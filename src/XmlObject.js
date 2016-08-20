@@ -61,15 +61,36 @@ class XmlObject {
   }
 
   /**
-   * getChildList - Gets a list of all childs by its tag name
+   * getTextArray - Get the strings of the given child tags as array instead of string
    *
    * @param  {string} name The tag name of the child
-   * @return {DOMNodeList}    DOM node list representation of the child
+   * @return {Arrray}      string array of the text content
    */
-  getChildList(name) {
-    return this.Node.getElementsByTagName(name);
+  getTextArray(name) {
+    const txt = [];
+    if (this.childExists(name)) {
+      const kids = this.getChildren(name);
+      for (let i = 0; i < kids.length; i++) {
+        txt.push(kids[i].textContent);
+      }
+    }
+    return txt;
   }
 
+  /**
+   * getNum - Get the numeric representation of the node. Will return NaN if failed
+   *
+   * @param  {string} name The tag name of the child
+   * @return {float}       Value of the node
+   */
+  getNum(name) {
+    let res = NaN;
+    if (this.childExists(name)) {
+      const kids = this.getChildren(name);
+      res = parseFloat(kids[0].textContent);
+    }
+    return res;
+  }
 
   /**
    * getAttribute - Gets a string representation of an attribute

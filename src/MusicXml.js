@@ -27,7 +27,7 @@ export default class MusicXml extends XmlObject {
     }
     this.Title = this.getText('movement-title');
 
-    const parts = this.getChildList('part');
+    const parts = this.getChildren('part');
     this.Parts = [...parts].map(p => new Part(p));
   }
 
@@ -43,7 +43,7 @@ export default class MusicXml extends XmlObject {
 class Part extends XmlObject {
   constructor(node) {
     super(node);
-    const measures = this.getChildList('measure');
+    const measures = this.getChildren('measure');
     this.Measures = [...measures].map(m => new Measure(m));
   }
 
@@ -92,10 +92,12 @@ class Measure extends XmlObject {
     super(node);
     this.Number = parseInt(this.getAttribute('number'), 10);
     this.Width = parseFloat(this.getAttribute('width'), 10);
-    const attr = this.getChildList('attributes');
+    const attr = this.getChildren('attributes');
+    // The MusicXML Spec says attributes are unbounded. It can occur that the
+    // measure contains more than one node if given a "backup" node.
     this.Attributes = [...attr].map(a => new Attributes(a));
-    // const notes = this.getChildList('note');
-    // this.Notes = [...notes].map(n => new Note(n));
+    const notes = this.getChildren('note');
+    this.Notes = [...notes].map(n => new Note(n, this.Attributes ? this.Attributes.Divisions : undefined));
   }
 
 /**
@@ -147,7 +149,8 @@ class Measure extends XmlObject {
  */
   getStaves() {
     // return [...new Set(this.Notes.map(n => n.Staff))];
-    return [].concat(...this.Notes.map(n => n.Staff));
+    const ret = [].concat(...this.Notes.map(n => n.Staff));
+    return ret;
   }
 }
 
@@ -155,13 +158,19 @@ class Measure extends XmlObject {
  * Class representation of a Note
  * @extends XmlObject
  */
-class Note extends XmlObject { // eslint-disable-line
+class Note extends XmlObject {
   /**
    * Create a note from an XML node
    * @param {NodeObject} node - the XML Node representing the note
+   * @param {Number}    divisions - The divisions entry from the measure node
    */
-  constructor(...node) {
-    super(...node);
+  constructor(node, divisions) {
+    super(node);
+    /**
+     * Private property to store measures divions units
+     * @prop {Number} Note.mDivisions
+     */
+    this.mDivisions = divisions;
     /**
      * Shows if this note is a rest
      * @prop {Boolean} Note.isRest
@@ -178,34 +187,48 @@ class Note extends XmlObject { // eslint-disable-line
      * @prop {Boolean} Note.isLast
      */
     this.isLast = this.Node.nextElementSibling === null ||
+                  this.Node.nextElementSibling === undefined ||
                   this.Node.nextElementSibling.tagName === 'backup';
+
     /**
      * The note's voice number
      * @prop {Number} Note.Voice
      */
-    this.Voice = this.childExists('voice') ? parseInt(this.getText('voice'), 10) : undefined;
+    this.Voice = this.getNum('voice');
     /**
      * The note's staff number
      * @prop {Number} Note.Staff
      */
-    this.Staff = this.childExists('staff') ? parseInt(this.getText('staff'), 10) : undefined;
+    const tStaff = this.getNum('staff');
+    this.Staff = isNaN(tStaff) ? 1 : tStaff;
     /**
      * The duration of the note
      * @prop {Number} Note.Duration
      */
-    this.Duration = this.childExists('duration') ? parseInt(this.getText('duration'), 10) : undefined;
+    this.Duration = this.getNum('duration');
     /**
      * The notes type of representation (8th, whole, ...)
      * @prop {String} Note.Type
      */
     this.Type = this.childExists('type') ?  this.getText('type') : undefined;
-
-    this.BeamState = this.childExists('beam') ? this.getText('beam') : 'none';
+    /**
+     * The notes beam state. It indicates if a beam starts or ends here
+     * @prop {Array} Note.Beam is an array of beams. They can be 'begin', 'end',
+     *               'continue' or 'none'
+     */
+    this.BeamState = this.getTextArray('beam');
 
     this.Pitch = {
       Step: this.childExists('step') ?  this.getText('step') : undefined,
-      Octave: this.childExists('octave') ?  parseInt(this.getText('octave'), 10) : undefined,
+      Octave: this.getNum('octave'),
     };
+
+    /**
+     * The note's length. It is defined by the duration divided by the divisions
+     * in this measure.
+     * @param {Number} Note.NoteLength defines the note's length
+     */
+    this.NoteLength = this.Duration / this.mDivisions;
 
     this.Dots = 0;
 
@@ -227,21 +250,14 @@ class Note extends XmlObject { // eslint-disable-line
   }
 
   calculateType() {
-    // cannot call a new Measure() constructor as this would end in an infinite loop
-    let temp = this.Node.ownerDocument.getElementsByTagName('divisions')[0];
-    const ret = '8';
-    if (!temp) {
-      return ret;
-    }
-    // Divisions is d/quarterNote
-    temp = parseInt(temp.textContent, 10);
-    const noteLength = this.Duration / temp;
-    if (noteLength === 4) {
-      return 'w';
-    } else if (noteLength >= 2 && noteLength <= 3) {
-      return 'h';
-    } else if (noteLength >= 1 && noteLength < 2) {
-      return 'w';
+    let ret;
+
+    if (this.NoteLength === 4) {
+      ret = 'w';
+    } else if (this.NoteLength >= 2 && this.NoteLength <= 3) {
+      ret = 'h';
+    } else if (this.NoteLength >= 1 && this.NoteLength < 2) {
+      ret = 'w';
     }
     // TODO: Smaller then 1
     return ret;
@@ -266,15 +282,15 @@ class Note extends XmlObject { // eslint-disable-line
 }
 
 class Attributes extends XmlObject {
-  constructor(...node) {
-    super(...node);
-    this.Divisions = parseInt(this.getText('divisions'), 10);
+  constructor(node) {
+    super(node);
+    this.Divisions = this.getNum('divisions');
     this.Key = this.childExists('key') ? new Key(this.getChild('key')) : undefined;
-    this.Staves = this.childExists('staves') ? parseInt(this.getText('staves'), 10) : undefined;
+    this.Staves = this.getNum('staves');
     this.Time = this.childExists('time') ?  new Time(this.getChild('time')) : undefined;
     // this.Clef = this.childExists('clef') ?  new Clef(this.getChild('clef')) : undefined;
 
-    const clefs = this.getChildList('clef');
+    const clefs = this.getChildren('clef');
     this.Clef = [...clefs].map(n => new Clef(n));
   }
 
@@ -309,7 +325,7 @@ class Attributes extends XmlObject {
 class Key extends XmlObject {
   constructor(...node) {
     super(...node);
-    this.Fifths = parseInt(this.getText('fifths'), 10);
+    this.Fifths = this.getNum('fifths');
     this.Mode = this.getText('mode');
   }
 }
@@ -318,8 +334,8 @@ class Time extends XmlObject {
   constructor(node) {
     super(node);
     this.Symbol = this.getAttribute('symbol');
-    this.Beats = parseInt(this.getText('beats'), 10);
-    this.BeatType = parseInt(this.getText('beat-type'), 10);
+    this.Beats = this.getNum('beats');
+    this.BeatType = this.getNum('beat-type');
   }
 
   getVexTime() {
@@ -330,9 +346,10 @@ class Time extends XmlObject {
 class Clef extends XmlObject {
   constructor(node) {
     super(node);
-    this.Number = parseInt(this.getAttribute('number'), 10);
+    const staffClefNum = parseInt(this.getAttribute('number'), 10);
+    this.Number = isNaN(staffClefNum) ? 1 : staffClefNum;
     this.sign = this.getText('sign');
-    this.line = parseInt(this.getText('line'), 10);
+    this.line = this.getNum('line');
 
     // TODO: Move somewhere else
     this.Clefs = {
