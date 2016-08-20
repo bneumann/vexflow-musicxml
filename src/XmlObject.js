@@ -22,6 +22,16 @@ class XmlObject {
     return this.Node.getElementsByTagName(name)[0];
   }
 
+  /**
+   * getChildren - Gets all children by its tag name
+   *
+   * @param  {string} name The tag name of the child
+   * @return {DOMNodeList} DOM node list representation of the children
+   */
+  getChildren(name) {
+    return this.Node.getElementsByTagName(name);
+  }
+
 
   /**
    * childExists - Check if a child exists
@@ -41,10 +51,13 @@ class XmlObject {
    */
   getText(name) {
     let txt = '';
-    if (this.getChild(name)) {
-      txt =  this.getChild(name).textContent;
+    if (this.childExists(name)) {
+      const kids = this.getChildren(name);
+      for (let i = 0; i < kids.length; i++) {
+        txt += kids[i].textContent + '\n';
+      }
     }
-    return txt;
+    return txt.trim();
   }
 
   /**

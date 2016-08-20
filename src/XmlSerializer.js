@@ -8,6 +8,7 @@
 export default class XmlSerializer {
   /**
    * @constructor
+   * @param {string} xDoc - The string representation of an XML document
    */
   constructor(xDoc) {
     const domParser = new DOMParser();

@@ -32,13 +32,15 @@
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-eslint": "^19.0.0",
     "grunt-git": "^1.0.0",
+    "grunt-jsdoc": "^2.1.0",
     "grunt-mocha-test": "^0.12.7",
     "grunt-webpack": "^1.0.14",
     "mocha": "^3.0.2",
     "source-map-support": "^0.4.2",
     "webpack": "*",
     "webpack-dev-server": "^1.14.1",
-    "xmldom": "^0.1.22"
+    "xmldom": "^0.1.22",
+    "xpath": "0.0.23"
   },
   "dependencies": {
     "vexflow": "^1.2.77"

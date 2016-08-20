@@ -20,16 +20,15 @@ export default class MusicXml extends XmlObject {
     }
     const xDoc = oParser.parseFromString(xDocString, 'text/xml');
     super(xDoc.getElementsByTagName('score-partwise')[0]);
-    this.FileName = xDocString;
     this.Version = this.getAttribute('version');
-    console.log(this.Version);
     this.Identification = undefined;
     if (this.childExists('identification')) {
       this.Identification = new Identification(this.getChild('identification'));
     }
+    this.Title = this.getText('movement-title');
 
-    // const parts = this.getChildList('part');
-    // this.Parts = [...parts].map(p => new Part(p));
+    const parts = this.getChildList('part');
+    this.Parts = [...parts].map(p => new Part(p));
   }
 
   getMeasuresFromPart(partNumber) {
@@ -41,14 +40,18 @@ export default class MusicXml extends XmlObject {
 }
 
 
-class Part extends XmlObject { // eslint-disable-line
+class Part extends XmlObject {
   constructor(node) {
     super(node);
     const measures = this.getChildList('measure');
     this.Measures = [...measures].map(m => new Measure(m));
   }
 
-
+  /**
+   * Get the number of all staves in all measures
+   *
+   * @returns {Array} Array of staves in measure
+   */
   getAllStaves() {
     const staves = this.Measures.map(m => m.getStaves());
     // Concatenate all arrays to one unique set and 'cast' it to array
@@ -91,8 +94,8 @@ class Measure extends XmlObject {
     this.Width = parseFloat(this.getAttribute('width'), 10);
     const attr = this.getChildList('attributes');
     this.Attributes = [...attr].map(a => new Attributes(a));
-    const notes = this.getChildList('note');
-    this.Notes = [...notes].map(n => new Note(n));
+    // const notes = this.getChildList('note');
+    // this.Notes = [...notes].map(n => new Note(n));
   }
 
 /**
@@ -152,7 +155,7 @@ class Measure extends XmlObject {
  * Class representation of a Note
  * @extends XmlObject
  */
-class Note extends XmlObject {
+class Note extends XmlObject { // eslint-disable-line
   /**
    * Create a note from an XML node
    * @param {NodeObject} node - the XML Node representing the note
@@ -350,13 +353,15 @@ class Identification extends XmlObject {
   constructor(node) {
     super(node);
     this.Encoding = new Encoding(this.getChild('encoding'));
+    this.Creator = this.getText('creator');
+    this.CreatorType = this.getAttribute('type');
   }
 }
 
 class Encoding extends XmlObject {
   constructor(node) {
     super(node);
-    this.Software = this.getChild('software');
+    this.Software = this.getText('software');
     this.EncodingDate = this.getChild('encoding-date');
     // TODO: This is a list
     this.Supports = this.getChild('supports');

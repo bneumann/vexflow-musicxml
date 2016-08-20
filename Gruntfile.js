@@ -7,6 +7,7 @@ module.exports = (grunt) => {
 
   const BASE_DIR = __dirname;
   const BUILD_DIR = path.join(BASE_DIR, 'build');
+  const DOC_DIR = path.join(BASE_DIR, 'doc');
   // const RELEASE_DIR = path.join(BASE_DIR, 'releases');
   const MODULE_ENTRY = path.join(BASE_DIR, 'src/MusicXml.js');
   const TARGET_RAW = path.join(BUILD_DIR, 'vexflow-musicxml.js');
@@ -76,7 +77,10 @@ module.exports = (grunt) => {
         configFile: '.eslintrc.json',
       },
     },
-    clean: [BUILD_DIR],
+    clean: {
+      all: [BUILD_DIR, DOC_DIR],
+      doc: [DOC_DIR],
+    },
     webpack: {
       build: webpackCommon,
       watch: Object.assign({}, webpackCommon, {
@@ -97,6 +101,14 @@ module.exports = (grunt) => {
         src: TEST_SOURCES,
       },
     },
+    jsdoc: {
+      dist: {
+        src: ['src/*.js', 'tests/*.js', 'README.md'],
+        options: {
+          destination: DOC_DIR,
+        },
+      },
+    },
   });
 
   // Load the plugin that provides the "uglify" task.
@@ -110,11 +122,13 @@ module.exports = (grunt) => {
   // grunt.loadNpmTasks('grunt-release');
   // grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-git');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-webpack');
 
   // Default task(s).
   grunt.registerTask('default', ['eslint', 'webpack:build', 'uglify:build']);
-  grunt.registerTask('test', ['clean', 'eslint', 'webpack:build', 'mochaTest']);
+  grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:build', 'mochaTest']);
+  grunt.registerTask('doc', ['clean:doc', 'jsdoc']);
 };
