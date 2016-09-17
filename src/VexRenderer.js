@@ -8,13 +8,13 @@
 import Vex from 'vexflow';
 import MusicXml from './MusicXml.js';
 
-const VF = Vex.Flow;
+const Flow = Vex.Flow;
 
-class VexRenderer {
+export default class VexRenderer {
   constructor(data, canvas) {
     this.musicXml = new MusicXml(data);
     this.canvas = canvas;
-    this.renderer = new VF.Renderer(this.canvas, VF.Renderer.Backends.CANVAS);
+    this.renderer = new Flow.Renderer(this.canvas, Flow.Renderer.Backends.CANVAS);
     this.ctx = this.renderer.getContext();
 
     this.staveList = [];
@@ -25,8 +25,6 @@ class VexRenderer {
     this.staveXOffset = 20;
     this.staveYOffset = 20;
     this.systemSpace = this.staveSpace * 2 + 50;
-
-    this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures;
 
     this.layout = this.calculateLayout();
     this.parse();
@@ -99,13 +97,13 @@ class VexRenderer {
          // The notes can be set to bass, treble, etc. with the clef.
          // So we need to remember the last clef we used
         let curClef = 'treble';
-        let curTime = { num_beats: 4, beat_value: 4, resolution: VF.RESOLUTION };
+        let curTime = { num_beats: 4, beat_value: 4, resolution: Flow.RESOLUTION };
         // Iterate all measures in this stave
         allMeasures.forEach((meas, mi) => {
           const newSystem = this.layout.measPerStave % (mi + 1) > 0;
           curSystem = newSystem ? curSystem + 1 : curSystem;
           const point = this.layout.points[mIndex];
-          stave = new VF.Stave(point.x, point.y, stave.width);
+          stave = new Flow.Stave(point.x, point.y, stave.width);
           mIndex++;
           measureList.push(stave);
 
@@ -119,7 +117,7 @@ class VexRenderer {
           // Adding time information to the stave & voice
           if (allTimes[staffInfo.si]) {
             curTime = allTimes[staffInfo.si].getVexTime();
-            curTime.resolution = VF.RESOLUTION;
+            curTime.resolution = Flow.RESOLUTION;
           }
           if (mi === 0 || allTimes[staffInfo.si]) {
             if (1) { // eslint-disable-line
@@ -142,7 +140,7 @@ class VexRenderer {
             curNotes.forEach(n => {
               const vn = n.getVexNote();
               vn.clef = n.isRest ? 'treble' : curClef;
-              const sn = new VF.StaveNote(vn);
+              const sn = new Flow.StaveNote(vn);
               for (let i = 0; i < n.Dots; i++) {
                 sn.addDotToAll();
               }
@@ -158,25 +156,17 @@ class VexRenderer {
             const beamList = [];
             let beamNotes = [];
             beamStates.forEach((b, i) => {
-              switch (b) {
-                case 'begin':
-                case 'continue':
-                  beamNotes.push(a[i]);
-                  break;
-                case 'end':
-                  beamNotes.push(a[i]);
-                  // Beams do only make sense if more then 1 note is involved
-                  if (beamNotes.length > 1) {
-                    beamList.push(new VF.Beam(beamNotes));
-                    beamNotes = [];
-                  }
-                  break;
-                default:
-
+              if (b) {
+                beamNotes.push(a[i]);
               }
             });
+            // Beams do only make sense if more then 1 note is involved
+            if (beamNotes.length > 1) {
+              beamList.push(new Flow.Beam(beamNotes));
+              beamNotes = [];
+            }
             // Draw notes
-            VF.Formatter.FormatAndDraw(this.ctx, stave, a);
+            Flow.Formatter.FormatAndDraw(this.ctx, stave, a);
             // Draw beams
             beamList.forEach(beam => beam.setContext(this.ctx).draw());
           }
@@ -189,14 +179,14 @@ class VexRenderer {
             if (measureIdx % this.layout.measPerStave === 0) {
               this.addConnector(topStave[measureIdx],
                                 bottomStave[measureIdx],
-                                VF.StaveConnector.type.BRACE);
+                                Flow.StaveConnector.type.BRACE);
             }
             this.addConnector(topStave[measureIdx],
                               bottomStave[measureIdx],
-                              VF.StaveConnector.type.SINGLE_LEFT);
+                              Flow.StaveConnector.type.SINGLE_LEFT);
             this.addConnector(topStave[measureIdx],
                               bottomStave[measureIdx],
-                              VF.StaveConnector.type.SINGLE_RIGHT);
+                              Flow.StaveConnector.type.SINGLE_RIGHT);
           }
         }
       }); // Staves
@@ -204,7 +194,7 @@ class VexRenderer {
   }
 
   addConnector(stave1, stave2, type) {
-    new VF.StaveConnector(stave1, stave2)
+    new Flow.StaveConnector(stave1, stave2)
       .setType(type)
       .setContext(this.ctx)
       .draw();
@@ -213,5 +203,3 @@ class VexRenderer {
   draw() {
   }
 }
-
-export default VexRenderer;

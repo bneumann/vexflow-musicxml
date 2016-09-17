@@ -48,7 +48,7 @@
           <octave>4</octave>
         </pitch>
         <duration>2</duration>
-        <type>eigth</type>
+        <type>eighth</type>
         <beam number="1">continue</beam>
         <beam number="2">end</beam>
       </note>
@@ -58,7 +58,7 @@
           <octave>4</octave>
         </pitch>
         <duration>2</duration>
-        <type>eigth</type>
+        <type>eighth</type>
         <beam number="1">end</beam>
       </note>
     </measure>

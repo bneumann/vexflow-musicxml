@@ -29,11 +29,13 @@ export default class MusicXml extends XmlObject {
 
     const parts = this.getChildren('part');
     this.Parts = [...parts].map(p => new Part(p));
+    // // FIXME: THIS IS ONLY FOR DEBUGGING!!!!
+    // this.Parts = [this.Parts[this.Parts.length - 1]];
   }
 
   getMeasuresFromPart(partNumber) {
     if (partNumber >= this.Parts.length) {
-      throw new Error('The part item you are trying to get is out of bounds');
+      throw new MusicXmlError('PartOutOfBounds', 'The part item you are trying to get is out of bounds');
     }
     return this.Parts[partNumber].Measures;
   }
@@ -44,7 +46,15 @@ class Part extends XmlObject {
   constructor(node) {
     super(node);
     const measures = this.getChildren('measure');
-    this.Measures = [...measures].map(m => new Measure(m));
+    this.Measures = [];
+    let lastDivision = 0;
+    for (let m = 0; m < measures.length; m++) {
+      const lastMeasure = new Measure(measures[m], lastDivision);
+      this.Measures.push(lastMeasure);
+      if (lastMeasure.Attributes.length > 0 && !isNaN(lastMeasure.Attributes[0].Divisions)) {
+        lastDivision = lastMeasure.Attributes[0].Divisions;
+      }
+    }
   }
 
   /**
@@ -88,7 +98,8 @@ class Measure extends XmlObject {
    * Create a measure from an XML node
    * @param {NodeObject} node - the XML Node representing the measure
    */
-  constructor(node) {
+   // FIXME: Description doesn't match implementation
+  constructor(node, lastDivision) {
     super(node);
     this.Number = parseInt(this.getAttribute('number'), 10);
     this.Width = parseFloat(this.getAttribute('width'), 10);
@@ -97,7 +108,9 @@ class Measure extends XmlObject {
     // measure contains more than one node if given a "backup" node.
     this.Attributes = [...attr].map(a => new Attributes(a));
     const notes = this.getChildren('note');
-    this.Notes = [...notes].map(n => new Note(n, this.Attributes ? this.Attributes.Divisions : undefined));
+    // the first attributes hould always have divisions.
+    const divisions = lastDivision === 0 ? this.Attributes[0].Divisions : lastDivision;
+    this.Notes = [...notes].map(n => new Note(n, divisions));
   }
 
 /**
@@ -144,13 +157,11 @@ class Measure extends XmlObject {
   }
 
 /**
- * Get the numbers of all staves in this measure
+ * Get the unique numbers of all staves in this measure
  * @returns {Array} Staves in this measure
  */
   getStaves() {
-    // return [...new Set(this.Notes.map(n => n.Staff))];
-    const ret = [].concat(...this.Notes.map(n => n.Staff));
-    return ret;
+    return [...new Set(this.Notes.map(n => n.Staff))];
   }
 }
 
@@ -206,18 +217,28 @@ class Note extends XmlObject {
      * @prop {Number} Note.Duration
      */
     this.Duration = this.getNum('duration');
+
     /**
      * The notes type of representation (8th, whole, ...)
      * @prop {String} Note.Type
      */
-    this.Type = this.childExists('type') ?  this.getText('type') : undefined;
+    this.Type = this.getText('type');
+
     /**
      * The notes beam state. It indicates if a beam starts or ends here
      * @prop {Array} Note.Beam is an array of beams. They can be 'begin', 'end',
      *               'continue' or 'none'
      */
-    this.BeamState = this.getTextArray('beam');
+     // FIXME: Description doesn't match implementation
+    this.BeamState = this.getTextArray('beam').indexOf('begin') > -1 ||
+                     this.getTextArray('beam').indexOf('continue') > -1 ||
+                     this.getTextArray('beam').indexOf('end') > -1;
 
+    /**
+     * The notes pitch. It is defined by a step and the octave.
+     * @prop {Object} .Step: Step inside octave
+     *                .Octave: Octave of the note
+     */
     this.Pitch = {
       Step: this.childExists('step') ?  this.getText('step') : undefined,
       Octave: this.getNum('octave'),
@@ -234,7 +255,7 @@ class Note extends XmlObject {
 
     // TODO: Move somewhere else
     this.Types = {
-      undefined: this.calculateType(),
+      '': this.calculateType(),
       'whole': 'w',
       'half': 'h',
       'quarter': 'q',
@@ -258,8 +279,13 @@ class Note extends XmlObject {
       ret = 'h';
     } else if (this.NoteLength >= 1 && this.NoteLength < 2) {
       ret = 'w';
+    } else if (this.NoteLength === 0.25) {
+      ret = 'q';
+    } else if (this.NoteLength === 0.5) {
+      ret = 'h';
+    } else if (this.NoteLength <= (1 / 8)) {
+      ret = Math.round(1 / (1 / 8)).toString();
     }
-    // TODO: Smaller then 1
     return ret;
   }
 
@@ -267,12 +293,15 @@ class Note extends XmlObject {
     const kStep = this.isRest ? 'b' : this.Pitch.Step;
     const kOctave = this.isRest ? '4' : this.Pitch.Octave;
     const type = this.Types[this.Type];
+    if (type === undefined) {
+      throw new MusicXmlError('BadArguments', 'Invalid type ' + JSON.stringify(this));
+    }
     const ret = { keys: [kStep + '/' + kOctave], duration: type };
     if (this.isRest) {
       ret.type = 'r';
     }
     if (this.Node.nextElementSibling !== null) {
-      const tempNote = new Note(this.Node.nextElementSibling);
+      const tempNote = new Note(this.Node.nextElementSibling, this.mDivisions);
       if (tempNote.isInChord) {
         ret.keys.push(...tempNote.getVexNote().keys);
       }
@@ -382,5 +411,13 @@ class Encoding extends XmlObject {
     this.EncodingDate = this.getChild('encoding-date');
     // TODO: This is a list
     this.Supports = this.getChild('supports');
+  }
+}
+
+class MusicXmlError extends TypeError {
+  constructor(code, msg) {
+    super();
+    this.name = 'MusicXmlError:' + code;
+    this.message = msg;
   }
 }

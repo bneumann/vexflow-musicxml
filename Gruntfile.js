@@ -10,6 +10,7 @@ module.exports = (grunt) => {
   const DOC_DIR = path.join(BASE_DIR, 'doc');
   // const RELEASE_DIR = path.join(BASE_DIR, 'releases');
   const MODULE_ENTRY = path.join(BASE_DIR, 'src/MusicXml.js');
+  const ALL_ENTRIES = path.join(BASE_DIR, 'src/index.js');
   const TARGET_RAW = path.join(BUILD_DIR, 'vexflow-musicxml.js');
   const TARGET_MIN = path.join(BUILD_DIR, 'vexflow-musicxml-min.js');
   const TARGET_TESTS = path.join(BUILD_DIR, 'vexflow-musicxml-tests.js');
@@ -19,13 +20,13 @@ module.exports = (grunt) => {
     'tests/run.js',
   ];
 
-  function webpackConfig(target, preset) {
+  function webpackConfig(config) {
     return {
-      entry: MODULE_ENTRY,
+      entry: config.entry,
       output: {
         path: '/',
-        filename: target,
-        library: 'MusicXml',
+        filename: config.target,
+        library: config.library,
         libraryTarget: 'umd',
       },
       devtool: 'source-map',
@@ -36,7 +37,7 @@ module.exports = (grunt) => {
             exclude: /(node_modules|bower_components)/,
             loader: 'babel',
             query: {
-              presets: [preset],
+              presets: [config.preset],
               'plugins': ['add-module-exports', 'transform-object-assign'],
             },
           },
@@ -45,7 +46,19 @@ module.exports = (grunt) => {
     };
   }
 
-  const webpackCommon = webpackConfig(TARGET_RAW, 'es2015');
+  const webpackMusicXmlOnly = webpackConfig({
+    entry: MODULE_ENTRY,
+    target: TARGET_RAW,
+    library: 'Vex.Flow.MusicXml',
+    preset: 'es2015' }
+  );
+
+  const webpackAll = webpackConfig({
+    entry: ALL_ENTRIES,
+    target: TARGET_RAW,
+    library: 'Vex',
+    preset: 'es2015' }
+  );
 
   // Project configuration.
   grunt.initConfig({
@@ -58,6 +71,16 @@ module.exports = (grunt) => {
       tests: {
         src: TEST_SOURCES,
         dest: TARGET_TESTS,
+      },
+    },
+    watch: {
+      dev: {
+        files: [SOURCES, 'tests/*.html'],
+        tasks: ['webpack:build'],
+      },
+      test: {
+        files: [SOURCES, 'tests/*.js', 'tests/parser/*.js', 'tests/testdata/mock/*.xml', 'tests/*.html'],
+        tasks: ['test'],
       },
     },
     uglify: {
@@ -81,8 +104,9 @@ module.exports = (grunt) => {
       doc: [DOC_DIR],
     },
     webpack: {
-      build: webpackCommon,
-      watch: Object.assign({}, webpackCommon, {
+      build: webpackMusicXmlOnly,
+      all: webpackAll,
+      watch: Object.assign({}, webpackAll, {
         watch: true,
         keepalive: true,
         watchDelay: 0,
@@ -114,7 +138,7 @@ module.exports = (grunt) => {
   // Load the plugin that provides the "uglify" task.
   // grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  // grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   // grunt.loadNpmTasks('grunt-contrib-qunit');
   // grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');

@@ -25,4 +25,10 @@ describe('Vexflow tests', function() {
   it('Check if times are loaded correctly', () => {
     assert.strictEqual(MOCK1.Parts[0].Measures[0].getAllTimes().length, 1, 'Number of times should be 1');
   });
+  it('Check if beams are set correctly', () => {
+    assert.strictEqual(MOCK1.Parts[0].Measures[0].Notes[0].BeamState, false, 'First not is a while and shouldnt have a beam');
+    assert.strictEqual(MOCK1.Parts[0].Measures[0].Notes[1].BeamState, true, 'This Note should be part of a beam group');
+    assert.strictEqual(MOCK1.Parts[0].Measures[0].Notes[2].BeamState, true, 'This Note should be part of a beam group');
+    assert.strictEqual(MOCK1.Parts[0].Measures[0].Notes[3].BeamState, true, 'This Note should be part of a beam group');
+  });
 });
