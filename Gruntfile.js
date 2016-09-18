@@ -45,7 +45,7 @@ module.exports = (grunt) => {
       },
     };
   }
-
+ // TODO: Make a test config that doesn't conflict with regular builds
   const webpackMusicXmlOnly = webpackConfig({
     entry: MODULE_ENTRY,
     target: TARGET_RAW,
@@ -76,7 +76,7 @@ module.exports = (grunt) => {
     watch: {
       dev: {
         files: [SOURCES, 'tests/*.html'],
-        tasks: ['webpack:build'],
+        tasks: ['webpack:all'],
       },
       test: {
         files: [SOURCES, 'tests/*.js', 'tests/parser/*.js', 'tests/testdata/mock/*.xml', 'tests/*.html'],
@@ -104,7 +104,7 @@ module.exports = (grunt) => {
       doc: [DOC_DIR],
     },
     webpack: {
-      build: webpackMusicXmlOnly,
+      test: webpackMusicXmlOnly,
       all: webpackAll,
       watch: Object.assign({}, webpackAll, {
         watch: true,
@@ -147,12 +147,12 @@ module.exports = (grunt) => {
   // grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.loadNpmTasks('grunt-git');
+  // grunt.loadNpmTasks('grunt-git');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-webpack');
 
   // Default task(s).
-  grunt.registerTask('default', ['eslint', 'webpack:build', 'uglify:build']);
-  grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:build', 'mochaTest']);
+  grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build']);
+  grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:test', 'mochaTest']);
   grunt.registerTask('doc', ['clean:doc', 'jsdoc']);
 };

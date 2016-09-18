@@ -2,7 +2,7 @@
   "name": "vexflow-musicxml",
   "version": "1.0.0",
   "description": "MusicXml Parser for vexflow",
-  "main": "index.js",
+  "main": "build/vexflow-musicxml.js",
   "keywords": [
     "vexflow",
     "musicxml",
@@ -45,5 +45,10 @@
   },
   "dependencies": {
     "vexflow": "^1.2.77"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
   }
 }

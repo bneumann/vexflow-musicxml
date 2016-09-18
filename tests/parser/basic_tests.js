@@ -44,7 +44,7 @@ describe('Basic tests', function() {
     assert.isAbove(gTestContext.MusicXml.Parts[0].Measures.length, 0, 'Measures seem valid');
   });
 
-  it('Check all sample files loading time', (done) => {
+  it('Check if every sample files loading time is < 1 s and the average < 500 ms', (done) => {
     const statistics = [];
     for (let i = 0; i < gTestContext.scores.length; i++) {
       let elapsedTime = 10000;
