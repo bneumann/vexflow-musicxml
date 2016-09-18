@@ -10,7 +10,11 @@ import MusicXml from './MusicXml.js';
 
 const Flow = Vex.Flow;
 
-export default class VexRenderer {
+/**
+ * MusicXmlRenderer aka VexRenderer
+ * @property {Array} VexRenderer.keySpec - An arrayed version of the Vex keyspec
+ */
+class VexRenderer {
   constructor(data, canvas) {
     this.musicXml = new MusicXml(data);
     this.canvas = canvas;
@@ -18,6 +22,15 @@ export default class VexRenderer {
     this.ctx = this.renderer.getContext();
 
     this.staveList = [];
+
+    this.keySpec = [];
+    for (const k in Flow.keySignature.keySpecs) {
+      if ({}.hasOwnProperty.call(Flow.keySignature.keySpecs, k)) {
+        const newEntry = Flow.keySignature.keySpecs[k];
+        newEntry.name = k;
+        this.keySpec.push(newEntry);
+      }
+    }
 
     // Some formatting constiables
     this.staveSpace = 100;
@@ -84,6 +97,7 @@ export default class VexRenderer {
     allParts.forEach((part) => {
       const allMeasures = part.Measures;
       const allStaves = part.getAllStaves();
+      const allMeasureWithKeys = part.getAllMeasuresWithKeys();
 
       let stave = {};
       stave.width = this.staveWidth;
@@ -107,6 +121,12 @@ export default class VexRenderer {
           mIndex++;
           measureList.push(stave);
 
+          // Check if we have keys in this measure
+          if (allMeasureWithKeys.indexOf(meas) > -1) {
+            const key = this.getVexKey(meas.Attributes[0].Key);
+            console.log('key', key);
+            stave.addKeySignature(key);
+          }
           const allClefs = meas.getAllClefs();
           const allTimes = meas.getAllTimes();
           // Adding clef information to the stave
@@ -133,7 +153,7 @@ export default class VexRenderer {
           let curNotes = meas.getNotesByBackup();
           curNotes = curNotes[staffInfo.si];
           // FIXME: Backup mechanism ftw... :(
-          const a = [];
+          const staffNoteArray = [];
           // filter chord notes. They are automatically returned by the getVexNote function
           if (curNotes) {
             curNotes = curNotes.filter(n => n.isInChord === false);
@@ -145,28 +165,29 @@ export default class VexRenderer {
                 sn.addDotToAll();
               }
               sn.setStave(stave);
-              a.push(sn);
+              staffNoteArray.push(sn);
             }); // Notes
 
 
-            // Beaming, mxml has a start, end and continue for beams. VexFlow
+            // Beaming: mxml has a start, end and continue for beams. VexFlow
             // handles the number of beams itself so we only need to group the
             // notes depending on their "BeamState"
-            const beamStates = curNotes.map(n => n.BeamState);
+            // const beamStates = curNotes.map(n => n.BeamState);
             const beamList = [];
             let beamNotes = [];
-            beamStates.forEach((b, i) => {
-              if (b) {
-                beamNotes.push(a[i]);
+            curNotes.forEach((b, i) => {
+              if (b.BeamState) {
+                beamNotes.push(staffNoteArray[i]);
+                // Beams do only make sense if more then 1 note is involved
+                if (beamNotes.length > 1 && b.isLastBeamNote) {
+                  beamList.push(new Flow.Beam(beamNotes));
+                  beamNotes = [];
+                }
               }
             });
-            // Beams do only make sense if more then 1 note is involved
-            if (beamNotes.length > 1) {
-              beamList.push(new Flow.Beam(beamNotes));
-              beamNotes = [];
-            }
+
             // Draw notes
-            Flow.Formatter.FormatAndDraw(this.ctx, stave, a);
+            Flow.Formatter.FormatAndDraw(this.ctx, stave, staffNoteArray);
             // Draw beams
             beamList.forEach(beam => beam.setContext(this.ctx).draw());
           }
@@ -193,6 +214,30 @@ export default class VexRenderer {
     }); // Parts
   }
 
+  /**
+   *
+   * From the docs:
+   * Traditional key signatures are represented by the number
+   * of flats and sharps, plus an optional mode for major/
+   * minor/mode distinctions. Negative numbers are used for
+   * flats and positive numbers for sharps, reflecting the
+   * key's placement within the circle of fifths (hence the
+   * element name).
+   * @param {Key} Key object to be translated
+   * @returns {VexKey} Vex object
+   */
+  getVexKey(key) {
+    let filteredKeys = this.keySpec.filter(k => k.num === Math.abs(key.Fifths));
+    const mode = key.Mode === 'major' ? 0 : 1;
+    if (key.Fifth < 0) {
+      filteredKeys = filteredKeys.filter(k => k.acc === 'b');
+    } else if (key.Fifths > 0) {
+      filteredKeys = filteredKeys.filter(k => k.acc === '#');
+    }
+    const entry = filteredKeys[mode].name;
+    return entry;
+  }
+
   addConnector(stave1, stave2, type) {
     new Flow.StaveConnector(stave1, stave2)
       .setType(type)
@@ -203,3 +248,6 @@ export default class VexRenderer {
   draw() {
   }
 }
+
+const MusicXmlRenderer = VexRenderer;
+export default MusicXmlRenderer;

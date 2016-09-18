@@ -14,7 +14,7 @@ require('source-map-support').install({
   environment: 'node',
 }); // eslint-disable-line
 
-const jsPath = path.join(__dirname, '..', 'build', 'vexflow-musicxml.js');
+const jsPath = path.join(__dirname, '..', 'build', 'vexflow-musicxml-tests.js');
 const MusicXml = require(jsPath);
 const SCORES_DIR = path.join(__dirname, 'testdata/v3/');
 const MOCK_DIR = path.join(__dirname, 'testdata/mock/');

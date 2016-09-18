@@ -9,6 +9,11 @@ import XmlObject from './XmlObject.js';
 
 export default class MusicXml extends XmlObject {
   constructor(xDocString) {
+    if (xDocString === undefined) {
+      console.warn('xml String undefined!');
+      super();
+      return;
+    }
     // This is a hack to be able to test with mocha in a non-browser environment
     // Or maybe even in a standalone node application.
     let oParser;
@@ -41,8 +46,15 @@ export default class MusicXml extends XmlObject {
   }
 }
 
-
+/**
+ * Class representation of a part
+ * @extends XmlObject
+ */
 class Part extends XmlObject {
+  /**
+   * Create a part from an XML node
+   * @param {NodeObject} node - the XML Node representing the part
+   */
   constructor(node) {
     super(node);
     const measures = this.getChildren('measure');
@@ -68,6 +80,11 @@ class Part extends XmlObject {
     return [...new Set(...staves)];
   }
 
+  /**
+   * Get all clefs in all measure
+   *
+   * @returns {Array} Array of clefs in all measures
+   */
   getAllClefs() {
     return this.Measures.map(m => m.getAllClefs());
   }
@@ -85,6 +102,17 @@ class Part extends XmlObject {
     // for (var key in this.Measures) {
     //   a.push(...this.Measures[key].getNotesByStaff(index));
     // }
+    return a;
+  }
+
+  /**
+   * Gets all measures that have keys. This can be used for checking if we still
+   * have the same keys as in the measure before
+   * @returns {Key} A Key class object
+   */
+  getAllMeasuresWithKeys() {
+    const a = this.Measures.filter(m => m.hasAttributes() &&
+                                        m.Attributes.some(a => a.Key !== undefined));
     return a;
   }
 }
@@ -163,6 +191,14 @@ class Measure extends XmlObject {
   getStaves() {
     return [...new Set(this.Notes.map(n => n.Staff))];
   }
+
+  /**
+   * Check if this Measure has Attributes
+   * @returns {Boolean} Indicates if the measure has Attributes
+   */
+  hasAttributes() {
+    return this.Attributes !== undefined && this.Attributes.length > 0;
+  }
 }
 
 /**
@@ -233,6 +269,13 @@ class Note extends XmlObject {
     this.BeamState = this.getTextArray('beam').indexOf('begin') > -1 ||
                      this.getTextArray('beam').indexOf('continue') > -1 ||
                      this.getTextArray('beam').indexOf('end') > -1;
+
+    /**
+     * Indicates if this is the last not in a beam.
+     * @prop {Boolean} Note.isLastBeamNote is an boolean that indicates the last
+     * not in a beam
+     */
+    this.isLastBeamNote = this.getTextArray('beam').every(b => b.indexOf('end') > -1);
 
     /**
      * The notes pitch. It is defined by a step and the octave.
@@ -322,33 +365,6 @@ class Attributes extends XmlObject {
     const clefs = this.getChildren('clef');
     this.Clef = [...clefs].map(n => new Clef(n));
   }
-
-  getVexKey() {
-    let ret;
-    if (this.Key) {
-      ret = this.fifthsToKey(this.Key.Fifths);
-    }
-    return ret;
-  }
-
-  // FIXME: This is taken from the original code and needs rework! It also includes
-  // Vex as a direct dependency
-  fifthsToKey(/* fifths */) {
-    let ret;
-    // Find equivalent key in Vex.Flow.keySignature.keySpecs
-    // for (const i in Vex.Flow.keySignature.keySpecs) {
-      // if ({}.hasOwnProperty.call(Vex.Flow.keySignature.keySpecs, i)) {
-      //   const spec = Vex.Flow.keySignature.keySpecs[i];
-      //   if (!(typeof spec !== 'object' || !('acc' in spec) || !('num' in spec))) {
-      //     if ((fifths < 0 && spec.acc === 'b' && spec.num === Math.abs(fifths)) ||
-      //         (fifths >= 0 && spec.acc !== 'b' && spec.num === fifths)) {
-      //       return i;
-      //     }
-      //   }
-      // }
-    // }
-    return ret;
-  }
 }
 
 class Key extends XmlObject {
@@ -356,6 +372,10 @@ class Key extends XmlObject {
     super(...node);
     this.Fifths = this.getNum('fifths');
     this.Mode = this.getText('mode');
+    // Default is always Major
+    if (this.Mode === '') {
+      this.Mode = 'major';
+    }
   }
 }
 

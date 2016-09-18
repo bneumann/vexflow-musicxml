@@ -11,7 +11,7 @@
  * */
 describe('Vexflow MusicXml unit tests', () => {
   describe('Basic xml parser tests', () => {
-    require('./parser/basic_tests.js');
+    // require('./parser/basic_tests.js');
   });
 
   describe('Vex specific conversion tests', () => {

@@ -12,4 +12,4 @@ Vex.Flow = vexImport.Flow;
 Vex.Flow.MusicXml = MusicXml;
 Vex.Flow.MusicXmlRenderer = VexRenderer;
 
-export { Vex };
+export default Vex;

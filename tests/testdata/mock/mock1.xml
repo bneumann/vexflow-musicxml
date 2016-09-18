@@ -62,5 +62,39 @@
         <beam number="1">end</beam>
       </note>
     </measure>
+    <measure>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>16</duration>
+        <type>whole</type>
+      </note>
+    </measure>
+    <measure>
+      <attributes>
+        <divisions>16</divisions>
+        <key>
+          <fifths>-2</fifths>
+        </key>
+        <time>
+          <beats>3</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>F</sign>
+          <line>4</line>
+        </clef>
+      </attributes>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>16</duration>
+        <type>whole</type>
+      </note>
+    </measure>
   </part>
 </score-partwise>

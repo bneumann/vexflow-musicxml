@@ -16,9 +16,7 @@ module.exports = (grunt) => {
   const TARGET_TESTS = path.join(BUILD_DIR, 'vexflow-musicxml-tests.js');
 
   const SOURCES = ['src/*.js'];
-  const TEST_SOURCES = [
-    'tests/run.js',
-  ];
+  const TEST_SOURCES = ['tests/*.js', 'tests/parser/*.js', 'tests/testdata/mock/*.xml', 'tests/*.html'];
 
   function webpackConfig(config) {
     return {
@@ -45,13 +43,19 @@ module.exports = (grunt) => {
       },
     };
   }
- // TODO: Make a test config that doesn't conflict with regular builds
-  const webpackMusicXmlOnly = webpackConfig({
+  const webpackTest = webpackConfig({
     entry: MODULE_ENTRY,
-    target: TARGET_RAW,
+    target: TARGET_TESTS,
     library: 'Vex.Flow.MusicXml',
     preset: 'es2015' }
   );
+
+  // const webpackMusicXmlOnly = webpackConfig({
+  //   entry: MODULE_ENTRY,
+  //   target: TARGET_RAW,
+  //   library: 'Vex.Flow.MusicXml',
+  //   preset: 'es2015' }
+  // );
 
   const webpackAll = webpackConfig({
     entry: ALL_ENTRIES,
@@ -63,24 +67,18 @@ module.exports = (grunt) => {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    concat: {
-      options: {
-        banner: BANNER,
-        sourceMap: true,
-      },
-      tests: {
-        src: TEST_SOURCES,
-        dest: TARGET_TESTS,
-      },
-    },
     watch: {
       dev: {
         files: [SOURCES, 'tests/*.html'],
         tasks: ['webpack:all'],
       },
       test: {
-        files: [SOURCES, 'tests/*.js', 'tests/parser/*.js', 'tests/testdata/mock/*.xml', 'tests/*.html'],
+        files: [TEST_SOURCES],
         tasks: ['test'],
+      },
+      meteor: {
+        files: [TEST_SOURCES, SOURCES],
+        tasks: ['meteor'],
       },
     },
     uglify: {
@@ -104,7 +102,7 @@ module.exports = (grunt) => {
       doc: [DOC_DIR],
     },
     webpack: {
-      test: webpackMusicXmlOnly,
+      test: webpackTest,
       all: webpackAll,
       watch: Object.assign({}, webpackAll, {
         watch: true,
@@ -122,7 +120,7 @@ module.exports = (grunt) => {
           require: 'babel-register',
           recursive: true,
         },
-        src: TEST_SOURCES,
+        src: ['tests/run.js'],
       },
     },
     jsdoc: {
@@ -152,7 +150,8 @@ module.exports = (grunt) => {
   grunt.loadNpmTasks('grunt-webpack');
 
   // Default task(s).
-  grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build']);
-  grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:test', 'mochaTest']);
+  grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build', 'doc']);
+  grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:test', 'mochaTest', 'doc']);
+  grunt.registerTask('meteor', ['clean:all', 'eslint', 'webpack:test', 'mochaTest', 'webpack:all', 'doc']);
   grunt.registerTask('doc', ['clean:doc', 'jsdoc']);
 };
