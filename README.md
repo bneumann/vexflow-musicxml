@@ -1,4 +1,4 @@
-# Vexflow MusicXML parser
+# Vexflow MusicXML parser [![Build Status](https://travis-ci.org/bneumann/vexflow-musicxml.svg?branch=master)](https://travis-ci.org/bneumann/vexflow-musicxml)
 
 This is a ES6 approach for a easy Music XML renderer. It uses [Vexflow](https://github.com/0xfe/vexflow) as to display the score.
 
