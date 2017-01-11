@@ -1,6 +1,8 @@
 # Vexflow MusicXML parser
 
-TODO: Write a project description
+This is a ES6 approach for a easy Music XML renderer. It uses [Vexflow](https://github.com/0xfe/vexflow) as to display the score.
+
+Please consider that this project is under development and needs some more care.
 
 ## Installation
 
@@ -24,7 +26,50 @@ grunt test
 
 ## Usage
 
-TODO: Write usage instructions
+Apply like this:
+
+```html
+<!doctype html>
+
+<html lang="en">
+<body>
+  <style>
+  html, body, canvas {
+    width:  100%;
+    height: 100%;
+    margin: 5px;
+  }
+  </style>
+  <script src="../build/vexflow-musicxml.js"></script>
+  <script>
+    const reader = new FileReader();
+    const openFile = function(event) {
+      const input = event.target;
+      reader.onload = function(){
+        const dStart = new Date();
+        const text = reader.result;
+        const node = document.getElementById('output'); // get the element where you want the score to be rendered
+        const vex = new Vex.Flow.MusicXmlRenderer(text, node); // call the MusicXmlRenderer
+        const dStop = new Date();
+        console.log('Time for loading: ' + (dStop.getMilliseconds() - dStart.getMilliseconds()) + ' ms');
+      };
+      reader.readAsText(input.files[0]);
+    };
+
+  </script>
+  <form name="foo" method="post" enctype="multipart/form-data">
+    <input type='file'
+           accept='text/xml'
+           onchange='openFile(event)'><br>
+  </form>
+  <canvas id='output' width='1280' height='1024'>
+  ...
+  </canvas>
+</body>
+
+</html>
+
+```
 
 ## Contributing
 
