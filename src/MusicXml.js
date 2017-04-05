@@ -155,7 +155,7 @@ class Measure extends XmlObject {
   getNotesByBackup() {
     const bList = [];
     let nList = [];
-    this.Notes.forEach(n => {
+    this.Notes.forEach((n) => {
       nList.push(n);
       if (n.isLast) {
         bList.push(nList);

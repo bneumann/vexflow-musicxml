@@ -33,7 +33,7 @@ module.exports = (grunt) => {
           {
             test: /\.js?$/,
             exclude: /(node_modules|bower_components)/,
-            loader: 'babel',
+            loader: 'babel-loader',
             query: {
               presets: [config.preset],
               'plugins': ['add-module-exports', 'transform-object-assign'],
@@ -70,7 +70,7 @@ module.exports = (grunt) => {
     watch: {
       dev: {
         files: [SOURCES, 'tests/*.html'],
-        tasks: ['webpack:all'],
+        tasks: ['fast'],
       },
       test: {
         files: [TEST_SOURCES],
@@ -153,5 +153,6 @@ module.exports = (grunt) => {
   grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build', 'doc']);
   grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:test', 'mochaTest', 'doc']);
   grunt.registerTask('meteor', ['clean:all', 'eslint', 'webpack:test', 'mochaTest', 'webpack:all', 'doc']);
+  grunt.registerTask('fast', ['webpack:all', 'uglify:build']);
   grunt.registerTask('doc', ['clean:doc', 'jsdoc']);
 };

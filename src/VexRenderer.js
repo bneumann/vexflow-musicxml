@@ -12,15 +12,17 @@ const Flow = Vex.Flow;
 
 /**
  * MusicXmlRenderer aka VexRenderer
- * @property {Array} VexRenderer.keySpec - An arrayed version of the Vex keyspec
+ * @param
  */
 class VexRenderer {
-  constructor(data, canvas) {
+  constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
+    this.isSvg = canvas instanceof SVGElement;
     this.canvas = canvas;
-    this.renderer = new Flow.Renderer(this.canvas, Flow.Renderer.Backends.CANVAS);
-    this.ctx = this.renderer.getContext();
+    // eslint-disable-next-line max-len
+    this.renderer = new Flow.Renderer(this.canvas, this.isSvg ? Flow.Renderer.Backends.SVG : Flow.Renderer.Backends.CANVAS);
 
+    this.ctx = this.renderer.getContext();
     this.staveList = [];
 
     this.keySpec = [];
@@ -32,7 +34,7 @@ class VexRenderer {
       }
     }
 
-    // Some formatting constiables
+    // Some formatting constants
     this.staveSpace = 100;
     this.staveWidth = 250;
     this.staveXOffset = 20;
@@ -40,13 +42,21 @@ class VexRenderer {
     this.systemSpace = this.staveSpace * 2 + 50;
 
     this.layout = this.calculateLayout();
-    this.parse();
+    if (dontPrint === true) {
+      this.parse();
+    }
+  }
+
+  getScoreHeight() {
+    return this.systemSpace * this.layout.linesPerPage;
   }
 
   calculateLayout() {
-    const mps = Math.floor(this.canvas.width / this.staveWidth); // measures per stave
+    const width = this.isSvg ? this.canvas.getAttribute('width') : this.canvas.width;
+    // const height = this.isSvg ? this.canvas.getAttribute('height') : this.canvas.height;
+    const mps = Math.floor(width / this.staveWidth); // measures per stave
     // Reset the stave width to fill the page
-    this.staveWidth = Math.round(this.canvas.width / mps) - this.staveXOffset;
+    this.staveWidth = Math.round(width / mps) - this.staveXOffset;
     // TODO: Use page height for calculation
     const measures = this.musicXml.Parts[0].Measures;
     const lpp = Math.ceil(measures.length / mps);    // lines per page
@@ -87,6 +97,7 @@ class VexRenderer {
       systems: sps,
       points: a,
     };
+    // console.log(ret);
     return ret;
   }
 
@@ -124,7 +135,6 @@ class VexRenderer {
           // Check if we have keys in this measure
           if (allMeasureWithKeys.indexOf(meas) > -1) {
             const key = this.getVexKey(meas.Attributes[0].Key);
-            console.log('key', key);
             stave.addKeySignature(key);
           }
           const allClefs = meas.getAllClefs();
@@ -157,7 +167,7 @@ class VexRenderer {
           // filter chord notes. They are automatically returned by the getVexNote function
           if (curNotes) {
             curNotes = curNotes.filter(n => n.isInChord === false);
-            curNotes.forEach(n => {
+            curNotes.forEach((n) => {
               const vn = n.getVexNote();
               vn.clef = n.isRest ? 'treble' : curClef;
               const sn = new Flow.StaveNote(vn);
@@ -245,8 +255,6 @@ class VexRenderer {
       .draw();
   }
 
-  draw() {
-  }
 }
 
 const MusicXmlRenderer = VexRenderer;
