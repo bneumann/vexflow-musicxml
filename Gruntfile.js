@@ -11,9 +11,9 @@ module.exports = (grunt) => {
   // const RELEASE_DIR = path.join(BASE_DIR, 'releases');
   const MODULE_ENTRY = path.join(BASE_DIR, 'src/MusicXml.js');
   const ALL_ENTRIES = path.join(BASE_DIR, 'src/index.js');
-  const TARGET_RAW = path.join(BUILD_DIR, 'vexflow-musicxml.js');
-  const TARGET_MIN = path.join(BUILD_DIR, 'vexflow-musicxml-min.js');
-  const TARGET_TESTS = path.join(BUILD_DIR, 'vexflow-musicxml-tests.js');
+  const TARGET_RAW = 'vexflow-musicxml.js';
+  const TARGET_MIN = 'vexflow-musicxml-min.js';
+  const TARGET_TESTS = 'vexflow-musicxml-tests.js';
 
   const SOURCES = ['src/*.js'];
   const TEST_SOURCES = ['tests/*.js', 'tests/parser/*.js', 'tests/testdata/mock/*.xml', 'tests/*.html'];
@@ -22,7 +22,7 @@ module.exports = (grunt) => {
     return {
       entry: config.entry,
       output: {
-        path: '/',
+        path: BUILD_DIR,
         filename: config.target,
         library: config.library,
         libraryTarget: 'umd',
@@ -87,8 +87,8 @@ module.exports = (grunt) => {
         sourceMap: true,
       },
       build: {
-        src: TARGET_RAW,
-        dest: TARGET_MIN,
+        src: path.resolve(BUILD_DIR, TARGET_RAW),
+        dest: path.resolve(BUILD_DIR, TARGET_MIN),
       },
     },
     eslint: {
