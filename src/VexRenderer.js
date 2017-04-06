@@ -17,13 +17,17 @@ const Flow = Vex.Flow;
 class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
-    this.isSvg = canvas instanceof SVGElement;
+    this.isSvg = !(canvas instanceof HTMLCanvasElement);
     this.canvas = canvas;
     // eslint-disable-next-line max-len
     this.renderer = new Flow.Renderer(this.canvas, this.isSvg ? Flow.Renderer.Backends.SVG : Flow.Renderer.Backends.CANVAS);
 
+    // Properties for rendering
     this.ctx = this.renderer.getContext();
     this.staveList = [];
+    this.beamList = [];
+    this.connectors = [];
+    this.voiceList = [];
 
     this.keySpec = [];
     for (const k in Flow.keySignature.keySpecs) {
@@ -42,8 +46,8 @@ class VexRenderer {
     this.systemSpace = this.staveSpace * 2 + 50;
 
     this.layout = this.calculateLayout();
-    if (dontPrint === true) {
-      this.parse();
+    if (dontPrint !== false) {
+      this.parse().draw();
     }
   }
 
@@ -102,6 +106,12 @@ class VexRenderer {
   }
 
   parse() {
+    // Reset all lilsts
+    this.staveList = [];
+    this.beamList = [];
+    this.connectors = [];
+    this.voiceList = [];
+
     const allParts = this.musicXml.Parts;
     let curSystem = 0;
     let mIndex = 0;
@@ -156,7 +166,7 @@ class VexRenderer {
               stave.addTimeSignature('C');
             }
           }
-          stave.setContext(this.ctx).draw();
+          stave.setContext(this.ctx);
 
           // Adding notes
           // const curNotes = meas.getNotesByStaff(staffInfo.stave);
@@ -183,23 +193,29 @@ class VexRenderer {
             // handles the number of beams itself so we only need to group the
             // notes depending on their "BeamState"
             // const beamStates = curNotes.map(n => n.BeamState);
-            const beamList = [];
             let beamNotes = [];
             curNotes.forEach((b, i) => {
               if (b.BeamState) {
                 beamNotes.push(staffNoteArray[i]);
                 // Beams do only make sense if more then 1 note is involved
                 if (beamNotes.length > 1 && b.isLastBeamNote) {
-                  beamList.push(new Flow.Beam(beamNotes));
+                  this.beamList.push(new Flow.Beam(beamNotes));
                   beamNotes = [];
                 }
               }
             });
 
             // Draw notes
-            Flow.Formatter.FormatAndDraw(this.ctx, stave, staffNoteArray);
-            // Draw beams
-            beamList.forEach(beam => beam.setContext(this.ctx).draw());
+            const voice = new Flow.Voice(curTime)
+              .setMode(Flow.Voice.Mode.SOFT)
+              .addTickables(staffNoteArray);
+
+            new Flow.Formatter()
+              .joinVoices([voice], { align_rests: false })
+              .formatToStave([voice], stave, { align_rests: false, stave });
+
+            this.voiceList.push(voice);
+            // Flow.Formatter.FormatAndDraw(this.ctx, stave, staffNoteArray);
           }
         }); // Measures
         this.staveList.push(measureList);
@@ -212,6 +228,12 @@ class VexRenderer {
                                 bottomStave[measureIdx],
                                 Flow.StaveConnector.type.BRACE);
             }
+            if (measureIdx === (topStave.length - 1)) {
+              // console.log(topStave[measureIdx], bottomStave[measureIdx])
+              // Draw Endbar
+              topStave[measureIdx].setEndBarType(Flow.Barline.type.END);
+              bottomStave[measureIdx].setEndBarType(Flow.Barline.type.END);
+            }
             this.addConnector(topStave[measureIdx],
                               bottomStave[measureIdx],
                               Flow.StaveConnector.type.SINGLE_LEFT);
@@ -222,6 +244,24 @@ class VexRenderer {
         }
       }); // Staves
     }); // Parts
+    return this;
+  }
+
+  /**
+   * Draw all elements on the canvas.
+   *
+   * @returns The object itself for usage in fluent interface
+   */
+  draw() {
+    // Draw measures and lines
+    this.staveList.forEach(meas => meas.forEach(s => s.setContext(this.ctx).draw()));
+    // Draw connectors
+    this.connectors.forEach(c => c.setContext(this.ctx).draw());
+    // Draw notes
+    this.voiceList.forEach(v => v.setContext(this.ctx).draw());
+    // Draw beams
+    this.beamList.forEach(beam => beam.setContext(this.ctx).draw());
+    return this;
   }
 
   /**
@@ -249,10 +289,10 @@ class VexRenderer {
   }
 
   addConnector(stave1, stave2, type) {
-    new Flow.StaveConnector(stave1, stave2)
+    this.connectors.push(
+      new Flow.StaveConnector(stave1, stave2)
       .setType(type)
-      .setContext(this.ctx)
-      .draw();
+      .setContext(this.ctx));
   }
 
 }
