@@ -10,9 +10,8 @@ import XmlObject from './XmlObject.js';
 export default class MusicXml extends XmlObject {
   constructor(xDocString) {
     if (xDocString === undefined) {
-      console.warn('xml String undefined!');
       super();
-      return;
+      throw new MusicXmlError('NoInputXML', 'No XML string has been given as input file');
     }
     // This is a hack to be able to test with mocha in a non-browser environment
     // Or maybe even in a standalone node application.

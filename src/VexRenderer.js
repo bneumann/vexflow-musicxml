@@ -151,8 +151,11 @@ class VexRenderer {
           const allTimes = meas.getAllTimes();
           // Adding clef information to the stave
           if (allClefs.length > 0) {
-            curClef = allClefs[staffInfo.si] ? allClefs[staffInfo.si].getVexClef() : curClef;
-            stave.addClef(curClef);
+            // Only change if the clef change is meant for this stave
+            if (allClefs[staffInfo.si] && staffInfo.stave === allClefs[staffInfo.si].Number) {
+              curClef = allClefs[staffInfo.si] ? allClefs[staffInfo.si].getVexClef() : curClef;
+              stave.addClef(curClef);
+            }
           }
           // Adding time information to the stave & voice
           if (allTimes[staffInfo.si]) {
@@ -219,27 +222,31 @@ class VexRenderer {
           }
         }); // Measures
         this.staveList.push(measureList);
+
+        // Add connectors
         if (this.staveList.length >= 2) {
           const topStave = this.staveList[0];
           const bottomStave = this.staveList[1];
-          for (const measureIdx in topStave) {
+          for (let measureIdx = 0; measureIdx < topStave.length; measureIdx++) {
+            const connectorTypeList = [];
             if (measureIdx % this.layout.measPerStave === 0) {
-              this.addConnector(topStave[measureIdx],
-                                bottomStave[measureIdx],
-                                Flow.StaveConnector.type.BRACE);
+              // Draw brace at beginning of line
+              connectorTypeList.push(Flow.StaveConnector.type.BRACE);
             }
-            if (measureIdx === (topStave.length - 1)) {
-              // console.log(topStave[measureIdx], bottomStave[measureIdx])
+            connectorTypeList.push(Flow.StaveConnector.type.SINGLE_LEFT);
+            connectorTypeList.push(Flow.StaveConnector.type.SINGLE_RIGHT);
+            // eslint-disable-next-line eqeqeq
+            if (measureIdx == (topStave.length - 1)) {
               // Draw Endbar
               topStave[measureIdx].setEndBarType(Flow.Barline.type.END);
               bottomStave[measureIdx].setEndBarType(Flow.Barline.type.END);
+              connectorTypeList.push(Flow.StaveConnector.type.BOLD_DOUBLE_RIGHT);
             }
-            this.addConnector(topStave[measureIdx],
-                              bottomStave[measureIdx],
-                              Flow.StaveConnector.type.SINGLE_LEFT);
-            this.addConnector(topStave[measureIdx],
-                              bottomStave[measureIdx],
-                              Flow.StaveConnector.type.SINGLE_RIGHT);
+            for (let cType = 0; cType < connectorTypeList.length; cType++) {
+              this.addConnector(topStave[measureIdx],
+                                bottomStave[measureIdx],
+                                connectorTypeList[cType]);
+            }
           }
         }
       }); // Staves
