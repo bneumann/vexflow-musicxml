@@ -24,6 +24,16 @@ grunt
 grunt test
 ```
 
+## Screenshots
+
+Here are some shots from the current development:
+
+![PC Browser](screenshot_bach1.png)
+
+It scales also to the small browser screens:
+
+![Smartphone Browser](screenshot_bach2.png)
+
 ## Usage
 
 Apply like this:
