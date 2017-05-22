@@ -34,7 +34,9 @@ export default class MusicXml extends XmlObject {
     const parts = this.getChildren('part');
     this.Parts = [...parts].map(p => new Part(p));
     // // FIXME: THIS IS ONLY FOR DEBUGGING!!!!
-    // this.Parts = [this.Parts[this.Parts.length - 1]];
+    // let rest, voice;
+    // this.Parts = this.Parts.slice(0,1);
+    // console.log(this.Parts);
   }
 
   getMeasuresFromPart(partNumber) {
@@ -43,6 +45,7 @@ export default class MusicXml extends XmlObject {
     }
     return this.Parts[partNumber].Measures;
   }
+
 }
 
 /**

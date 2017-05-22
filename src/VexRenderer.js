@@ -17,10 +17,15 @@ const Flow = Vex.Flow;
 class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
+    console.log(this.musicXml);
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
     this.canvas = canvas;
     // eslint-disable-next-line max-len
     this.renderer = new Flow.Renderer(this.canvas, this.isSvg ? Flow.Renderer.Backends.SVG : Flow.Renderer.Backends.CANVAS);
+
+    // Internal property to set if layout information should be printed
+    // on score
+    this.mDebug = false;
 
     // Properties for rendering
     this.ctx = this.renderer.getContext();
@@ -38,12 +43,17 @@ class VexRenderer {
       }
     }
 
+    this.stavesPerSystem = this.musicXml.Parts
+              .map(p => p.getAllStaves()) // get all the staves in a part
+              .map(sa => sa.length)       // get the length of the array (number of staves)
+              .reduce((e, ne) => e + ne);   // sum them up
+
     // Some formatting constants
     this.staveSpace = 100;
     this.staveWidth = 250;
     this.staveXOffset = 20;
     this.staveYOffset = 20;
-    this.systemSpace = this.staveSpace * 2 + 50;
+    this.systemSpace = this.staveSpace * this.stavesPerSystem + 50;
 
     this.layout = this.calculateLayout();
     if (dontPrint !== false) {
@@ -64,10 +74,7 @@ class VexRenderer {
     // TODO: Use page height for calculation
     const measures = this.musicXml.Parts[0].Measures;
     const lpp = Math.ceil(measures.length / mps);    // lines per page
-    const sps = this.musicXml.Parts
-              .map(p => p.getAllStaves()) // get all the staves in a part
-              .map(sa => sa.length)       // get the length of the array (number of staves)
-              .reduce((e, ne) => e + ne);   // sum them up
+    const sps = this.stavesPerSystem;
 
     const a = [];
     let idx = 0;
@@ -80,11 +87,12 @@ class VexRenderer {
             y: l * this.systemSpace + s * this.staveSpace + this.staveYOffset,
             index: idx,
           };
-          // uncomment for debug purposes
-          // this.ctx.fillText(' line: ' + l +
-          //                   ' stave ' + s +
-          //                   ' measure ' + m +
-          //                   ' index: ' + idx, point.x, point.y)
+          if (this.mDebug) {
+            this.ctx.fillText(' line: ' + l +
+                              ' stave ' + s +
+                              ' measure ' + m +
+                              ' index: ' + idx, point.x, point.y);
+          }
           a.push(point);
           idx++;
           if (idx === measures.length) {
@@ -106,7 +114,7 @@ class VexRenderer {
   }
 
   parse() {
-    // Reset all lilsts
+    // Reset all lists
     this.staveList = [];
     this.beamList = [];
     this.connectors = [];
@@ -115,7 +123,7 @@ class VexRenderer {
     const allParts = this.musicXml.Parts;
     let curSystem = 0;
     let mIndex = 0;
-    allParts.forEach((part) => {
+    allParts.forEach((part, pIdx) => {
       const allMeasures = part.Measures;
       const allStaves = part.getAllStaves();
       const allMeasureWithKeys = part.getAllMeasuresWithKeys();
@@ -139,6 +147,8 @@ class VexRenderer {
           curSystem = newSystem ? curSystem + 1 : curSystem;
           const point = this.layout.points[mIndex];
           stave = new Flow.Stave(point.x, point.y, stave.width);
+          // Keep track which stave belongs to which part. Needed for connectors
+          stave.system = pIdx;
           mIndex++;
           measureList.push(stave);
 
@@ -212,45 +222,18 @@ class VexRenderer {
             const voice = new Flow.Voice(curTime)
               .setMode(Flow.Voice.Mode.SOFT)
               .addTickables(staffNoteArray);
-
+            // FIXME: This would only add 1 voice per stave.
             new Flow.Formatter()
               .joinVoices([voice], { align_rests: false })
               .formatToStave([voice], stave, { align_rests: false, stave });
 
             this.voiceList.push(voice);
-            // Flow.Formatter.FormatAndDraw(this.ctx, stave, staffNoteArray);
           }
         }); // Measures
         this.staveList.push(measureList);
-
-        // Add connectors
-        if (this.staveList.length >= 2) {
-          const topStave = this.staveList[0];
-          const bottomStave = this.staveList[1];
-          for (let measureIdx = 0; measureIdx < topStave.length; measureIdx++) {
-            const connectorTypeList = [];
-            if (measureIdx % this.layout.measPerStave === 0) {
-              // Draw brace at beginning of line
-              connectorTypeList.push(Flow.StaveConnector.type.BRACE);
-            }
-            connectorTypeList.push(Flow.StaveConnector.type.SINGLE_LEFT);
-            connectorTypeList.push(Flow.StaveConnector.type.SINGLE_RIGHT);
-            // eslint-disable-next-line eqeqeq
-            if (measureIdx == (topStave.length - 1)) {
-              // Draw Endbar
-              topStave[measureIdx].setEndBarType(Flow.Barline.type.END);
-              bottomStave[measureIdx].setEndBarType(Flow.Barline.type.END);
-              connectorTypeList.push(Flow.StaveConnector.type.BOLD_DOUBLE_RIGHT);
-            }
-            for (let cType = 0; cType < connectorTypeList.length; cType++) {
-              this.addConnector(topStave[measureIdx],
-                                bottomStave[measureIdx],
-                                connectorTypeList[cType]);
-            }
-          }
-        }
       }); // Staves
     }); // Parts
+    this.addConnectors();
     return this;
   }
 
@@ -295,6 +278,45 @@ class VexRenderer {
     return entry;
   }
 
+/**
+ * Adds all the connectors between the systems.
+ *
+ */
+  addConnectors() {
+    for (let s = 0; s < this.staveList.length - 1; s++) {
+      for (let m = 0; m < this.staveList[s].length; m++) {
+        const firstStave = this.staveList[s][m];
+        const secondStave = this.staveList[s + 1][m];
+        // Beginning of system line
+        if (m % this.layout.measPerStave === 0) {
+          this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.SINGLE_LEFT);
+          if (firstStave.system === secondStave.system) {
+            this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.BRACE);
+          }
+        }
+        // Every measure
+        if (firstStave.system === secondStave.system) {
+          this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.SINGLE_RIGHT);
+        }
+        // End of score
+        if (m === this.staveList[s].length - 1) {
+          if (firstStave.system === secondStave.system) {
+            this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.BOLD_DOUBLE_RIGHT);
+          } else {
+            firstStave.setEndBarType(Flow.Barline.type.END);
+          }
+        }
+      }
+    }
+  }
+
+/**
+ * Adds a connector between two staves
+ *
+ * @param {Stave} stave1: First stave
+ * @param {Stave} stave2: Second stave
+ * @param {Flow.StaveConnector.type} type: Type of connector
+ */
   addConnector(stave1, stave2, type) {
     this.connectors.push(
       new Flow.StaveConnector(stave1, stave2)

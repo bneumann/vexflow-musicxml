@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = (grunt) => {
   const BANNER = [
@@ -8,7 +9,6 @@ module.exports = (grunt) => {
   const BASE_DIR = __dirname;
   const BUILD_DIR = path.join(BASE_DIR, 'build');
   const DOC_DIR = path.join(BASE_DIR, 'doc');
-  // const RELEASE_DIR = path.join(BASE_DIR, 'releases');
   const MODULE_ENTRY = path.join(BASE_DIR, 'src/MusicXml.js');
   const ALL_ENTRIES = path.join(BASE_DIR, 'src/index.js');
   const TARGET_RAW = 'vexflow-musicxml.js';
@@ -41,28 +41,27 @@ module.exports = (grunt) => {
           },
         ],
       },
+      plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+          compress: false,
+          sourceMap: true,
+        })
+      ],
     };
   }
   const webpackTest = webpackConfig({
     entry: MODULE_ENTRY,
     target: TARGET_TESTS,
     library: 'Vex.Flow.MusicXml',
-    preset: 'es2015' }
-  );
-
-  // const webpackMusicXmlOnly = webpackConfig({
-  //   entry: MODULE_ENTRY,
-  //   target: TARGET_RAW,
-  //   library: 'Vex.Flow.MusicXml',
-  //   preset: 'es2015' }
-  // );
+    preset: 'es2015',
+  });
 
   const webpackAll = webpackConfig({
     entry: ALL_ENTRIES,
     target: TARGET_RAW,
     library: 'Vex',
-    preset: 'es2015' }
-  );
+    preset: 'es2015',
+  });
 
   // Project configuration.
   grunt.initConfig({
@@ -107,7 +106,6 @@ module.exports = (grunt) => {
       watch: Object.assign({}, webpackAll, {
         watch: true,
         keepalive: true,
-        watchDelay: 0,
       }),
     },
     mochaTest: {
@@ -134,18 +132,11 @@ module.exports = (grunt) => {
   });
 
   // Load the plugin that provides the "uglify" task.
-  // grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  // grunt.loadNpmTasks('grunt-contrib-qunit');
-  // grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  // grunt.loadNpmTasks('grunt-contrib-docco');
-  // grunt.loadNpmTasks('grunt-release');
-  // grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-jsdoc');
-  // grunt.loadNpmTasks('grunt-git');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-webpack');
 
@@ -153,6 +144,6 @@ module.exports = (grunt) => {
   grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build', 'doc']);
   grunt.registerTask('test', ['clean:all', 'eslint', 'webpack:test', 'mochaTest', 'doc']);
   grunt.registerTask('meteor', ['clean:all', 'eslint', 'webpack:test', 'mochaTest', 'webpack:all', 'doc']);
-  grunt.registerTask('fast', ['webpack:all', 'uglify:build']);
+  grunt.registerTask('fast', ['webpack:all']);
   grunt.registerTask('doc', ['clean:doc', 'jsdoc']);
 };
