@@ -97,8 +97,9 @@ module.exports = (grunt) => {
       },
     },
     clean: {
-      all: [BUILD_DIR, DOC_DIR],
-      doc: [DOC_DIR],
+      all: [BUILD_DIR, 'doc/*', '!doc/images/**'],
+      doc: ['doc/*', '!doc/images/**'],
+      options: {'no-write': false}
     },
     webpack: {
       test: webpackTest,

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Vexflow MusicXML parser <a href="https://travis-ci.org/bneumann/vexflow-musicxml"><img src="https://travis-ci.org/bneumann/vexflow-musicxml.svg?branch=master" alt="Build Status"></a></h1><p>This is a ES6 approach to an easy Music XML renderer. It uses <a href="https://github.com/0xfe/vexflow">Vexflow</a> to display the score. It does <strong>not</strong> take care about the layout (at the moment) and always renders the score in respect to the given canvas. The VexRenderer class has an interface for layout calculations and redrawing if the dimensions change.</p>
+<p>Please consider that this project is under development and needs some more care.</p>
+<h2>Installation</h2><pre class="prettyprint source lang-javascript"><code>npm install</code></pre><p>Grunt</p>
+<pre class="prettyprint source lang-javascript"><code>npm install -g grunt-cli</code></pre><h2>Build</h2><pre class="prettyprint source lang-javascript"><code>grunt</code></pre><h2>Test</h2><pre class="prettyprint source lang-javascript"><code>grunt test</code></pre><h2>Screenshots</h2><p>Here are some shots from the current development:</p>
+<p><img src="doc/images/screenshot_bach1.png" alt="PC Browser"></p>
+<p>It scales also to the small browser screens:</p>
+<p><img src="doc/images/screenshot_bach2.png" alt="Smartphone Browser"></p>
+<h2>Usage</h2><p>Apply like this:</p>
+<pre class="prettyprint source lang-html"><code>&lt;!doctype html>
+
+&lt;html lang=&quot;en&quot;>
+&lt;body>
+  &lt;style>
+  html, body, canvas {
+    width:  100%;
+    height: 100%;
+    margin: 5px;
+  }
+  &lt;/style>
+  &lt;script src=&quot;../build/vexflow-musicxml.js&quot;>&lt;/script>
+  &lt;script>
+    const reader = new FileReader();
+    const openFile = function(event) {
+      const input = event.target;
+      reader.onload = function(){
+        const dStart = new Date();
+        const text = reader.result;
+        const node = document.getElementById('output'); // get the element where you want the score to be rendered
+        const vex = new Vex.Flow.MusicXmlRenderer(text, node); // call the MusicXmlRenderer
+        const dStop = new Date();
+        console.log('Time for loading: ' + (dStop.getMilliseconds() - dStart.getMilliseconds()) + ' ms');
+      };
+      reader.readAsText(input.files[0]);
+    };
+
+  &lt;/script>
+  &lt;form name=&quot;foo&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;>
+    &lt;input type='file'
+           accept='text/xml'
+           onchange='openFile(event)'>&lt;br>
+  &lt;/form>
+  &lt;canvas id='output' width='1280' height='1024'>
+  ...
+  &lt;/canvas>
+&lt;/body>
+
+&lt;/html></code></pre><h2>Contributing</h2><ol>
+<li>Fork it!</li>
+<li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>
+<li>Commit your changes: <code>git commit -am 'Add some feature'</code></li>
+<li>Push to the branch: <code>git push origin my-new-feature</code></li>
+<li>Submit a pull request :D</li>
+</ol>
+<h2>History</h2><p>TODO: Write history</p>
+<h2>Credits</h2><p>TODO: Write credits</p>
+<h2>License</h2><p>MIT License</p>
+<p>Copyright (c) 2017 Benjamin Giesinger</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p></article>
+    </section>
+
+
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>src/MusicXml.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>neumann.benni@gmail.com</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_MusicXml.js.html">src/MusicXml.js</a>, <a href="src_MusicXml.js.html#line4">line 4</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>src/VexRenderer.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Parser and renderer for Music XML files to Vex Flow</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>neumann.benni@gmail.com</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_VexRenderer.js.html">src/VexRenderer.js</a>, <a href="src_VexRenderer.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>src/XmlSerializer.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>neumann.benni@gmail.com</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_XmlSerializer.js.html">src/XmlSerializer.js</a>, <a href="src_XmlSerializer.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="Measure.html">Measure</a></li><li><a href="module.exports.html">exports</a></li><li><a href="Note.html">Note</a></li><li><a href="Part.html">Part</a></li><li><a href="VexRenderer.html">VexRenderer</a></li><li><a href="XmlObject.html">XmlObject</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue May 23 2017 15:08:04 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
