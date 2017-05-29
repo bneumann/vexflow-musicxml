@@ -6,7 +6,7 @@
 */
 
 import Vex from 'vexflow';
-import MusicXml from './MusicXml.js';
+import { MusicXml } from './xml/MusicXml.js';
 
 const Flow = Vex.Flow;
 
@@ -14,7 +14,7 @@ const Flow = Vex.Flow;
  * MusicXmlRenderer aka VexRenderer
  * @param
  */
-class VexRenderer {
+export class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
     console.log(this.musicXml);
@@ -25,14 +25,9 @@ class VexRenderer {
     this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
     this.canvas = canvas;
-
+    // eslint-disable-next-line max-len
     // eslint-disable-next-line max-len
     this.renderer = new Flow.Renderer(this.canvas, this.isSvg ? Flow.Renderer.Backends.SVG : Flow.Renderer.Backends.CANVAS);
-    console.log(new Vex.Flow.Factory({renderer:{
-      width: 700,
-      height: 500,
-      elementId: this.canvas
-    }}));
 
     // Internal property to set if layout information should be printed
     // on score
@@ -134,7 +129,7 @@ class VexRenderer {
     const allParts = this.musicXml.Parts;
     let curSystem = 0;
     let mIndex = 0;
-    console.time("parse");
+    console.time('parse');
     allParts.forEach((part, pIdx) => {
       const allMeasures = part.Measures;
       const allStaves = part.getAllStaves();
@@ -202,22 +197,26 @@ class VexRenderer {
           // filter chord notes. They are automatically returned by the getVexNote function
           if (curNotes) {
             curNotes = curNotes.filter(n => n.isInChord === false);
+            let lastTempClef = curClef;
             curNotes.forEach((n) => {
               const vn = n.getVexNote();
-              vn.clef = n.isRest ? 'treble' : curClef;
+              const tempClef = n.getClef() ? n.getClef().getVexClef() : 'treble'; //n.getAttributes().Clef[0].getVexClef();
+              console.log('Clefs: ', n.getClef(), ' Note: ', n.Pitch);
+              vn.clef = n.isRest ? 'treble' : tempClef;
               const sn = new Flow.StaveNote(vn);
-              if(n.hasAttributes)
-              {
-                const noteAtt = { type: 'bass', options: { size: 'small', annotation: '' } };//n.getAttributes() ;
-                // new Flow.ClefNote(noteAtt);
+              if (tempClef !== lastTempClef) {
+                lastTempClef = tempClef;
+                // console.log(tempClef);
+                const cn = new Flow.ClefNote(tempClef, 'small');
+                sn.addModifier(0, new Flow.NoteSubGroup([cn]));
+                // console.log(cn);
               }
               for (let i = 0; i < n.Dots; i++) {
                 sn.addDotToAll();
               }
               sn.setStave(stave);
               const acc = n.getAccidental();
-              if (acc !== null)
-              {
+              if (acc !== null) {
                 sn.addAccidental(0, new Flow.Accidental(acc));
               }
 
@@ -256,7 +255,7 @@ class VexRenderer {
         this.staveList.push(measureList);
       }); // Staves
     }); // Parts
-    console.timeEnd("parse");
+    console.timeEnd('parse');
     this.addConnectors();
     return this;
   }
@@ -349,6 +348,3 @@ class VexRenderer {
   }
 
 }
-
-const MusicXmlRenderer = VexRenderer;
-export default MusicXmlRenderer;

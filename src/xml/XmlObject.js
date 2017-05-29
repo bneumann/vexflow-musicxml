@@ -4,7 +4,7 @@
  * @class XmlObject
  * @param node DOM tree node
  */
-class XmlObject {
+export class XmlObject {
   constructor(node) {
     if (!node || !node.nodeType) {
       throw new Error('The node "' + node + '" is not a valid DOM node');
@@ -25,13 +25,34 @@ class XmlObject {
   /**
    * getChildren - Gets all children by its tag name
    *
-   * @param  {string} name The tag name of the child
+   * @param  {string} name The tag name of the child. If empty all children will be given
    * @return {DOMNodeList} DOM node list representation of the children
    */
-  getChildren(name) {
-    return this.Node.getElementsByTagName(name);
+  getChildren(name = '') {
+    return name === '' ? this.Node.children : this.Node.getElementsByTagName(name);
   }
 
+  findPreviousElement(name, vicinity = 2) {
+    let prevElement = this.Node.previousElementSibling;
+    let distance = 0;
+    while (prevElement !== null && prevElement !== undefined && distance <= vicinity) {
+      if (prevElement.tagName === name) {
+        return { 'element': prevElement, 'distance': distance };
+      }
+      prevElement = prevElement.previousElementSibling;
+      distance++;
+    }
+    return { 'element': null, 'distance': 0 };
+  }
+
+  getNextElement() {
+    if ((this.Node.nextElementSibling !== null &&
+       this.Node.nextElementSibling !== undefined) &&
+       this.Node.nextElementSibling.tagName) {
+      return this.Node.previousElementSibling;
+    }
+    return null;
+  }
 
   /**
    * childExists - Check if a child exists
@@ -102,5 +123,3 @@ class XmlObject {
     return this.Node.getAttribute(name);
   }
 }
-
-export default XmlObject;

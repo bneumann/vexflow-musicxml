@@ -44,7 +44,7 @@
     "xpath": "0.0.24"
   },
   "dependencies": {
-    "vexflow": "latest"
+    "vexflow": "^1.2.83"
   },
   "babel": {
     "presets": [
