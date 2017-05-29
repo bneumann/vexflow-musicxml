@@ -150,8 +150,11 @@ export class Note extends XmlObject {
   }
 
   getClef() {
+    const thisClef = this.Attributes.Clef.find(c => c.Number === this.Staff);
+    console.log(thisClef, this.Pitch);
+
     const sIdx = this.Attributes.Clef.length > 1 ? this.Staff : 0;
-    return this.Attributes.Clef[sIdx];
+    return this.Attributes.Clef.find(c => c.Number === this.Staff);
   }
 
   getAttributes() {

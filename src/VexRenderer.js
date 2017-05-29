@@ -200,8 +200,8 @@ export class VexRenderer {
             let lastTempClef = curClef;
             curNotes.forEach((n) => {
               const vn = n.getVexNote();
-              const tempClef = n.getClef() ? n.getClef().getVexClef() : 'treble'; //n.getAttributes().Clef[0].getVexClef();
-              console.log('Clefs: ', n.getClef(), ' Note: ', n.Pitch);
+              const tempClef = n.getClef() ? n.getClef().getVexClef() : curClef;
+              // console.log('Clefs: ', n.getClef(), ' Note: ', n.Pitch);
               vn.clef = n.isRest ? 'treble' : tempClef;
               const sn = new Flow.StaveNote(vn);
               if (tempClef !== lastTempClef) {
