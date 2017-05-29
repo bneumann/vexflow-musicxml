@@ -42,10 +42,10 @@ module.exports = (grunt) => {
         ],
       },
       plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-          compress: false,
-          sourceMap: true,
-        })
+        // new webpack.optimize.UglifyJsPlugin({
+        //   compress: false,
+        //   sourceMap: true,
+        // })
       ],
     };
   }

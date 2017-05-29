@@ -18,10 +18,21 @@ class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
     console.log(this.musicXml);
+    const part = 1;
+    const from = 0;
+    const to = 2;
+    this.musicXml.Parts = [this.musicXml.Parts[part]];
+    this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
     this.canvas = canvas;
+
     // eslint-disable-next-line max-len
     this.renderer = new Flow.Renderer(this.canvas, this.isSvg ? Flow.Renderer.Backends.SVG : Flow.Renderer.Backends.CANVAS);
+    console.log(new Vex.Flow.Factory({renderer:{
+      width: 700,
+      height: 500,
+      elementId: this.canvas
+    }}));
 
     // Internal property to set if layout information should be printed
     // on score
@@ -123,6 +134,7 @@ class VexRenderer {
     const allParts = this.musicXml.Parts;
     let curSystem = 0;
     let mIndex = 0;
+    console.time("parse");
     allParts.forEach((part, pIdx) => {
       const allMeasures = part.Measures;
       const allStaves = part.getAllStaves();
@@ -194,10 +206,21 @@ class VexRenderer {
               const vn = n.getVexNote();
               vn.clef = n.isRest ? 'treble' : curClef;
               const sn = new Flow.StaveNote(vn);
+              if(n.hasAttributes)
+              {
+                const noteAtt = { type: 'bass', options: { size: 'small', annotation: '' } };//n.getAttributes() ;
+                // new Flow.ClefNote(noteAtt);
+              }
               for (let i = 0; i < n.Dots; i++) {
                 sn.addDotToAll();
               }
               sn.setStave(stave);
+              const acc = n.getAccidental();
+              if (acc !== null)
+              {
+                sn.addAccidental(0, new Flow.Accidental(acc));
+              }
+
               staffNoteArray.push(sn);
             }); // Notes
 
@@ -233,6 +256,7 @@ class VexRenderer {
         this.staveList.push(measureList);
       }); // Staves
     }); // Parts
+    console.timeEnd("parse");
     this.addConnectors();
     return this;
   }

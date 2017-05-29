@@ -239,6 +239,11 @@ class Note extends XmlObject {
                   this.Node.nextElementSibling === undefined ||
                   this.Node.nextElementSibling.tagName === 'backup';
 
+
+    this.hasAttributes = !(this.Node.nextElementSibling === null ||
+                         this.Node.nextElementSibling === undefined ) &&
+                         this.Node.nextElementSibling.tagName === 'attributes';
+
     /**
      * The note's voice number
      * @prop {Number} Note.Voice
@@ -296,7 +301,7 @@ class Note extends XmlObject {
      */
     this.NoteLength = this.Duration / this.mDivisions;
 
-    this.Dots = 0;
+    this.Dots = this.NoteLength >= 1 && this.NoteLength % 1 === 0.5;
 
     // TODO: Move somewhere else
     this.Types = {
@@ -313,6 +318,26 @@ class Note extends XmlObject {
       '512th': '512',
       '1024th': '1024',
     };
+  }
+
+  getAttributes() {
+    if(this.hasAttributes){
+      return new Attributes(this.Node.nextElementSibling);
+    }
+  }
+
+  getAccidental() {
+    const acc = this.getText('accidental');
+    switch (acc) {
+      case "natural":
+        return "n";
+      case "flat":
+        return "b"
+      case "sharp":
+        return "#";
+      default:
+      return null;
+    }
   }
 
   calculateType() {
