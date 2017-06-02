@@ -44,7 +44,7 @@ module.exports = (grunt) => {
       plugins: [
         // new webpack.optimize.UglifyJsPlugin({
         //   sourceMap: true,
-        // })
+        // }),
       ],
     };
   }

@@ -1,6 +1,5 @@
 import { XmlObject } from './XmlObject.js';
 import { MusicXmlError } from './Errors.js';
-import { Attributes } from './Attributes.js';
 
 /**
  * Class representation of a Note
@@ -150,10 +149,6 @@ export class Note extends XmlObject {
   }
 
   getClef() {
-    const thisClef = this.Attributes.Clef.find(c => c.Number === this.Staff);
-    console.log(thisClef, this.Pitch);
-
-    const sIdx = this.Attributes.Clef.length > 1 ? this.Staff : 0;
     return this.Attributes.Clef.find(c => c.Number === this.Staff);
   }
 

@@ -7,6 +7,8 @@
 
 import Vex from 'vexflow';
 import { MusicXml } from './xml/MusicXml.js';
+import { Utils } from './xml/Utils.js';
+import { Measure } from './vex/Measure.js';
 
 const Flow = Vex.Flow;
 
@@ -18,11 +20,11 @@ export class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
     console.log(this.musicXml);
-    const part = 1;
-    const from = 0;
-    const to = 2;
-    this.musicXml.Parts = [this.musicXml.Parts[part]];
-    this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
+    // const part = 1;
+    // const from = 0;
+    // const to = 2;
+    // this.musicXml.Parts = [this.musicXml.Parts[part]];
+    // this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
     this.canvas = canvas;
     // eslint-disable-next-line max-len
@@ -31,7 +33,7 @@ export class VexRenderer {
 
     // Internal property to set if layout information should be printed
     // on score
-    this.mDebug = false;
+    this.mDebug = true;
 
     // Properties for rendering
     this.ctx = this.renderer.getContext();
@@ -55,39 +57,49 @@ export class VexRenderer {
               .reduce((e, ne) => e + ne);   // sum them up
 
     // Some formatting constants
+    this.width = this.isSvg ? this.canvas.getAttribute('width') : this.canvas.width;
+    const startWidth = document.body.clientWidth < 250 ? document.body.clientWidth : 250;
     this.staveSpace = 100;
-    this.staveWidth = 250;
     this.staveXOffset = 20;
     this.staveYOffset = 20;
     this.systemSpace = this.staveSpace * this.stavesPerSystem + 50;
+    this.measuresPerStave = Math.floor(this.width / startWidth); // measures per stave
+    this.staveWidth = Math.round(this.width / this.measuresPerStave) - this.staveXOffset;
 
-    this.layout = this.calculateLayout();
+    this.format = {
+      staveSpace: 100,
+      staveXOffset: 20,
+      staveYOffset: 20,
+      systemSpace: this.systemSpace,
+      measuresPerStave: this.measuresPerStave,
+      staveWidth: this.staveWidth,
+      stavesPerSystem: this.musicXml.getStavesPerSystem(),
+      width: this.width,
+      linesPerPage: Math.ceil(this.musicXml.Parts[0].Measures.length / this.measuresPerStave),
+    };
+
+    // this.layout = this.calculateLayout();
     if (dontPrint !== false) {
-      this.parse().draw();
+      this.parseNew().draw();
     }
   }
 
   getScoreHeight() {
-    return this.systemSpace * this.layout.linesPerPage;
+    return this.systemSpace * this.format.linesPerPage;
   }
 
   calculateLayout() {
-    const width = this.isSvg ? this.canvas.getAttribute('width') : this.canvas.width;
-    // const height = this.isSvg ? this.canvas.getAttribute('height') : this.canvas.height;
-    const mps = Math.floor(width / this.staveWidth); // measures per stave
-    // Reset the stave width to fill the page
-    this.staveWidth = Math.round(width / mps) - this.staveXOffset;
     // TODO: Use page height for calculation
+    // const height = this.isSvg ? this.canvas.getAttribute('height') : this.canvas.height;
     const measures = this.musicXml.Parts[0].Measures;
-    const lpp = Math.ceil(measures.length / mps);    // lines per page
-    const sps = this.stavesPerSystem;
+    const lpp = Math.ceil(measures.length / this.measuresPerStave);    // lines per page
 
     const a = [];
     let idx = 0;
 
-    for (let s = 0; s < sps; s++) { // systems / all staves
+    for (let s = 0; s < this.stavesPerSystem; s++) { // systems / all staves
       for (let l = 0; l < lpp; l++) { // lines
-        for (let m = 0; m < mps; m++) { // measures
+        for (let m = 0; m < this.measuresPerStave; m++) { // measures
           const point = {
             x: (this.staveWidth * m) + this.staveXOffset,
             y: l * this.systemSpace + s * this.staveSpace + this.staveYOffset,
@@ -110,13 +122,30 @@ export class VexRenderer {
     }
     // console.log(a);
     const ret = {
-      measPerStave: mps,
+      measPerStave: this.measuresPerStave,
       linesPerPage: lpp,
-      systems: sps,
+      systems: this.stavesPerSystem,
       points: a,
     };
     // console.log(ret);
     return ret;
+  }
+
+  // https://github.com/0xfe/vexflow/blob/1.2.83/tests/formatter_tests.js line 271
+  parseNew() {
+    console.profile('parse');
+    const drawables = [];
+    const allParts = this.musicXml.Parts;
+    for (const [p] of allParts.entries()) {
+      const part = allParts[p];
+      for (const [, measure] of part.Measures.entries()) { // let m = 0; m < part.Measures.length; m++) {
+        // const measure = part.Measures[m];
+        drawables.push(new Measure(measure, this.format, this.ctx));
+      }
+    }
+    drawables.forEach(d => d.draw());
+    console.profileEnd();
+    return this;
   }
 
   parse() {
@@ -129,7 +158,6 @@ export class VexRenderer {
     const allParts = this.musicXml.Parts;
     let curSystem = 0;
     let mIndex = 0;
-    console.time('parse');
     allParts.forEach((part, pIdx) => {
       const allMeasures = part.Measures;
       const allStaves = part.getAllStaves();
@@ -190,7 +218,7 @@ export class VexRenderer {
 
           // Adding notes
           // const curNotes = meas.getNotesByStaff(staffInfo.stave);
-          let curNotes = meas.getNotesByBackup();
+          let curNotes = Utils.getNotesByBackup(meas.Notes);
           curNotes = curNotes[staffInfo.si];
           // FIXME: Backup mechanism ftw... :(
           const staffNoteArray = [];
@@ -255,7 +283,6 @@ export class VexRenderer {
         this.staveList.push(measureList);
       }); // Staves
     }); // Parts
-    console.timeEnd('parse');
     this.addConnectors();
     return this;
   }
@@ -267,7 +294,8 @@ export class VexRenderer {
    */
   draw() {
     // Draw measures and lines
-    this.staveList.forEach(meas => meas.forEach(s => s.setContext(this.ctx).draw()));
+    // this.staveList.forEach(meas => meas.forEach(s => s.setContext(this.ctx).draw()));
+    this.staveList.forEach(s => s.setContext(this.ctx).draw());
     // Draw connectors
     this.connectors.forEach(c => c.setContext(this.ctx).draw());
     // Draw notes

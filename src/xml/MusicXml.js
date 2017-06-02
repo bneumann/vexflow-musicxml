@@ -36,10 +36,6 @@ export class MusicXml extends XmlObject {
 
     const parts = this.getChildren('part');
     this.Parts = [...parts].map(p => new Part(p));
-    // // FIXME: THIS IS ONLY FOR DEBUGGING!!!!
-    // let rest, voice;
-    // this.Parts = this.Parts.slice(0,1);
-    // console.log(this.Parts);
   }
 
   getMeasuresFromPart(partNumber) {
@@ -47,6 +43,13 @@ export class MusicXml extends XmlObject {
       throw new MusicXmlError('PartOutOfBounds', 'The part item you are trying to get is out of bounds');
     }
     return this.Parts[partNumber].Measures;
+  }
+
+  getStavesPerSystem() {
+    return this.Parts
+      .map(p => p.getAllStaves()) // get all the staves in a part
+      .map(sa => sa.length)       // get the length of the array (number of staves)
+      .reduce((e, ne) => e + ne);   // sum them up
   }
 
 }

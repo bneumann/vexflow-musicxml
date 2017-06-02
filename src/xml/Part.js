@@ -1,5 +1,5 @@
-import { XmlObject } from './XmlObject.js';
 import { Measure } from './Measure.js';
+import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
 /**
  * Class representation of a part
@@ -14,10 +14,16 @@ export class Part extends XmlObject {
     super(node);
     const measures = this.getChildren('measure');
     this.Measures = [];
+    this.Id = parseInt(this.getAttribute('id').match(/[0-9]+/)[0], 10);
+
     let lastAttributes = new Attributes(this.Node.getElementsByTagName('attributes')[0]);
     let lastDivision = lastAttributes.Divisions;
     for (let m = 0; m < measures.length; m++) {
-      const lastMeasure = new Measure(measures[m], lastAttributes);
+      const options = {
+        lastAttributes,
+        part: this.Id,
+      };
+      const lastMeasure = new Measure(measures[m], options);
       this.Measures.push(lastMeasure);
       if (lastMeasure.Attributes.length > 0) {
         if (!isNaN(lastMeasure.Attributes.Divisions)) {
