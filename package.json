@@ -8,6 +8,9 @@
     "musicxml",
     "notes"
   ],
+  "scripts": {
+    "test": "webpack-dev-server -d --config webpack.config.js --progress --colors"
+  },
   "author": {
     "name": "Benjamin Giesinger",
     "email": "neumann.benni@gmail.com"
@@ -36,10 +39,11 @@
     "grunt-jsdoc": "^2.1.0",
     "grunt-mocha-test": "^0.13.2",
     "grunt-webpack": "^2.0.1",
+    "grunt-webpack-server": "^0.1.0",
     "mocha": "^3.0.2",
     "source-map-support": "^0.4.2",
     "webpack": "*",
-    "webpack-dev-server": "^2.4.2",
+    "webpack-dev-server": "^2.5.1",
     "xmldom": "^0.1.22",
     "xpath": "0.0.24"
   },

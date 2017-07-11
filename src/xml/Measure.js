@@ -29,15 +29,18 @@ export class Measure extends XmlObject {
     // children and check which is which. The lastAttributes value needs to
     // be stored so the layout can break the line whereever it wants.
     let curAttributes = lastAttributes;
+    this.Attributes.push(curAttributes);
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
         this.Notes.push(new Note(curChild, curAttributes));
       }
       if (curChild.tagName === 'attributes') {
-        curAttributes = Object.assign(new Attributes(curChild), lastAttributes);
+        curAttributes = new Attributes(curChild); //Object.assign(lastAttributes, new Attributes(curChild));
+        curAttributes.Divisions === undefined ? lastAttributes.Divisions : curAttributes.Divisions;
+        curAttributes.Clef === undefined ? lastAttributes.Clef : curAttributes.Clef;
+        this.Attributes.push(curAttributes);
       }
-      this.Attributes.push(curAttributes);
     }
 
     // Make unique list of voices in this measure
@@ -78,6 +81,7 @@ export class Measure extends XmlObject {
     const clefs = this.Attributes.map(a => a.Clef.filter(c => c.Number === index));
     // Collect all distributed clefs in all attributes in measure
     return [].concat(...clefs);
+    // return [...new Set(...clefs)];
   }
 
   getAllTimes() {

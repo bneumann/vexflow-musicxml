@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const webpackCfg = require('./webpack.config.js');
 
 module.exports = (grunt) => {
   const BANNER = [
@@ -11,6 +12,7 @@ module.exports = (grunt) => {
   const DOC_DIR = path.join(BASE_DIR, 'doc');
   const MODULE_ENTRY = path.join(BASE_DIR, 'src/MusicXml.js');
   const ALL_ENTRIES = path.join(BASE_DIR, 'src/index.js');
+  const WP_SERVER_ENTRIES = path.join(BASE_DIR, 'src/index.html');
   const TARGET_RAW = 'vexflow-musicxml.js';
   const TARGET_MIN = 'vexflow-musicxml-min.js';
   const TARGET_TESTS = 'vexflow-musicxml-tests.js';
@@ -23,6 +25,7 @@ module.exports = (grunt) => {
       entry: config.entry,
       output: {
         path: BUILD_DIR,
+        publicPath: 'assets',
         filename: config.target,
         library: config.library,
         libraryTarget: 'umd',
@@ -108,6 +111,13 @@ module.exports = (grunt) => {
         keepalive: true,
       }),
     },
+    webpack_server: {
+      options: {
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+      },
+      prod: webpackCfg,
+      dev: Object.assign({ watch: true }, webpackCfg)
+    },
     mochaTest: {
       test: {
         options: {
@@ -139,6 +149,7 @@ module.exports = (grunt) => {
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-webpack-server');
 
   // Default task(s).
   grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build', 'doc']);

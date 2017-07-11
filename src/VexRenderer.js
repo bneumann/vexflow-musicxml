@@ -20,9 +20,9 @@ export class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
     console.log(this.musicXml);
-    // const part = 1;
+    // const part = 0;
     // const from = 0;
-    // const to = 2;
+    // const to = 1;
     // this.musicXml.Parts = [this.musicXml.Parts[part]];
     // this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
@@ -138,8 +138,7 @@ export class VexRenderer {
     const allParts = this.musicXml.Parts;
     for (const [p] of allParts.entries()) {
       const part = allParts[p];
-      for (const [, measure] of part.Measures.entries()) { // let m = 0; m < part.Measures.length; m++) {
-        // const measure = part.Measures[m];
+      for (const [, measure] of part.Measures.entries()) {
         drawables.push(new Measure(measure, this.format, this.ctx));
       }
     }

@@ -33,7 +33,10 @@ export class Measure {
     const clefs = xmlMeasure.getClefs();
 
     for (const [s, stave] of allStaves.entries()) {
-      const staveClef = clefs.filter(c => c.Number === stave)[0].getVexClef();
+      const allClefs = xmlMeasure.getClefsByStaff(stave);
+      console.log(xmlMeasure, allClefs, stave);
+
+      const staveClef = allClefs[0].getVexClef();
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
       if (firstInLine) {
