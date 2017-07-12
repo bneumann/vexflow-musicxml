@@ -17,6 +17,7 @@ export class Part extends XmlObject {
     this.Id = parseInt(this.getAttribute('id').match(/[0-9]+/)[0], 10);
 
     let lastAttributes = new Attributes(this.Node.getElementsByTagName('attributes')[0]);
+    console.log(lastAttributes);    
     let lastDivision = lastAttributes.Divisions;
     for (let m = 0; m < measures.length; m++) {
       const options = {

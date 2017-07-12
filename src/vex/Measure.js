@@ -1,5 +1,6 @@
 import Vex from 'vexflow';
 import { Voice } from './Voice.js';
+import { Time } from '../xml/Time.js';
 
 const Flow = Vex.Flow;
 
@@ -29,14 +30,16 @@ export class Measure {
     this.y = lineOnPage * format.systemSpace;
 
     const allStaves = xmlMeasure.getStaves();
-    const time = xmlMeasure.getTime();
+    // FIXME: Time should be handled in Stave object
+    const time = xmlMeasure.getTime() === undefined ? new Time(xmlMeasure.Node.parentNode.getElementsByTagName('time')[0]) : xmlMeasure.getTime();
     const clefs = xmlMeasure.getClefs();
 
     for (const [s, stave] of allStaves.entries()) {
       const allClefs = xmlMeasure.getClefsByStaff(stave);
       console.log(xmlMeasure, allClefs, stave);
 
-      const staveClef = allClefs[0].getVexClef();
+      // FIXME: Clefs should be handled in a Stave object
+      const staveClef = allClefs[0] !== undefined ? allClefs[0].getVexClef() : 'treble';
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
       if (firstInLine) {

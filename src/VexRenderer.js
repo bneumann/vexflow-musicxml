@@ -28,7 +28,6 @@ export class VexRenderer {
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
     this.canvas = canvas;
     // eslint-disable-next-line max-len
-    // eslint-disable-next-line max-len
     this.renderer = new Flow.Renderer(this.canvas, this.isSvg ? Flow.Renderer.Backends.SVG : Flow.Renderer.Backends.CANVAS);
 
     // Internal property to set if layout information should be printed
@@ -57,7 +56,7 @@ export class VexRenderer {
               .reduce((e, ne) => e + ne);   // sum them up
 
     // Some formatting constants
-    this.width = this.isSvg ? this.canvas.getAttribute('width') : this.canvas.width;
+    this.width = this.isSvg ? parseInt(this.canvas.getAttribute('width'), 10) : this.canvas.width;
     const startWidth = document.body.clientWidth < 250 ? document.body.clientWidth : 250;
     this.staveSpace = 100;
     this.staveXOffset = 20;

@@ -8,7 +8,6 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'build'),
-    publicPath: '/build/',
     filename: '[name].js',
     library: 'Vex',
     libraryTarget: 'umd',
@@ -28,13 +27,21 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: [path.join(__dirname, "public"), path.join(__dirname, "assets")],
+    contentBase: [path.join(__dirname, "tests/testdata/v3"), path.join(__dirname, "src"), path.join(__dirname, "build")],
     port: 8000,
-    compress: true
+    compress: false
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
     }),
-  ],
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    }),
+    // new webpack.LoaderOptionsPlugin({
+    //   //TODO: Make it NODE_ENV dependent
+    //    debug: true
+    // }),
+  ]
 };
