@@ -1,5 +1,6 @@
 import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
+import { Clef } from './Clef.js';
 import { Note } from './Note.js';
 
 /**
@@ -23,8 +24,16 @@ export class Measure extends XmlObject {
       this.Attributes = lastAttributes;
       return;
     }
-    const children = this.getChildren();
 
+    this.Clefs = [];
+    this.StartClefs = new Array(this.getStaves());
+    this.EndClefs = new Array(this.StartClefs.length);
+
+    const children = this.getChildren();
+    const clefNodes = Array.from(this.Node.getElementsByTagName('clef'));
+    if (clefNodes.length > 0) {
+      this.setClefs(clefNodes.map(cn => new Clef(cn)));
+    }
     // In this XML the order does matter. So we need to go through the whole
     // children and check which is which. The lastAttributes value needs to
     // be stored so the layout can break the line whereever it wants.
@@ -33,7 +42,7 @@ export class Measure extends XmlObject {
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
-        this.Notes.push(new Note(curChild, curAttributes));
+        this.Notes.push(new Note(curChild, curAttributes.Divisions));
       }
       if (curChild.tagName === 'attributes') {
         curAttributes = new Attributes(curChild); //Object.assign(lastAttributes, new Attributes(curChild));
@@ -74,11 +83,23 @@ export class Measure extends XmlObject {
   }
 
   getClefs() {
-    return [].concat(...this.Attributes[0].Clef);
+    return this.Clefs;
+  }
+
+  setClefs(clefs) {
+    this.Clefs.push(...clefs);
+    for (let c = 0; c < this.StartClefs.length; c++) {
+      const staffClefs = this.getClefsByStaff(c+1);
+
+      this.StartClefs[c] = staffClefs[0] !== undefined ? staffClefs[0] : this.StartClefs[c];
+      this.EndClefs[c] = staffClefs[staffClefs.length - 1] !== undefined ? staffClefs[staffClefs.length - 1] : this.EndClefs[c];
+    }
+    console.log(`Clefs for measure ${this.Number}`, this.StartClefs, this.EndClefs);
   }
 
   getClefsByStaff(index) {
-    const clefs = this.Attributes.map(a => a.Clef.filter(c => c.Number === index));
+    const clefs = this.Clefs.filter(c => c.Number === index);
+
     // Collect all distributed clefs in all attributes in measure
     return [].concat(...clefs);
     // return [...new Set(...clefs)];
@@ -100,7 +121,13 @@ export class Measure extends XmlObject {
  * @returns {Array} Staves in this measure
  */
   getStaves() {
-    return [...new Set(this.Notes.map(n => n.Staff))];
+    const stavesNode = this.Node.parentElement.getElementsByTagName('staves');
+    return stavesNode.length === 0 ? 1 : parseInt(stavesNode[0].textContent, 10);
+  }
+
+  fillArrayWithNumbers(n) {
+      const arr = Array.apply(null, Array(n));
+      return arr.map(function (x, i) { return i });
   }
 
   /**
