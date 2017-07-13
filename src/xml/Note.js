@@ -11,15 +11,14 @@ export class Note extends XmlObject {
    * @param {NodeObject} node - the XML Node representing the note
    * @param {Number}    divisions - The divisions entry from the measure node
    */
-  constructor(node, attributes) {
+  constructor(node, divisions) {
     super(node);
 
-    this.Attributes = attributes;
     /**
      * Private property to store measures divions units
      * @prop {Number} Note.mDivisions
      */
-    this.mDivisions = attributes.Divisions;
+    this.mDivisions = divisions;
     /**
      * Shows if this note is a rest
      * @prop {Boolean} Note.isRest
@@ -148,14 +147,6 @@ export class Note extends XmlObject {
     return ret;
   }
 
-  getClef() {
-    return this.Attributes.Clef.find(c => c.Number === this.Staff);
-  }
-
-  getAttributes() {
-    return this.Attributes;
-  }
-
   getVexNote() {
     const kStep = this.isRest ? 'b' : this.Pitch.Step;
     const kOctave = this.isRest ? '4' : this.Pitch.Octave;
@@ -168,7 +159,7 @@ export class Note extends XmlObject {
       ret.type = 'r';
     }
     if (this.Node.nextElementSibling !== null) {
-      const tempNote = new Note(this.Node.nextElementSibling, this.Attributes);
+      const tempNote = new Note(this.Node.nextElementSibling, this.mDivisions);
       if (tempNote.isInChord) {
         ret.keys.push(...tempNote.getVexNote().keys);
       }

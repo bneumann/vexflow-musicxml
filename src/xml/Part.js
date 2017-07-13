@@ -17,23 +17,25 @@ export class Part extends XmlObject {
     this.Id = parseInt(this.getAttribute('id').match(/[0-9]+/)[0], 10);
 
     let lastAttributes = new Attributes(this.Node.getElementsByTagName('attributes')[0]);
-    console.log(lastAttributes);    
     let lastDivision = lastAttributes.Divisions;
+    let lastMeasure = {};
     for (let m = 0; m < measures.length; m++) {
       const options = {
         lastAttributes,
         part: this.Id,
       };
-      const lastMeasure = new Measure(measures[m], options);
-      this.Measures.push(lastMeasure);
-      if (lastMeasure.Attributes.length > 0) {
-        if (!isNaN(lastMeasure.Attributes.Divisions)) {
-          lastDivision = lastMeasure.Attributes.Divisions;
-        }
-        // Save the divisions throughput the document
-        lastMeasure.Attributes.Divisions = lastDivision;
-        lastAttributes = lastMeasure.Attributes[lastMeasure.Attributes.length - 1];
+      const curMeasure = new Measure(measures[m], options);
+      if (m > 0) {
+        // FIXME: This would overwrite all "calculated" clefs. So they need to
+        // come over the constructor
+        curMeasure.EndClefs = lastMeasure.EndClefs;
+        curMeasure.StartClefs = lastMeasure.EndClefs;
+        curMeasure.setClefs(lastMeasure.Clefs);
       }
+      this.Measures.push(curMeasure);
+      lastAttributes = curMeasure.Attributes; //[curMeasure.Attributes.length - 1];
+
+      lastMeasure = curMeasure;
     }
   }
 
@@ -43,9 +45,7 @@ export class Part extends XmlObject {
    * @returns {Array} Array of staves in measure
    */
   getAllStaves() {
-    const staves = this.Measures.map(m => m.getStaves());
-    // Concatenate all arrays to one unique set and 'cast' it to array
-    return [...new Set(...staves)];
+    return this.Measures[0].getStaves();
   }
 
   /**

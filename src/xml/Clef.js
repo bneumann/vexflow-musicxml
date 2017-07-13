@@ -21,4 +21,8 @@ export class Clef extends XmlObject {
   getVexClef() {
     return this.Clefs[this.sign + this.line];
   }
+
+  toString() {
+    return `Clef [Staff ${this.Number}]:\n\t-> ${this.sign}${this.line} ~ ${this.getVexClef()}\n`;
+  }
 }

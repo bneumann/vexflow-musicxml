@@ -12,7 +12,7 @@ export class Measure extends XmlObject {
     super(node);
     const { lastAttributes, part } = options;
 
-    this.Attributes = [];
+    this.Attributes = {};
     this.Notes = [];
     this.Part = part;
 
@@ -37,20 +37,26 @@ export class Measure extends XmlObject {
     // In this XML the order does matter. So we need to go through the whole
     // children and check which is which. The lastAttributes value needs to
     // be stored so the layout can break the line whereever it wants.
-    let curAttributes = lastAttributes;
-    this.Attributes.push(curAttributes);
+    // let curAttributes = lastAttributes;
+    this.Attributes = lastAttributes;
+
+    // this.Attributes.push(curAttributes);
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
-        this.Notes.push(new Note(curChild, curAttributes.Divisions));
+        this.Notes.push(new Note(curChild, this.Attributes.Divisions));
       }
       if (curChild.tagName === 'attributes') {
-        curAttributes = new Attributes(curChild); //Object.assign(lastAttributes, new Attributes(curChild));
-        curAttributes.Divisions === undefined ? lastAttributes.Divisions : curAttributes.Divisions;
-        curAttributes.Clef === undefined ? lastAttributes.Clef : curAttributes.Clef;
-        this.Attributes.push(curAttributes);
+        const curAttributes = new Attributes(curChild)
+        // Object.assign(this.Attributes.Clef, curAttributes.Clef);
+        // curAttributes.Divisions === undefined ? lastAttributes.Divisions : curAttributes.Divisions;
+        // curAttributes.Clef === undefined ? lastAttributes.Clef : curAttributes.Clef;
+        this.Attributes.merge(curAttributes);
+        // this.Attributes.push(curAttributes);
       }
     }
+    // console.log(`Part ${this.Part}, Measure ${this.Number}: \n${this.Attributes}`);
+
 
     // Make unique list of voices in this measure
     this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
@@ -94,7 +100,7 @@ export class Measure extends XmlObject {
       this.StartClefs[c] = staffClefs[0] !== undefined ? staffClefs[0] : this.StartClefs[c];
       this.EndClefs[c] = staffClefs[staffClefs.length - 1] !== undefined ? staffClefs[staffClefs.length - 1] : this.EndClefs[c];
     }
-    console.log(`Clefs for measure ${this.Number}`, this.StartClefs, this.EndClefs);
+    // console.log(`Clefs for measure ${this.Number}`, this.StartClefs, this.EndClefs);
   }
 
   getClefsByStaff(index) {
@@ -113,7 +119,7 @@ export class Measure extends XmlObject {
   }
 
   getTime() {
-    return this.Attributes[0].Time;
+    return this.Attributes.Time;
   }
 
 /**

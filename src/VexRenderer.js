@@ -20,7 +20,7 @@ export class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
     console.log(this.musicXml);
-    // const part = 0;
+    // const part = 1;
     // const from = 0;
     // const to = 1;
     // this.musicXml.Parts = [this.musicXml.Parts[part]];
@@ -49,10 +49,8 @@ export class VexRenderer {
         this.keySpec.push(newEntry);
       }
     }
-
     this.stavesPerSystem = this.musicXml.Parts
               .map(p => p.getAllStaves()) // get all the staves in a part
-              .map(sa => sa.length)       // get the length of the array (number of staves)
               .reduce((e, ne) => e + ne);   // sum them up
 
     // Some formatting constants
@@ -76,7 +74,9 @@ export class VexRenderer {
       width: this.width,
       linesPerPage: Math.ceil(this.musicXml.Parts[0].Measures.length / this.measuresPerStave),
     };
-
+    // Set the SVG viewbox according to the calculated layout
+    const vb = [0, 0, this.width, this.getScoreHeight()];
+    this.ctx.setViewBox(vb);
     // this.layout = this.calculateLayout();
     if (dontPrint !== false) {
       this.parseNew().draw();

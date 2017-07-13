@@ -9,5 +9,10 @@ export class Key extends XmlObject {
     if (this.Mode === '') {
       this.Mode = 'major';
     }
+
+  }
+
+  toString() {
+    return `\t-> Fifths: ${this.Fifths}\n\t-> Mode: ${this.Mode}`;
   }
 }

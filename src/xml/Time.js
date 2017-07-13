@@ -11,4 +11,8 @@ export class Time extends XmlObject {
   getVexTime() {
     return { num_beats: this.Beats, beat_value: this.BeatType, symbol: this.Symbol };
   }
+
+  toString() {
+    return `${this.Beats}/${this.BeatType}, Symbol: ${this.Symbol}`;
+  }
 }

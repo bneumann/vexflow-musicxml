@@ -111,12 +111,13 @@ module.exports = (grunt) => {
         keepalive: true,
       }),
     },
+    // FIXME: grunt-webpack-server does not support webpack 3.x configs
     webpack_server: {
       options: {
         stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       },
-      prod: webpackCfg,
-      dev: Object.assign({ watch: true }, webpackCfg)
+      prod: Object.assign({ options: webpackCfg }),
+      dev: Object.assign({ watch: true, port: 8080 }, webpackCfg)
     },
     mochaTest: {
       test: {

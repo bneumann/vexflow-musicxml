@@ -2,8 +2,9 @@ import Vex from './index.js';
 
 // const file1 = 'ActorPreludeSample.xml';
 const file1 = 'BeetAnGeSample.xml';
-
-loadXMLDoc();
+$(document).ready(() => {
+  loadXMLDoc();
+});
 
 function loadXMLDoc() {
   const xmlhttp = new XMLHttpRequest();

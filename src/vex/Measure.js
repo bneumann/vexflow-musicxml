@@ -34,12 +34,16 @@ export class Measure {
     const time = xmlMeasure.getTime() === undefined ? new Time(xmlMeasure.Node.parentNode.getElementsByTagName('time')[0]) : xmlMeasure.getTime();
     const clefs = xmlMeasure.getClefs();
 
-    for (const [s, stave] of allStaves.entries()) {
+    for (let s = 0; s < allStaves; s++) {
+    // for (const [s, stave] of allStaves.entries()) {
+      const stave = s + 1;
+      // console.log(" measure", s, stave);
+
       const allClefs = xmlMeasure.getClefsByStaff(stave);
-      console.log(xmlMeasure, allClefs, stave);
+      // console.log(xmlMeasure, allClefs, stave);
 
       // FIXME: Clefs should be handled in a Stave object
-      const staveClef = allClefs[0] !== undefined ? allClefs[0].getVexClef() : 'treble';
+      const staveClef = xmlMeasure.StartClefs[s].getVexClef(); // allClefs[0] !== undefined ? allClefs[0].getVexClef() : 'treble';
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
       if (firstInLine) {
