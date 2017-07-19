@@ -42,11 +42,12 @@ export class Measure {
       const allClefs = xmlMeasure.getClefsByStaff(stave);
       // console.log(xmlMeasure, allClefs, stave);
 
-      // FIXME: Clefs should be handled in a Stave object
-      const staveClef = xmlMeasure.StartClefs[s].getVexClef(); // allClefs[0] !== undefined ? allClefs[0].getVexClef() : 'treble';
+      const staveClef = xmlMeasure.StartClefs[s].getVexClef();
+      // console.log(`Part: ${xmlMeasure.Part} Measure: ${number} staveClef: ${staveClef}`);
+
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
-      if (firstInLine) {
+      if (firstInLine || xmlMeasure.StartClefs[s] !== xmlMeasure.Attributes.Clef[s]) {
         flowStave.addClef(staveClef);
       }
       this.staveList.push(flowStave);

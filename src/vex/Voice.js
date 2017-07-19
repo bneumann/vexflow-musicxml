@@ -22,12 +22,20 @@ export class Voice {
         const noteList = [];
         let beamNoteList = [];
         for (const [, notes] of voiceNotes.entries()) {
+          console.log(`Part ${xmlMeasure.Part}, Measure ${xmlMeasure.Number}: \n${notes.mAttributes === xmlMeasure.Attributes},\nMeasureclef ${staveClef}`);
           const note = notes.getVexNote();
-          note.clef = note.isRest ? 'treble' : staveClef;
+          const newClef = notes.hasClefChange ? notes.mAttributes.Clef[stave - 1].getVexClef() : staveClef;
+          note.clef = note.isRest ? 'treble' : newClef;
           const flowNote = new Flow.StaveNote(note)
            .setContext(ctx)
            .setStave(flowStave);
+          if (notes.hasClefChange) {
+            const cn = new Flow.ClefNote(newClef, 'small');
+            flowNote.addModifier(0, new Flow.NoteSubGroup([cn]));
+          }
           noteList.push(flowNote);
+
+
           // Accidentals
           const acc = notes.getAccidental();
           if (acc) {

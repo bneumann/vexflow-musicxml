@@ -17,25 +17,14 @@ export class Part extends XmlObject {
     this.Id = parseInt(this.getAttribute('id').match(/[0-9]+/)[0], 10);
 
     let lastAttributes = new Attributes(this.Node.getElementsByTagName('attributes')[0]);
-    let lastDivision = lastAttributes.Divisions;
-    let lastMeasure = {};
     for (let m = 0; m < measures.length; m++) {
       const options = {
         lastAttributes,
         part: this.Id,
       };
       const curMeasure = new Measure(measures[m], options);
-      if (m > 0) {
-        // FIXME: This would overwrite all "calculated" clefs. So they need to
-        // come over the constructor
-        curMeasure.EndClefs = lastMeasure.EndClefs;
-        curMeasure.StartClefs = lastMeasure.EndClefs;
-        curMeasure.setClefs(lastMeasure.Clefs);
-      }
       this.Measures.push(curMeasure);
-      lastAttributes = curMeasure.Attributes; //[curMeasure.Attributes.length - 1];
-
-      lastMeasure = curMeasure;
+      lastAttributes = curMeasure.Attributes;
     }
   }
 

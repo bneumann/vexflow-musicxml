@@ -18,6 +18,7 @@ export class Measure extends XmlObject {
 
     this.Number = parseInt(this.getAttribute('number'), 10);
     this.Width = parseFloat(this.getAttribute('width'), 10);
+    // REVIEW: Fluid interface for filtering notes seems odd.
     if (part === -1) {
       // FIXME: This is a workaround for a fluid interface. This way I can instantiate
       // new objects without parsing the node again.
@@ -25,38 +26,29 @@ export class Measure extends XmlObject {
       return;
     }
 
-    this.Clefs = [];
-    this.StartClefs = new Array(this.getStaves());
-    this.EndClefs = new Array(this.StartClefs.length);
 
-    const children = this.getChildren();
-    const clefNodes = Array.from(this.Node.getElementsByTagName('clef'));
-    if (clefNodes.length > 0) {
-      this.setClefs(clefNodes.map(cn => new Clef(cn)));
-    }
+    const children = this.getChildren()
     // In this XML the order does matter. So we need to go through the whole
     // children and check which is which. The lastAttributes value needs to
     // be stored so the layout can break the line whereever it wants.
-    // let curAttributes = lastAttributes;
-    this.Attributes = lastAttributes;
 
-    // this.Attributes.push(curAttributes);
+    this.Attributes = lastAttributes;
+    this.StartClefs = this.Attributes.Clef;
+    let tmpClef = this.StartClefs; // Semaphore to change the clef inline
+
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
-        this.Notes.push(new Note(curChild, this.Attributes.Divisions));
+        // Add a clef change if the attributes before the note are different
+        // then the starting clef. Also prevent it for the first note
+        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes), this.Attributes.Clef !== tmpClef && this.Notes.length > 0));
+        // tmpClef = this.Attributes.Clef;
       }
       if (curChild.tagName === 'attributes') {
         const curAttributes = new Attributes(curChild)
-        // Object.assign(this.Attributes.Clef, curAttributes.Clef);
-        // curAttributes.Divisions === undefined ? lastAttributes.Divisions : curAttributes.Divisions;
-        // curAttributes.Clef === undefined ? lastAttributes.Clef : curAttributes.Clef;
         this.Attributes.merge(curAttributes);
-        // this.Attributes.push(curAttributes);
       }
     }
-    // console.log(`Part ${this.Part}, Measure ${this.Number}: \n${this.Attributes}`);
-
 
     // Make unique list of voices in this measure
     this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
@@ -89,22 +81,11 @@ export class Measure extends XmlObject {
   }
 
   getClefs() {
-    return this.Clefs;
-  }
-
-  setClefs(clefs) {
-    this.Clefs.push(...clefs);
-    for (let c = 0; c < this.StartClefs.length; c++) {
-      const staffClefs = this.getClefsByStaff(c+1);
-
-      this.StartClefs[c] = staffClefs[0] !== undefined ? staffClefs[0] : this.StartClefs[c];
-      this.EndClefs[c] = staffClefs[staffClefs.length - 1] !== undefined ? staffClefs[staffClefs.length - 1] : this.EndClefs[c];
-    }
-    // console.log(`Clefs for measure ${this.Number}`, this.StartClefs, this.EndClefs);
+    return this.Attributes.Clef;
   }
 
   getClefsByStaff(index) {
-    const clefs = this.Clefs.filter(c => c.Number === index);
+    const clefs = this.StartClefs.filter(c => c.Number === index);
 
     // Collect all distributed clefs in all attributes in measure
     return [].concat(...clefs);
