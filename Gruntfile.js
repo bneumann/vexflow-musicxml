@@ -10,7 +10,6 @@ module.exports = (grunt) => {
   const BASE_DIR = __dirname;
   const BUILD_DIR = path.join(BASE_DIR, 'build');
   const DOC_DIR = path.join(BASE_DIR, 'doc');
-  const MODULE_ENTRY = path.join(BASE_DIR, 'src/index.js');
   const ALL_ENTRIES = path.join(BASE_DIR, 'src/index.js');
   const WP_SERVER_ENTRIES = path.join(BASE_DIR, 'src/index.html');
   const TARGET_RAW = 'vexflow-musicxml.js';
@@ -52,9 +51,9 @@ module.exports = (grunt) => {
     };
   }
   const webpackTest = webpackConfig({
-    entry: MODULE_ENTRY,
+    entry: ALL_ENTRIES,
     target: TARGET_TESTS,
-    library: 'Vex.Flow.MusicXml',
+    library: 'Vex',
     preset: 'es2015',
   });
 

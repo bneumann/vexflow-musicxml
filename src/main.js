@@ -1,7 +1,8 @@
 import Vex from './index.js';
 
-// const file1 = 'ActorPreludeSample.xml';
-const file1 = 'BeetAnGeSample.xml';
+const file1 = 'ActorPreludeSample.xml';
+// const file1 = 'BeetAnGeSample.xml';
+// eslint-disable-next-line no-undef
 $(document).ready(() => {
   loadXMLDoc();
 });

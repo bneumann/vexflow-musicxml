@@ -8,8 +8,10 @@ export class Measure {
   constructor(xmlMeasure, format, ctx) {
     this.staveList = [];
     this.voiceList = [];
+    this.connectors = [];
     this.xmlMeasure = xmlMeasure;
     this.context = ctx;
+    this.format = format;
     // FIXME: The formatter should be available in all vex components
     this.formatter = new Flow.Formatter();
     // console.log(xmlMeasure.Attributes, xmlMeasure.Part);
@@ -25,6 +27,7 @@ export class Measure {
     const lineOnPage = Math.ceil(number / format.measuresPerStave) - 1;
 
     const firstInLine = (number - 1) % format.measuresPerStave === 0;
+    const lastMeasure = number === format.totalMeasures;
 
     this.x = format.staveXOffset + (number - 1) % format.measuresPerStave * format.staveWidth;
     this.y = lineOnPage * format.systemSpace;
@@ -33,17 +36,17 @@ export class Measure {
     // FIXME: Time should be handled in Stave object
     const time = xmlMeasure.getTime() === undefined ? new Time(xmlMeasure.Node.parentNode.getElementsByTagName('time')[0]) : xmlMeasure.getTime();
     const clefs = xmlMeasure.getClefs();
-
     for (let s = 0; s < allStaves; s++) {
-    // for (const [s, stave] of allStaves.entries()) {
       const stave = s + 1;
       // console.log(" measure", s, stave);
 
       const allClefs = xmlMeasure.getClefsByStaff(stave);
       // console.log(xmlMeasure, allClefs, stave);
 
-      const staveClef = xmlMeasure.StartClefs[s].getVexClef();
-      // console.log(`Part: ${xmlMeasure.Part} Measure: ${number} staveClef: ${staveClef}`);
+      let staveClef = xmlMeasure.StartClefs[s].getVexClef();
+      if(staveClef === undefined) {
+        staveClef = "treble";
+      }
 
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
@@ -54,12 +57,52 @@ export class Measure {
       // this.context.fillText(`Measure: ${this.xmlMeasure.Number} Num in line: ${firstInLine}`, this.x, this.y + 30 + s * 100 + part * 100);
 
       const options = { ctx, formatter: this.formatter, stave, staveClef, flowStave, time };
-      this.voiceList.push(new Voice(xmlMeasure, options));
+      const v = new Voice(xmlMeasure, options);
+      this.voiceList.push(v);
+
     } // Staves
+    this.addConnectors(firstInLine, lastMeasure);
   } // Constructor
 
   draw() {
     this.staveList.forEach(s => s.draw());
     this.voiceList.forEach(n => n.draw());
+    this.connectors.forEach(c => c.draw());
   }
+
+  addConnectors(firstInLine, lastMeasure) {
+    if(this.staveList.length === 1 && lastMeasure) {
+      this.staveList[0].setEndBarType(Flow.Barline.type.END);
+    }
+    for (let s = 0; s < this.staveList.length - 1; s++) {
+      const firstStave = this.staveList[s];
+      const secondStave = this.staveList[s+1];
+      // Beginning of system line
+      if (firstInLine) {
+        this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.SINGLE_LEFT);
+        this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.BRACE);
+      }
+      // Every measure
+      this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.SINGLE_RIGHT);
+      // End of score
+      if (lastMeasure) {
+          this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.BOLD_DOUBLE_RIGHT);
+      }
+    }
+  }
+
+  /**
+   * Adds a connector between two staves
+   *
+   * @param {Stave} stave1: First stave
+   * @param {Stave} stave2: Second stave
+   * @param {Flow.StaveConnector.type} type: Type of connector
+   */
+   addConnector(stave1, stave2, type) {
+      this.connectors.push(
+        new Flow.StaveConnector(stave1, stave2)
+        .setType(type)
+        .setContext(this.context));
+    }
+
 }

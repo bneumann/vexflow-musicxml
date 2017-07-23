@@ -12,7 +12,9 @@ export class Clef extends XmlObject {
     this.Clefs = {
       'G2': 'treble',
       'C3': 'alto',
-      'G4': 'tenor',
+      // TODO: Was this a typo? Or does a G4 exist?
+      // 'G4': 'tenor',
+      'C4': 'tenor',
       'F4': 'bass',
       'percussion': 'percussion',
     };

@@ -86,14 +86,10 @@ export class Note extends XmlObject {
     this.isLastBeamNote = this.getTextArray('beam').every(b => b.indexOf('end') > -1);
 
     /**
-     * The notes pitch. It is defined by a step and the octave.
-     * @prop {Object} .Step: Step inside octave
-     *                .Octave: Octave of the note
+     * Percussion notes don't have absolute values and are called "unpitched"
+     * @param {Boolean} Note.isUnpitched defines if note is a percussion note
      */
-    this.Pitch = {
-      Step: this.childExists('step') ?  this.getText('step') : undefined,
-      Octave: this.getNum('octave'),
-    };
+    this.isUnpitched = this.childExists('unpitched');
 
     /**
      * The note's length. It is defined by the duration divided by the divisions
@@ -120,6 +116,20 @@ export class Note extends XmlObject {
       '1024th': '1024',
     };
   }
+
+  /**
+   * The notes pitch. It is defined by a step and the octave.
+   * @prop {Object} .Step: Step inside octave
+   *                .Octave: Octave of the note
+   */
+  get Pitch () {
+    const stepName = this.isUnpitched ? 'display-step' : 'step';
+    const octavepName = this.isUnpitched ? 'display-octave' : 'octave';
+    return {
+      Step: this.childExists(stepName) ?  this.getText(stepName) : undefined,
+      Octave: this.getNum('octave'),
+    }
+  };
 
   getAccidental() {
     const acc = this.getText('accidental');

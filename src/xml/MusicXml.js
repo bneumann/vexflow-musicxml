@@ -48,7 +48,6 @@ export class MusicXml extends XmlObject {
   getStavesPerSystem() {
     return this.Parts
       .map(p => p.getAllStaves()) // get all the staves in a part
-      .map(sa => sa.length)       // get the length of the array (number of staves)
       .reduce((e, ne) => e + ne);   // sum them up
   }
 

@@ -13,10 +13,10 @@ import { Measure } from './vex/Measure.js';
 const Flow = Vex.Flow;
 
 /**
- * MusicXmlRenderer aka VexRenderer
+ * MusicXmlRenderer
  * @param
  */
-export class VexRenderer {
+export class MusicXmlRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
     console.log(this.musicXml);
@@ -41,6 +41,7 @@ export class VexRenderer {
     this.connectors = [];
     this.voiceList = [];
 
+    // Create a lookup table of key names ("C", "B", etc.) that map to key objects
     this.keySpec = [];
     for (const k in Flow.keySignature.keySpecs) {
       if ({}.hasOwnProperty.call(Flow.keySignature.keySpecs, k)) {
@@ -68,7 +69,9 @@ export class VexRenderer {
       staveXOffset: 20,
       staveYOffset: 20,
       systemSpace: this.systemSpace,
+      // FIXME: Refactor to stavesPerMeasure
       measuresPerStave: this.measuresPerStave,
+      totalMeasures: this.musicXml.Parts[0].Measures.length,
       staveWidth: this.staveWidth,
       stavesPerSystem: this.musicXml.getStavesPerSystem(),
       width: this.width,
@@ -77,9 +80,8 @@ export class VexRenderer {
     // Set the SVG viewbox according to the calculated layout
     const vb = [0, 0, this.width, this.getScoreHeight()];
     this.ctx.setViewBox(vb);
-    // this.layout = this.calculateLayout();
     if (dontPrint !== false) {
-      this.parseNew().draw();
+      this.parse();
     }
   }
 
@@ -87,52 +89,8 @@ export class VexRenderer {
     return this.systemSpace * this.format.linesPerPage;
   }
 
-  calculateLayout() {
-    // TODO: Use page height for calculation
-    // const height = this.isSvg ? this.canvas.getAttribute('height') : this.canvas.height;
-    const measures = this.musicXml.Parts[0].Measures;
-    const lpp = Math.ceil(measures.length / this.measuresPerStave);    // lines per page
-
-    const a = [];
-    let idx = 0;
-
-    for (let s = 0; s < this.stavesPerSystem; s++) { // systems / all staves
-      for (let l = 0; l < lpp; l++) { // lines
-        for (let m = 0; m < this.measuresPerStave; m++) { // measures
-          const point = {
-            x: (this.staveWidth * m) + this.staveXOffset,
-            y: l * this.systemSpace + s * this.staveSpace + this.staveYOffset,
-            index: idx,
-          };
-          if (this.mDebug) {
-            this.ctx.fillText(' line: ' + l +
-                              ' stave ' + s +
-                              ' measure ' + m +
-                              ' index: ' + idx, point.x, point.y);
-          }
-          a.push(point);
-          idx++;
-          if (idx === measures.length) {
-            idx = 0;
-            break;
-          }
-        }
-      }
-    }
-    // console.log(a);
-    const ret = {
-      measPerStave: this.measuresPerStave,
-      linesPerPage: lpp,
-      systems: this.stavesPerSystem,
-      points: a,
-    };
-    // console.log(ret);
-    return ret;
-  }
-
   // https://github.com/0xfe/vexflow/blob/1.2.83/tests/formatter_tests.js line 271
-  parseNew() {
-    console.profile('parse');
+  parse() {
     const drawables = [];
     const allParts = this.musicXml.Parts;
     for (const [p] of allParts.entries()) {
@@ -142,11 +100,9 @@ export class VexRenderer {
       }
     }
     drawables.forEach(d => d.draw());
-    console.profileEnd();
-    return this;
   }
 
-  parse() {
+  parseOld() {
     // Reset all lists
     this.staveList = [];
     this.beamList = [];
@@ -282,24 +238,6 @@ export class VexRenderer {
       }); // Staves
     }); // Parts
     this.addConnectors();
-    return this;
-  }
-
-  /**
-   * Draw all elements on the canvas.
-   *
-   * @returns The object itself for usage in fluent interface
-   */
-  draw() {
-    // Draw measures and lines
-    // this.staveList.forEach(meas => meas.forEach(s => s.setContext(this.ctx).draw()));
-    this.staveList.forEach(s => s.setContext(this.ctx).draw());
-    // Draw connectors
-    this.connectors.forEach(c => c.setContext(this.ctx).draw());
-    // Draw notes
-    this.voiceList.forEach(v => v.setContext(this.ctx).draw());
-    // Draw beams
-    this.beamList.forEach(beam => beam.setContext(this.ctx).draw());
     return this;
   }
 

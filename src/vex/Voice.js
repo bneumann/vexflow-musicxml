@@ -17,24 +17,32 @@ export class Voice {
         .getNotesByVoice(voice)
         .Notes
         .filter(n => n.isInChord === false);
+      // console.log(`Stave: ${stave}, ${flowStave}, voice: ${voice}`);
       if (voiceNotes.length > 0) {
         // Notes
         const noteList = [];
         let beamNoteList = [];
         for (const [, notes] of voiceNotes.entries()) {
-          console.log(`Part ${xmlMeasure.Part}, Measure ${xmlMeasure.Number}: \n${notes.mAttributes === xmlMeasure.Attributes},\nMeasureclef ${staveClef}`);
+          // console.log(`Part ${xmlMeasure.Part}, Measure ${xmlMeasure.Number}: \n${notes.mAttributes === xmlMeasure.Attributes},\nMeasureclef ${staveClef}`);
           const note = notes.getVexNote();
           const newClef = notes.hasClefChange ? notes.mAttributes.Clef[stave - 1].getVexClef() : staveClef;
           note.clef = note.isRest ? 'treble' : newClef;
-          const flowNote = new Flow.StaveNote(note)
-           .setContext(ctx)
-           .setStave(flowStave);
-          if (notes.hasClefChange) {
-            const cn = new Flow.ClefNote(newClef, 'small');
-            flowNote.addModifier(0, new Flow.NoteSubGroup([cn]));
-          }
-          noteList.push(flowNote);
+          // console.log(`Part: ${xmlMeasure.Part}, Measure: ${xmlMeasure.Number}, Key: ${note.keys[0]}`);
 
+          try {
+            // FIXME: This call causes RunTime errors!
+            var flowNote = new Flow.StaveNote(note);
+            flowNote.setContext(ctx);
+            flowNote.setStave(flowStave);
+            if (notes.hasClefChange) {
+              const cn = new Flow.ClefNote(newClef, 'small');
+              flowNote.addModifier(0, new Flow.NoteSubGroup([cn]));
+            }
+            // console.log(xmlMeasure.Part, xmlMeasure.Number, newClef, notes.mAttributes.Clef[stave - 1], staveClef);
+            noteList.push(flowNote);
+          } catch(e) {
+            console.log("ErrorV: ", e, note, flowStave, newClef);
+          }
 
           // Accidentals
           const acc = notes.getAccidental();

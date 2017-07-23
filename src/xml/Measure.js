@@ -75,7 +75,7 @@ export class Measure extends XmlObject {
   }
 
   getAllClefs() {
-    const clefs = this.Attributes.map(a => a.Clef.filter(c => c.Number));
+    const clefs = this.Attributes.Clef.filter(c => c.Number);
     // Collect all distributed clefs in all attributes in measure
     return [].concat(...clefs);
   }
@@ -93,9 +93,9 @@ export class Measure extends XmlObject {
   }
 
   getAllTimes() {
-    let times = this.Attributes.map(a => a.Time);
+    let times = this.Attributes.Time;
     // Repeat the timing information according to the staves
-    times = Array(this.getStaves().length).fill(times[0]);
+    times = Array(this.getStaves()).fill(times[0]);
     return times;
   }
 
@@ -105,23 +105,19 @@ export class Measure extends XmlObject {
 
 /**
  * Get the unique numbers of all staves in this measure
- * @returns {Array} Staves in this measure
+ * @returns {Number} Staves in this measure
  */
   getStaves() {
-    const stavesNode = this.Node.parentElement.getElementsByTagName('staves');
+    const stavesNode = this.getSiblings('staves');
     return stavesNode.length === 0 ? 1 : parseInt(stavesNode[0].textContent, 10);
-  }
-
-  fillArrayWithNumbers(n) {
-      const arr = Array.apply(null, Array(n));
-      return arr.map(function (x, i) { return i });
   }
 
   /**
    * Check if this Measure has Attributes
+   * @deprecated since version 0.2 every measure has attributes.
    * @returns {Boolean} Indicates if the measure has Attributes
    */
   hasAttributes() {
-    return this.Attributes !== undefined && this.Attributes.length > 0;
+    return this.Attributes !== undefined;
   }
 }

@@ -29,7 +29,17 @@ export class XmlObject {
    * @return {DOMNodeList} DOM node list representation of the children
    */
   getChildren(name = '') {
-    return name === '' ? this.Node.children : this.Node.getElementsByTagName(name);
+    return name === '' ? this.Node.childNodes : this.Node.getElementsByTagName(name);
+  }
+
+  /**
+   * getSiblings - Gets all siblings by its tag name
+   *
+   * @param  {string} name The tag name of the sibling.
+   * @return {DOMNodeList} DOM node list representation of the children
+   */
+  getSiblings(name) {
+    return this.Node.parentNode.getElementsByTagName(name);
   }
 
   findPreviousElement(name, vicinity = 2) {
