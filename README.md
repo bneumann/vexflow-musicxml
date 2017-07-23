@@ -15,13 +15,18 @@ npm install -g grunt-cli
 ```
 
 ## Build
-
 ```javascript
 grunt
 ```
 ## Test
 ```javascript
 grunt test
+```
+
+## Debugging
+There is a wepback development server configuration for debugging purposes. It uses the ```src/main.js``` script to load a file from the ```test/testdata``` folder. This is very convenient for live changes in the code. To start the server just hit npm test:
+```
+npm test
 ```
 
 ## Screenshots
@@ -91,7 +96,8 @@ Apply like this:
 
 ## History
 
-TODO: Write history
+* v0.1: First draft and working version
+* v0.2: Changed the vexflow object creation and drawing to a more capsuled code. Added webpack-dev-server. Renamed VexRenderer to MusicXmlRenderer. Integrated the Attributes to Notes and Measures to be able to display according to screen size.
 
 ## Credits
 
