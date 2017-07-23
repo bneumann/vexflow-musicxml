@@ -62,7 +62,7 @@
         <beam number="1">end</beam>
       </note>
     </measure>
-    <measure>
+    <measure number="2">
       <note>
         <pitch>
           <step>C</step>
@@ -72,7 +72,7 @@
         <type>whole</type>
       </note>
     </measure>
-    <measure>
+    <measure number="3">
       <attributes>
         <divisions>16</divisions>
         <key>

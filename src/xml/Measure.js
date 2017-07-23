@@ -1,6 +1,5 @@
 import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
-import { Clef } from './Clef.js';
 import { Note } from './Note.js';
 
 /**
@@ -26,26 +25,25 @@ export class Measure extends XmlObject {
       return;
     }
 
-
-    const children = this.getChildren()
+    const children = this.getChildren();
     // In this XML the order does matter. So we need to go through the whole
     // children and check which is which. The lastAttributes value needs to
     // be stored so the layout can break the line whereever it wants.
 
     this.Attributes = lastAttributes;
     this.StartClefs = this.Attributes.Clef;
-    let tmpClef = this.StartClefs; // Semaphore to change the clef inline
+    const tmpClef = this.StartClefs; // Semaphore to change the clef inline
 
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
         // Add a clef change if the attributes before the note are different
-        // then the starting clef. Also prevent it for the first note
-        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes), this.Attributes.Clef !== tmpClef && this.Notes.length > 0));
-        // tmpClef = this.Attributes.Clef;
+        // then the starting clef.
+        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes),
+          this.Attributes.Clef !== tmpClef));
       }
       if (curChild.tagName === 'attributes') {
-        const curAttributes = new Attributes(curChild)
+        const curAttributes = new Attributes(curChild);
         this.Attributes.merge(curAttributes);
       }
     }
@@ -54,7 +52,7 @@ export class Measure extends XmlObject {
     this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
   }
 
- /**
+  /**
  * Get all the notes belonging to the given staff. The staff number
  * can be retrieved from {@link getStaves}
  * @param {Number} Number of the staff.
@@ -103,7 +101,7 @@ export class Measure extends XmlObject {
     return this.Attributes.Time;
   }
 
-/**
+  /**
  * Get the unique numbers of all staves in this measure
  * @returns {Number} Staves in this measure
  */
@@ -119,5 +117,9 @@ export class Measure extends XmlObject {
    */
   hasAttributes() {
     return this.Attributes !== undefined;
+  }
+
+  toString() {
+    return `Part: ${this.Part}, Measure: ${this.Number}`;
   }
 }

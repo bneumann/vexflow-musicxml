@@ -94,7 +94,7 @@ module.exports = (grunt) => {
     eslint: {
       target: SOURCES,
       options: {
-        configFile: '.eslintrc.json',
+        configFile: '.eslintrc',
       },
     },
     clean: {

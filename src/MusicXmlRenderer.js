@@ -18,7 +18,9 @@ const Flow = Vex.Flow;
  */
 export class MusicXmlRenderer {
   constructor(data, canvas, dontPrint) {
+    console.profile('parsing');
     this.musicXml = new MusicXml(data);
+    console.profileEnd('parsing');
     console.log(this.musicXml);
     // const part = 1;
     // const from = 0;
@@ -51,8 +53,8 @@ export class MusicXmlRenderer {
       }
     }
     this.stavesPerSystem = this.musicXml.Parts
-              .map(p => p.getAllStaves()) // get all the staves in a part
-              .reduce((e, ne) => e + ne);   // sum them up
+      .map(p => p.getAllStaves()) // get all the staves in a part
+      .reduce((e, ne) => e + ne);   // sum them up
 
     // Some formatting constants
     this.width = this.isSvg ? parseInt(this.canvas.getAttribute('width'), 10) : this.canvas.width;
@@ -126,8 +128,8 @@ export class MusicXmlRenderer {
           'si': si,
         };
         const measureList = [];
-         // The notes can be set to bass, treble, etc. with the clef.
-         // So we need to remember the last clef we used
+        // The notes can be set to bass, treble, etc. with the clef.
+        // So we need to remember the last clef we used
         let curClef = 'treble';
         let curTime = { num_beats: 4, beat_value: 4, resolution: Flow.RESOLUTION };
         // Iterate all measures in this stave
@@ -265,7 +267,7 @@ export class MusicXmlRenderer {
     return entry;
   }
 
-/**
+  /**
  * Adds all the connectors between the systems.
  *
  */
@@ -297,7 +299,7 @@ export class MusicXmlRenderer {
     }
   }
 
-/**
+  /**
  * Adds a connector between two staves
  *
  * @param {Stave} stave1: First stave
@@ -307,8 +309,7 @@ export class MusicXmlRenderer {
   addConnector(stave1, stave2, type) {
     this.connectors.push(
       new Flow.StaveConnector(stave1, stave2)
-      .setType(type)
-      .setContext(this.ctx));
+        .setType(type)
+        .setContext(this.ctx));
   }
-
 }

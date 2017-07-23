@@ -12,6 +12,10 @@ export class XmlObject {
     this.Node = node;
   }
 
+  clone() {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
+
   /**
    * getChild - Gets a (usally the first) child by its tag name
    *

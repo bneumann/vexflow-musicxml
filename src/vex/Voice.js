@@ -22,10 +22,17 @@ export class Voice {
         // Notes
         const noteList = [];
         let beamNoteList = [];
-        for (const [, notes] of voiceNotes.entries()) {
+        for (let n = 0; n < voiceNotes.length; n++) {
+          const notes = voiceNotes[n];
           // console.log(`Part ${xmlMeasure.Part}, Measure ${xmlMeasure.Number}: \n${notes.mAttributes === xmlMeasure.Attributes},\nMeasureclef ${staveClef}`);
           const note = notes.getVexNote();
-          const newClef = notes.hasClefChange ? notes.mAttributes.Clef[stave - 1].getVexClef() : staveClef;
+          let clefChange = false;
+
+          if (n > 0) {
+            console.log(notes.hasClefChange,  voiceNotes[n - 1].hasClefChange);
+            clefChange = notes.hasClefChange !== voiceNotes[n - 1].hasClefChange;
+          }
+          const newClef = clefChange ? notes.mAttributes.Clef[stave - 1].getVexClef() : staveClef;
           note.clef = note.isRest ? 'treble' : newClef;
           // console.log(`Part: ${xmlMeasure.Part}, Measure: ${xmlMeasure.Number}, Key: ${note.keys[0]}`);
 
@@ -34,13 +41,13 @@ export class Voice {
             var flowNote = new Flow.StaveNote(note);
             flowNote.setContext(ctx);
             flowNote.setStave(flowStave);
-            if (notes.hasClefChange) {
+            if (clefChange) {
               const cn = new Flow.ClefNote(newClef, 'small');
               flowNote.addModifier(0, new Flow.NoteSubGroup([cn]));
             }
             // console.log(xmlMeasure.Part, xmlMeasure.Number, newClef, notes.mAttributes.Clef[stave - 1], staveClef);
             noteList.push(flowNote);
-          } catch(e) {
+          } catch (e) {
             console.log("ErrorV: ", e, note, flowStave, newClef);
           }
 

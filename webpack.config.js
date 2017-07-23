@@ -3,8 +3,8 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-      'vexflow-musicxml': './src/index.js',
-      'bundle': './src/main.js'
+    'vexflow-musicxml': './src/index.js',
+    'bundle': './src/main.js',
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -27,9 +27,13 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: [path.join(__dirname, "tests/testdata/v3"), path.join(__dirname, "src"), path.join(__dirname, "build")],
+    contentBase: [
+      path.join(__dirname, 'tests/testdata/v3'),
+      path.join(__dirname, 'tests/testdata/mock'),
+      path.join(__dirname, 'src'), path.join(__dirname, 'build'),
+    ],
     port: 8000,
-    compress: false
+    compress: false,
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
@@ -37,11 +41,11 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       $: 'jquery',
-      jQuery: 'jquery'
+      jQuery: 'jquery',
     }),
     // new webpack.LoaderOptionsPlugin({
     //   //TODO: Make it NODE_ENV dependent
     //    debug: true
     // }),
-  ]
+  ],
 };
