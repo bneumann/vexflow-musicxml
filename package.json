@@ -8,6 +8,9 @@
     "musicxml",
     "notes"
   ],
+  "scripts": {
+    "test": "webpack-dev-server -d --config webpack.config.js --progress --colors"
+  },
   "author": {
     "name": "Benjamin Giesinger",
     "email": "neumann.benni@gmail.com"
@@ -25,7 +28,7 @@
     "eslint": "^3.0.1",
     "eslint-config-airbnb-base": "^11.1.1",
     "eslint-plugin-import": "^2.2.0",
-    "grunt": "~1.0.1",
+    "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-jshint": "~1.1.0",
     "grunt-contrib-nodeunit": "~1.0.0",
@@ -36,15 +39,17 @@
     "grunt-jsdoc": "^2.1.0",
     "grunt-mocha-test": "^0.13.2",
     "grunt-webpack": "^2.0.1",
+    "grunt-webpack-server": "^0.1.0",
+    "jquery": "^3.2.1",
     "mocha": "^3.0.2",
     "source-map-support": "^0.4.2",
-    "webpack": "*",
-    "webpack-dev-server": "^2.4.2",
+    "webpack": "^3.2.0",
+    "webpack-dev-server": "^2.5.1",
     "xmldom": "^0.1.22",
     "xpath": "0.0.24"
   },
   "dependencies": {
-    "vexflow": "latest"
+    "vexflow": "^1.2.83"
   },
   "babel": {
     "presets": [

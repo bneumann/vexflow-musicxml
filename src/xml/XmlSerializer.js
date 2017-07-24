@@ -5,7 +5,7 @@
 */
 
 
-export default class XmlSerializer {
+export class XmlSerializer {
   /**
    * @constructor
    * @param {string} xDoc - The string representation of an XML document

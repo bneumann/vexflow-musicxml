@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>Part</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Part<span class="signature">(node)</span><span class="type-signature"></span></h2>
         
             <div class="class-description">Class representation of a part</div>
         
@@ -44,7 +44,9 @@
     <h2>Constructor</h2>
     
 
+    
     <h4 class="name" id="Part"><span class="type-signature"></span>new Part<span class="signature">(node)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -144,7 +146,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_MusicXml.js.html">src/MusicXml.js</a>, <a href="src_MusicXml.js.html#line55">line 55</a>
+        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -154,6 +156,8 @@
 
     
 </dl>
+
+
 
 
 
@@ -190,7 +194,9 @@
 
     
 
-     
+    
+
+    
 
     
 
@@ -204,7 +210,9 @@
 
     
 
+    
     <h4 class="name" id="childExists"><span class="type-signature"></span>childExists<span class="signature">(name)</span><span class="type-signature"> &rarr; {bool}</span></h4>
+    
 
     
 
@@ -309,7 +317,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line42">line 42</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line77">line 77</a>
     </li></ul></dd>
     
 
@@ -357,12 +365,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAllClefs"><span class="type-signature"></span>getAllClefs<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
 
     
 
@@ -413,7 +425,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_MusicXml.js.html">src/MusicXml.js</a>, <a href="src_MusicXml.js.html#line90">line 90</a>
+        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -461,19 +473,24 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAllMeasuresWithKeys"><span class="type-signature"></span>getAllMeasuresWithKeys<span class="signature">()</span><span class="type-signature"> &rarr; {Key}</span></h4>
+    
 
     
 
 
 
 <div class="description">
-    Gets all measures that have keys. This can be used for checking if we stillhave the same keys as in the measure before
+    Gets all measures that have keys. This can be used for checking if we still
+have the same keys as in the measure before
 </div>
 
 
@@ -505,6 +522,8 @@
     
 
     
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function will always return all measures because all measures have attributes (with keys)</li></ul></dd>
+    
 
     
 
@@ -517,7 +536,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_MusicXml.js.html">src/MusicXml.js</a>, <a href="src_MusicXml.js.html#line115">line 115</a>
+        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -565,12 +584,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAllStaves"><span class="type-signature"></span>getAllStaves<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
 
     
 
@@ -621,7 +644,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_MusicXml.js.html">src/MusicXml.js</a>, <a href="src_MusicXml.js.html#line79">line 79</a>
+        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line36">line 36</a>
     </li></ul></dd>
     
 
@@ -669,12 +692,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAttribute"><span class="type-signature"></span>getAttribute<span class="signature">(name)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
 
     
 
@@ -779,7 +806,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line101">line 101</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -827,12 +854,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getChild"><span class="type-signature"></span>getChild<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNode}</span></h4>
+    
 
     
 
@@ -937,7 +968,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line21">line 21</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -985,12 +1016,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getChildren"><span class="type-signature"></span>getChildren<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNodeList}</span></h4>
+    
 
     
 
@@ -1049,7 +1084,7 @@
 
             
 
-            <td class="description last">The tag name of the child</td>
+            <td class="description last">The tag name of the child. If empty all children will be given</td>
         </tr>
 
     
@@ -1095,7 +1130,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line31">line 31</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line35">line 35</a>
     </li></ul></dd>
     
 
@@ -1143,19 +1178,24 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getNotesByStaff"><span class="type-signature"></span>getNotesByStaff<span class="signature">(Number)</span><span class="type-signature"> &rarr; {<a href="Note.html">Note</a>}</span></h4>
+    
 
     
 
 
 
 <div class="description">
-    Get all the notes belonging to the given staff. The staff numbercan be retrieved from getStaves
+    Get all the notes belonging to the given staff. The staff number
+can be retrieved from getStaves
 </div>
 
 
@@ -1248,7 +1288,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_MusicXml.js.html">src/MusicXml.js</a>, <a href="src_MusicXml.js.html#line101">line 101</a>
+        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line56">line 56</a>
     </li></ul></dd>
     
 
@@ -1303,12 +1343,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getNum"><span class="type-signature"></span>getNum<span class="signature">(name)</span><span class="type-signature"> &rarr; {float}</span></h4>
+    
 
     
 
@@ -1413,7 +1457,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line86">line 86</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line121">line 121</a>
     </li></ul></dd>
     
 
@@ -1461,12 +1505,178 @@
 
 
 
+
+
         
             
 
     
 
+    
+    <h4 class="name" id="getSiblings"><span class="type-signature"></span>getSiblings<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNodeList}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    getSiblings - Gets all siblings by its tag name
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The tag name of the sibling.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="XmlObject.html#getSiblings">XmlObject#getSiblings</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    DOM node list representation of the children
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">DOMNodeList</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="getText"><span class="type-signature"></span>getText<span class="signature">(name)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
 
     
 
@@ -1571,7 +1781,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line52">line 52</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -1619,12 +1829,16 @@
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getTextArray"><span class="type-signature"></span>getTextArray<span class="signature">(name)</span><span class="type-signature"> &rarr; {Arrray}</span></h4>
+    
 
     
 
@@ -1729,7 +1943,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_XmlObject.js.html">src/XmlObject.js</a>, <a href="src_XmlObject.js.html#line69">line 69</a>
+        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line104">line 104</a>
     </li></ul></dd>
     
 
@@ -1777,6 +1991,8 @@
 
 
 
+
+
         
     
 
@@ -1793,13 +2009,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="Measure.html">Measure</a></li><li><a href="module.exports.html">exports</a></li><li><a href="Note.html">Note</a></li><li><a href="Part.html">Part</a></li><li><a href="VexRenderer.html">VexRenderer</a></li><li><a href="XmlObject.html">XmlObject</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Key_Key.html">Key</a></li><li><a href="Measure.html">Measure</a></li><li><a href="Note.html">Note</a></li><li><a href="Part.html">Part</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue May 23 2017 15:08:04 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a> on Mon Jul 24 2017 19:11:14 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>
