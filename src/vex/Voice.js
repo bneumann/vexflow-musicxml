@@ -9,6 +9,7 @@ export class Voice {
 
     this.voiceList = [];
     this.beamList = [];
+    this.slurList = [];
     this.formatter = formatter;
 
     for (const [, voice] of xmlMeasure.Voices.entries()) {
@@ -17,16 +18,17 @@ export class Voice {
         .getNotesByVoice(voice)
         .Notes
         .filter(n => n.isInChord === false);
-      // console.log(`Stave: ${stave}, ${flowStave}, voice: ${voice}`);
+      console.log(`Stave: ${stave}, voice: ${voice}`);
       if (voiceNotes.length > 0) {
         // Notes
         const noteList = [];
         let beamNoteList = [];
+        let slurNoteList = [];
         for (let n = 0; n < voiceNotes.length; n++) {
           const xmlNote = voiceNotes[n];
           const vexNote = xmlNote.getVexNote();
           let clefChange = false;
-          // FIXME: n > 0 is ONLY valid for the first measure. the clafchange can
+          // FIXME: n > 0 is ONLY valid for the first measure. the clefchange can
           // also occure if the last not in the last measure was different from
           // the first note of this measure
           // Ergo: Last Measure needs to be accessible from this measure.
@@ -53,16 +55,19 @@ export class Voice {
               flowNote.addModifier(0, new Flow.NoteSubGroup([cn]));
             }
             // console.log(xmlMeasure.Part, xmlMeasure.Number, newClef, xmlNote.mAttributes.Clef[stave - 1], staveClef);
+
             noteList.push(flowNote);
           } catch (e) {
             console.log('ErrorV', e, vexNote, flowStave, newClef);
           }
 
           // Accidentals
-          const acc = xmlNote.getAccidental();
-          if (acc) {
-            noteList[noteList.length - 1].addAccidental(0, new Flow.Accidental(acc));
-          }
+          vexNote.accidental.forEach((acc, idx) => {
+            if (acc) {
+              noteList[noteList.length - 1].addAccidental(idx, new Flow.Accidental(acc));
+            }
+          });
+
           // Beams
           if (xmlNote.BeamState) {
             beamNoteList.push(flowNote);
@@ -71,6 +76,24 @@ export class Voice {
               this.beamList.push(new Flow.Beam(beamNoteList)
                 .setContext(ctx));
               beamNoteList = [];
+            }
+          }
+
+          // Slurs
+          if (xmlNote.Notation) {
+            slurNoteList.push(flowNote);
+            if (slurNoteList.length > 1 && xmlNote.IsLastSlur) {
+              const tie = new Flow.StaveTie({
+                first_note: slurNoteList[0],
+                last_note: slurNoteList[slurNoteList.length - 1],
+                first_indices: [0],
+                last_indices: [0],
+              });
+              tie.setContext(ctx);
+              console.log(xmlNote.Notation);
+              tie.setDirection(xmlNote.Notation.Slur.placement === 'above' ? -1 : 1);
+              this.slurList.push(tie);
+              slurNoteList = [];
             }
           }
         } // Notes
@@ -89,6 +112,14 @@ export class Voice {
       this.formatter.joinVoices(this.voiceList, { align_rests: false })
         .formatToStave(this.voiceList, flowStave, { align_rests: false, flowStave });
     }
+    // StaveTies
+    // this.noteList
+    // const tie = new Flow.StaveTie({
+    //   first_note: params.from,
+    //   last_note: params.to,
+    //   first_indices: params.first_indices,
+    //   last_indices: params.last_indices,
+    // }, params.text);
   }
 
   getVoices() {
@@ -98,5 +129,6 @@ export class Voice {
   draw() {
     this.voiceList.forEach(n => n.draw());
     this.beamList.forEach(b => b.draw());
+    this.slurList.forEach(s => s.draw());
   }
 }

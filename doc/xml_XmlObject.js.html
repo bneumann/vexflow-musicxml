@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: xml/XmlObject.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: xml/XmlObject.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Basic XML object that handles data connection to the DON node tree
+ *
+ * @class XmlObject
+ * @param node DOM tree node
+ */
+export class XmlObject {
+  constructor(node) {
+    if (!node || !node.nodeType) {
+      throw new Error('The node "' + node + '" is not a valid DOM node');
+    }
+    this.Node = node;
+  }
+
+  clone() {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
+
+  /**
+   * getChild - Gets a (usally the first) child by its tag name
+   *
+   * @param  {string} name The tag name of the child
+   * @return {DOMNode}    DOM node representation of the child
+   */
+  getChild(name) {
+    return this.Node.getElementsByTagName(name)[0];
+  }
+
+  /**
+   * getChildren - Gets all children by its tag name
+   *
+   * @param  {string} name The tag name of the child. If empty all children will be given
+   * @return {DOMNodeList} DOM node list representation of the children
+   */
+  getChildren(name = '') {
+    return name === '' ? this.Node.childNodes : this.Node.getElementsByTagName(name);
+  }
+
+  /**
+   * getSiblings - Gets all siblings by its tag name
+   *
+   * @param  {string} name The tag name of the sibling.
+   * @return {DOMNodeList} DOM node list representation of the children
+   */
+  getSiblings(name) {
+    return this.Node.parentNode.getElementsByTagName(name);
+  }
+
+  findPreviousElement(name, vicinity = 2) {
+    let prevElement = this.Node.previousElementSibling;
+    let distance = 0;
+    while (prevElement !== null &amp;&amp; prevElement !== undefined &amp;&amp; distance &lt;= vicinity) {
+      if (prevElement.tagName === name) {
+        return { 'element': prevElement, 'distance': distance };
+      }
+      prevElement = prevElement.previousElementSibling;
+      distance++;
+    }
+    return { 'element': null, 'distance': 0 };
+  }
+
+  getNextElement() {
+    if ((this.Node.nextElementSibling !== null &amp;&amp;
+       this.Node.nextElementSibling !== undefined) &amp;&amp;
+       this.Node.nextElementSibling.tagName) {
+      return this.Node.previousElementSibling;
+    }
+    return null;
+  }
+
+  /**
+   * childExists - Check if a child exists
+   *
+   * @param  {string} name The tag name of the child
+   * @return {bool}      true if child exists, false otherwise
+   */
+  childExists(name) {
+    return this.Node.getElementsByTagName(name)[0] !== undefined;
+  }
+
+  /**
+   * getText - Get the string representation of a node's text content
+   *
+   * @param  {string} name The tag name of the child
+   * @return {string}      string of the text content
+   */
+  getText(name) {
+    let txt = '';
+    if (this.childExists(name)) {
+      const kids = this.getChildren(name);
+      for (let i = 0; i &lt; kids.length; i++) {
+        txt += kids[i].textContent + '\n';
+      }
+    }
+    return txt.trim();
+  }
+
+  /**
+   * getTextArray - Get the strings of the given child tags as array instead of string
+   *
+   * @param  {string} name The tag name of the child
+   * @return {Arrray}      string array of the text content
+   */
+  getTextArray(name) {
+    const txt = [];
+    if (this.childExists(name)) {
+      const kids = this.getChildren(name);
+      for (let i = 0; i &lt; kids.length; i++) {
+        txt.push(kids[i].textContent);
+      }
+    }
+    return txt;
+  }
+
+  /**
+   * getNum - Get the numeric representation of the node. Will return NaN if failed
+   *
+   * @param  {string} name The tag name of the child
+   * @return {float}       Value of the node
+   */
+  getNum(name) {
+    let res = NaN;
+    if (this.childExists(name)) {
+      const kids = this.getChildren(name);
+      res = parseFloat(kids[0].textContent);
+    }
+    return res;
+  }
+
+  /**
+   * getAttribute - Gets a string representation of an attribute
+   *
+   * @param  {string} name Attribute name
+   * @return {string}      Attribute value
+   */
+  getAttribute(name) {
+    return this.Node.getAttribute(name);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Key_Key.html">Key</a></li><li><a href="Measure.html">Measure</a></li><li><a href="Note.html">Note</a></li><li><a href="Part.html">Part</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a> on Mon Jul 24 2017 19:11:14 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

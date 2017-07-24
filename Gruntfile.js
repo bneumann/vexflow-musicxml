@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackCfg = require('./webpack.config.js');
+const jsdocCfg = require('./.jsdoc.js');
 
 module.exports = (grunt) => {
   const BANNER = [
@@ -133,10 +134,8 @@ module.exports = (grunt) => {
     },
     jsdoc: {
       dist: {
-        src: ['src/*.js', 'tests/*.js', 'README.md'],
-        options: {
-          destination: DOC_DIR,
-        },
+        src: ['src/xml/*.js', 'src/vex/*.js', 'README.md'],
+        options: Object.assign({ destination: DOC_DIR }, jsdocCfg),
       },
     },
   });

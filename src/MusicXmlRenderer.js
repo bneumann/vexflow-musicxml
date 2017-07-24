@@ -41,14 +41,6 @@ export class MusicXmlRenderer {
     this.Drawables = [];
 
     // Create a lookup table of key names ("C", "B", etc.) that map to key objects
-    this.keySpec = [];
-    for (const k in Flow.keySignature.keySpecs) {
-      if ({}.hasOwnProperty.call(Flow.keySignature.keySpecs, k)) {
-        const newEntry = Flow.keySignature.keySpecs[k];
-        newEntry.name = k;
-        this.keySpec.push(newEntry);
-      }
-    }
     this.stavesPerSystem = this.musicXml.Parts
       .map(p => p.getAllStaves()) // get all the staves in a part
       .reduce((e, ne) => e + ne);   // sum them up
