@@ -25,7 +25,7 @@ export class Measure {
     // Calculate the line where this measure is on the page
     const lineOnPage = Math.ceil(number / format.measuresPerStave) - 1;
 
-    const firstInLine = (number - 1) % format.measuresPerStave === 0;
+    this.firstInLine = (number - 1) % format.measuresPerStave === 0;
     const lastMeasure = number === format.totalMeasures;
 
     this.x = format.staveXOffset + (number - 1) % format.measuresPerStave * format.staveWidth;
@@ -42,9 +42,8 @@ export class Measure {
 
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
-      if (firstInLine) { // || xmlMeasure.StartClefs[s] !== xmlMeasure.Attributes.Clef[s]) {
-        console.log(xmlMeasure.toString(), `Stave: ${stave}`, staveClef);
-
+      console.log(xmlMeasure.toString(), `Stave: ${stave}`, staveClef);
+      if (this.firstInLine) { // || xmlMeasure.StartClefs[s] !== xmlMeasure.Attributes.Clef[s]) {
         flowStave.addClef(staveClef);
       }
       this.staveList.push(flowStave);
@@ -61,7 +60,7 @@ export class Measure {
         flowStave.addTimeSignature(curTime.num_beats + '/' + curTime.beat_value);
       }
     } // Staves
-    this.addConnectors(firstInLine, lastMeasure);
+    this.addConnectors(this.firstInLine, lastMeasure);
   } // Constructor
 
   draw() {

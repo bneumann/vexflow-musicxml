@@ -24,7 +24,7 @@ export class MusicXmlRenderer {
     console.log(this.musicXml);
     // const part = 1;
     // const from = 0;
-    // const to = 1;
+    // const to = 2;
     // this.musicXml.Parts = [this.musicXml.Parts[part]];
     // this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
     this.isSvg = !(canvas instanceof HTMLCanvasElement);
@@ -38,10 +38,7 @@ export class MusicXmlRenderer {
 
     // Properties for rendering
     this.ctx = this.renderer.getContext();
-    this.staveList = [];
-    this.beamList = [];
-    this.connectors = [];
-    this.voiceList = [];
+    this.Drawables = [];
 
     // Create a lookup table of key names ("C", "B", etc.) that map to key objects
     this.keySpec = [];
@@ -83,25 +80,43 @@ export class MusicXmlRenderer {
     const vb = [0, 0, this.width, this.getScoreHeight()];
     this.ctx.setViewBox(vb);
     if (dontPrint !== false) {
-      this.parse();
+      this.parse().render();
     }
   }
 
   getScoreHeight() {
-    return this.systemSpace * this.format.linesPerPage;
+    // FIXME: The 100 are only for deugging and should be removed
+    return this.systemSpace * this.format.linesPerPage + 100;
   }
 
   // https://github.com/0xfe/vexflow/blob/1.2.83/tests/formatter_tests.js line 271
   parse() {
-    const drawables = [];
     const allParts = this.musicXml.Parts;
     for (const [p] of allParts.entries()) {
       const part = allParts[p];
       for (const [, measure] of part.Measures.entries()) {
-        drawables.push(new Measure(measure, this.format, this.ctx));
+        this.Drawables.push(new Measure(measure, this.format, this.ctx));
       }
     }
-    drawables.forEach(d => d.draw());
+
+    // Connect the first measures in a line
+    const MeasuresFirstInLine = this.Drawables.filter(m => m.firstInLine);
+    const MeasureNumsFirstInLine = new Set(MeasuresFirstInLine.map(m => m.xmlMeasure.Number));
+    MeasureNumsFirstInLine.forEach((n) => {
+      // Get all the measures from all parts with the same starting number.
+      // Get their stavelist(s) and concatenate them in one array. Now we have an
+      // array of staves that are in the first line.
+      const system = [].concat(...MeasuresFirstInLine.filter(m => m.xmlMeasure.Number === n).map(m => m.staveList));
+      for (let s = 0; s < system.length - 1; s++) {
+        // It actually doesn't matter which measure we use for the connectors
+        MeasuresFirstInLine[0].addConnector(system[s], system[s + 1], Flow.StaveConnector.type.SINGLE_LEFT);
+      }
+    });
+    return this;
+  }
+
+  render() {
+    this.Drawables.forEach(d => d.draw());
   }
 
   parseOld() {
@@ -265,51 +280,5 @@ export class MusicXmlRenderer {
     }
     const entry = filteredKeys[mode].name;
     return entry;
-  }
-
-  /**
- * Adds all the connectors between the systems.
- *
- */
-  addConnectors() {
-    for (let s = 0; s < this.staveList.length - 1; s++) {
-      for (let m = 0; m < this.staveList[s].length; m++) {
-        const firstStave = this.staveList[s][m];
-        const secondStave = this.staveList[s + 1][m];
-        // Beginning of system line
-        if (m % this.layout.measPerStave === 0) {
-          this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.SINGLE_LEFT);
-          if (firstStave.system === secondStave.system) {
-            this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.BRACE);
-          }
-        }
-        // Every measure
-        if (firstStave.system === secondStave.system) {
-          this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.SINGLE_RIGHT);
-        }
-        // End of score
-        if (m === this.staveList[s].length - 1) {
-          if (firstStave.system === secondStave.system) {
-            this.addConnector(firstStave, secondStave, Flow.StaveConnector.type.BOLD_DOUBLE_RIGHT);
-          } else {
-            firstStave.setEndBarType(Flow.Barline.type.END);
-          }
-        }
-      }
-    }
-  }
-
-  /**
- * Adds a connector between two staves
- *
- * @param {Stave} stave1: First stave
- * @param {Stave} stave2: Second stave
- * @param {Flow.StaveConnector.type} type: Type of connector
- */
-  addConnector(stave1, stave2, type) {
-    this.connectors.push(
-      new Flow.StaveConnector(stave1, stave2)
-        .setType(type)
-        .setContext(this.ctx));
   }
 }
