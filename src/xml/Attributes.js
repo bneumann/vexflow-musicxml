@@ -21,13 +21,22 @@ export class Attributes extends XmlObject {
   merge(attributes) {
     // Find the clef belonging to our staff and replace it
     for (const [, clef] of attributes.Clef.entries()) {
-      this.Clef = this.Clef.map(c => c.Number === clef.Number ? clef : c);
+      if (this.Clef.map(c => c.Number).indexOf(clef.Number) === -1) {
+        this.Clef.push(clef);
+      } else {
+        this.Clef = this.Clef.map(c => c.Number === clef.Number ? clef : c);
+      }
     }
     this.Divisions = attributes.Divisions > 0 ? attributes.Divisions : this.Divisions;
+    // this.TimingChange = false;
     if (attributes.Time !== undefined) {
-      this.TimingChange = true;
+      // console.log(JSON.stringify(attributes.Time) !== JSON.stringify(this.Time));
+      this.TimingChange = JSON.stringify(attributes.Time) !== JSON.stringify(this.Time);
       this.Time = attributes.Time.clone();
+    } else {
+      //this.TimingChange = true;
     }
+    console.log(attributes.Time, this.Time, this.TimingChange);
   }
 
   toString() {

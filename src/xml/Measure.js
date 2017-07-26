@@ -44,10 +44,18 @@ export class Measure extends XmlObject {
       }
       if (curChild.tagName === 'attributes') {
         const curAttributes = new Attributes(curChild);
+        // console.log('curAttributes', curAttributes);
         this.Attributes.merge(curAttributes);
       }
     }
-
+    // Fix for MusicXML 2.0: Clefs can occur somewhere in the stream. Therefore
+    // we should check that all staves have clefs:
+    if (this.StartClefs.length !== this.Attributes.Staves &&
+       this.Attributes.Clef.length === this.Attributes.Staves) {
+      this.StartClefs = this.Attributes.Clef;
+    } else {
+      // TODO: Throw error here
+    }
     // Make unique list of voices in this measure
     this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
   }

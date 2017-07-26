@@ -144,7 +144,7 @@ export class Note extends XmlObject {
 
   get IsLastSlur() {
     let res = false;
-    if (this.Notation) {
+    if (this.Notation && this.Notation.Slur) {
       res = this.Notation.Slur.type === 'stop';
     }
     return res;

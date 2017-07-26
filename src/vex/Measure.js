@@ -43,7 +43,6 @@ export class Measure {
 
       const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
         .setContext(ctx);
-      // console.log(xmlMeasure.toString(), `Stave: ${stave}`, staveClef);
       if (this.firstInLine) {
         flowStave.addClef(staveClef);
         const vexKey = new Key(xmlMeasure.Attributes.Key);
@@ -58,7 +57,8 @@ export class Measure {
       this.voiceList.push(v);
 
       // Adding time signatures
-      if (xmlMeasure.Attributes.TimingChange) {
+      console.log(xmlMeasure.toString(), xmlMeasure.Attributes.TimingChange);
+      if (xmlMeasure.Number === 1 || xmlMeasure.Attributes.TimingChange) {
         const curTime = xmlMeasure.Attributes.Time !== undefined ? xmlMeasure.Attributes.Time.getVexTime() : 'C';
         flowStave.addTimeSignature(curTime.num_beats + '/' + curTime.beat_value);
       }

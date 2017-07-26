@@ -18,7 +18,7 @@ export class Voice {
         .getNotesByVoice(voice)
         .Notes
         .filter(n => n.isInChord === false);
-      console.log(`Stave: ${stave}, voice: ${voice}`);
+      // console.log(`Stave: ${stave}, voice: ${voice}`);
       if (voiceNotes.length > 0) {
         // Notes
         const noteList = [];
@@ -80,6 +80,7 @@ export class Voice {
           }
 
           // Slurs
+          // TODO: Slurs can go over measure borders.uo
           if (xmlNote.Notation) {
             slurNoteList.push(flowNote);
             if (slurNoteList.length > 1 && xmlNote.IsLastSlur) {
@@ -90,8 +91,8 @@ export class Voice {
                 last_indices: [0],
               });
               tie.setContext(ctx);
-              console.log(xmlNote.Notation);
-              tie.setDirection(xmlNote.Notation.Slur.placement === 'above' ? -1 : 1);
+              // console.log(xmlNote.Notation);
+              // tie.setDirection(xmlNote.Notation.Slur.placement === 'below' ? -1 : 1);
               this.slurList.push(tie);
               slurNoteList = [];
             }
