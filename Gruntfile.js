@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackCfg = require('./webpack.config.js');
-const jsdocCfg = require('./.jsdoc.js');
+const jsdocCfg = require('./.jsdoc.json');
 
 module.exports = (grunt) => {
   const BANNER = [

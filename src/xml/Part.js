@@ -24,7 +24,7 @@ export class Part extends XmlObject {
       };
       const curMeasure = new Measure(measures[m], options);
       this.Measures.push(curMeasure);
-      lastAttributes = new Attributes(curMeasure.Attributes.Node);
+      lastAttributes = curMeasure.Attributes;
     }
   }
 
