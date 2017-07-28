@@ -110,6 +110,8 @@ export class Note extends XmlObject {
     // TODO: Move somewhere else
     this.Types = {
       '': this.calculateType(),
+      'long': '1/2', // long is not available in Vex library
+      'breve': '1/2',
       'whole': 'w',
       'half': 'h',
       'quarter': 'q',
@@ -194,10 +196,11 @@ export class Note extends XmlObject {
       keys: [kStep + '/' + kOctave],
       duration: type,
       stem_direction: this.Stem === 'up' ? 1 : -1,
-      accidental: [this.getAccidental()],
+      accidental: [this.getAccidental()]
     };
     if (this.isRest) {
       ret.type = 'r';
+      ret.align_center = ['h', 'w', '1/2'].indexOf(type) > -1;
     }
     if (this.Node.nextElementSibling !== null) {
       const tempNote = new Note(this.Node.nextElementSibling, this.mAttributes, false);
