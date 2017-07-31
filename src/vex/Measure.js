@@ -57,7 +57,7 @@ export class Measure {
       this.voiceList.push(v);
 
       // Adding time signatures
-      console.log(xmlMeasure.toString(), xmlMeasure.Attributes.TimingChange);
+      // console.log(xmlMeasure.toString(), xmlMeasure.Attributes.toString());
       if (xmlMeasure.Number === 1 || xmlMeasure.Attributes.TimingChange) {
         const curTime = xmlMeasure.Attributes.Time !== undefined ? xmlMeasure.Attributes.Time.getVexTime() : 'C';
         flowStave.addTimeSignature(curTime.num_beats + '/' + curTime.beat_value);

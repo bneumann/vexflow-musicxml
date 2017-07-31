@@ -27,6 +27,8 @@ export class Attributes extends XmlObject {
         this.Clef = this.Clef.map(c => c.Number === clef.Number ? clef : c);
       }
     }
+    this.Clef.sort((c1, c2) => c1.Number > c2.Number);
+
     this.Divisions = attributes.Divisions > 0 ? attributes.Divisions : this.Divisions;
     this.Key = this.Key === undefined ? attributes.Key : this.Key;
 
