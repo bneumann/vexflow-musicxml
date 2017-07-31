@@ -24,7 +24,7 @@ describe('Vexflow tests', function() {
   // FIXME: This test is actually not necessary because all measures have attributes due to the parsing
   it('Check attributes', () => {
     assert.strictEqual(meas1.hasAttributes(), true, 'This measure should have attributes');
-    assert.notStrictEqual(meas2.Attributes, meas1.Attributes, 'This measure should not have attributes from the 1st measure');
+    assert.notStrictEqual(meas3.Attributes, meas1.Attributes, 'This measure should not have attributes from the 1st measure');
     assert.strictEqual(MOCK1.Parts[0].getAllMeasuresWithKeys().length, 3, 'All measures should have attributes');
   });
   it('Check if clefs are loaded correctly', () => {
@@ -33,7 +33,7 @@ describe('Vexflow tests', function() {
   it('Check if times are loaded correctly', () => {
     assert.strictEqual(meas1.getAllTimes().length, 1, 'Number of times should be 1');
     assert.deepEqual(meas1.Attributes.Time, meas2.Attributes.Time, 'Measure 1 and 2 should have the same Time');
-    assert.notStrictEqual(meas1.Attributes.Time, meas3.Attributes.Time, 'Measure 1 and 3 should not have the same Time');
+    assert.notDeepEqual(meas1.Attributes.Time, meas3.Attributes.Time, 'Measure 1 and 3 should not have the same Time');
   });
   it('Check if beams are set correctly', () => {
     assert.strictEqual(meas1.Notes[0].BeamState, false, 'First not is a while and shouldnt have a beam');

@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>Part</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Part<span class="signature">(node)</span><span class="type-signature"></span></h2>
         
             <div class="class-description">Class representation of a part</div>
         
@@ -44,1881 +44,9 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Part"><span class="type-signature"></span>new Part<span class="signature">()</span><span class="type-signature"></span></h4>
-
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line8">line 8</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="XmlObject.html">XmlObject</a></li>
-    </ul>
-
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="childExists"><span class="type-signature"></span>childExists<span class="signature">(name)</span><span class="type-signature"> &rarr; {bool}</span></h4>
-
-    
-
-
-
-<div class="description">
-    childExists - Check if a child exists
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the child</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#childExists">XmlObject#childExists</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line77">line 77</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    true if child exists, false otherwise
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">bool</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getAllClefs"><span class="type-signature"></span>getAllClefs<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Get all clefs in all measure
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line45">line 45</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Array of clefs in all measures
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getAllMeasuresWithKeys"><span class="type-signature"></span>getAllMeasuresWithKeys<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Key.html">Key</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Gets all measures that have keys. This can be used for checking if we still
-have the same keys as in the measure before
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function will always return all measures because all measures have attributes (with keys)</li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line71">line 71</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    A Key class object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Key.html">Key</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getAllStaves"><span class="type-signature"></span>getAllStaves<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Get the number of all staves in all measures
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line36">line 36</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Array of staves in measure
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getAttribute"><span class="type-signature"></span>getAttribute<span class="signature">(name)</span><span class="type-signature"> &rarr; {string}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getAttribute - Gets a string representation of an attribute
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Attribute name</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getAttribute">XmlObject#getAttribute</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line136">line 136</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Attribute value
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getChild"><span class="type-signature"></span>getChild<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNode}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getChild - Gets a (usally the first) child by its tag name
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the child</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getChild">XmlObject#getChild</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    DOM node representation of the child
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">DOMNode</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getChildren"><span class="type-signature"></span>getChildren<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNodeList}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getChildren - Gets all children by its tag name
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the child. If empty all children will be given</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getChildren">XmlObject#getChildren</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line35">line 35</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    DOM node list representation of the children
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">DOMNodeList</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getNotesByStaff"><span class="type-signature"></span>getNotesByStaff<span class="signature">(Number)</span><span class="type-signature"> &rarr; {<a href="Note.html">Note</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Get all the notes belonging to the given staff. The staff number
-can be retrieved from getStaves
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>Number</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">of the staff.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line56">line 56</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>getStaves</li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    A Note class object
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Note.html">Note</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getNum"><span class="type-signature"></span>getNum<span class="signature">(name)</span><span class="type-signature"> &rarr; {float}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getNum - Get the numeric representation of the node. Will return NaN if failed
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the child</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getNum">XmlObject#getNum</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line121">line 121</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Value of the node
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">float</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getSiblings"><span class="type-signature"></span>getSiblings<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNodeList}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getSiblings - Gets all siblings by its tag name
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the sibling.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getSiblings">XmlObject#getSiblings</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line45">line 45</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    DOM node list representation of the children
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">DOMNodeList</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getText"><span class="type-signature"></span>getText<span class="signature">(name)</span><span class="type-signature"> &rarr; {string}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getText - Get the string representation of a node's text content
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the child</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getText">XmlObject#getText</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line87">line 87</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    string of the text content
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getTextArray"><span class="type-signature"></span>getTextArray<span class="signature">(name)</span><span class="type-signature"> &rarr; {Arrray}</span></h4>
-
-    
-
-
-
-<div class="description">
-    getTextArray - Get the strings of the given child tags as array instead of string
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The tag name of the child</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="XmlObject.html#getTextArray">XmlObject#getTextArray</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_XmlObject.js.html">xml/XmlObject.js</a>, <a href="xml_XmlObject.js.html#line104">line 104</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    string array of the text content
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Arrray</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
-
-
-
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>Part</h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-
     <h4 class="name" id="Part"><span class="type-signature"></span>new Part<span class="signature">(node)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -2018,7 +146,7 @@ can be retrieved from getStaves
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line13">line 13</a>
+        <a href="xml_Part.js.html">xml/Part.js</a>, <a href="xml_Part.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -2044,16 +172,31 @@ can be retrieved from getStaves
 
 
 
+
+
     
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="XmlObject.html">XmlObject</a></li>
+    </ul>
+
 
     
 
     
 
-     
+    
+
+    
+
+    
 
     
 
@@ -2067,7 +210,9 @@ can be retrieved from getStaves
 
     
 
+    
     <h4 class="name" id="childExists"><span class="type-signature"></span>childExists<span class="signature">(name)</span><span class="type-signature"> &rarr; {bool}</span></h4>
+    
 
     
 
@@ -2220,12 +365,16 @@ can be retrieved from getStaves
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAllClefs"><span class="type-signature"></span>getAllClefs<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
 
     
 
@@ -2324,20 +473,23 @@ can be retrieved from getStaves
 
 
 
+
+
         
             
 
     
 
-    <h4 class="name" id="getAllMeasuresWithKeys"><span class="type-signature"></span>getAllMeasuresWithKeys<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Key.html">Key</a>}</span></h4>
+    
+    <h4 class="name" id="getAllMeasuresWithKeys"><span class="type-signature"></span>getAllMeasuresWithKeys<span class="signature">()</span><span class="type-signature"> &rarr; {Key}</span></h4>
+    
 
     
 
 
 
 <div class="description">
-    Gets all measures that have keys. This can be used for checking if we still
-have the same keys as in the measure before
+    Gets all measures that have keys. This can be used for checking if we stillhave the same keys as in the measure before
 </div>
 
 
@@ -2421,7 +573,7 @@ have the same keys as in the measure before
     </dt>
     <dd>
         
-<span class="param-type"><a href="Key.html">Key</a></span>
+<span class="param-type">Key</span>
 
 
     </dd>
@@ -2431,12 +583,16 @@ have the same keys as in the measure before
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAllStaves"><span class="type-signature"></span>getAllStaves<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
 
     
 
@@ -2535,12 +691,16 @@ have the same keys as in the measure before
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getAttribute"><span class="type-signature"></span>getAttribute<span class="signature">(name)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
 
     
 
@@ -2693,12 +853,16 @@ have the same keys as in the measure before
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getChild"><span class="type-signature"></span>getChild<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNode}</span></h4>
+    
 
     
 
@@ -2851,12 +1015,16 @@ have the same keys as in the measure before
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getChildren"><span class="type-signature"></span>getChildren<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNodeList}</span></h4>
+    
 
     
 
@@ -3009,20 +1177,23 @@ have the same keys as in the measure before
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getNotesByStaff"><span class="type-signature"></span>getNotesByStaff<span class="signature">(Number)</span><span class="type-signature"> &rarr; {<a href="Note.html">Note</a>}</span></h4>
+    
 
     
 
 
 
 <div class="description">
-    Get all the notes belonging to the given staff. The staff number
-can be retrieved from getStaves
+    Get all the notes belonging to the given staff. The staff numbercan be retrieved from getStaves
 </div>
 
 
@@ -3170,12 +1341,16 @@ can be retrieved from getStaves
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getNum"><span class="type-signature"></span>getNum<span class="signature">(name)</span><span class="type-signature"> &rarr; {float}</span></h4>
+    
 
     
 
@@ -3328,12 +1503,16 @@ can be retrieved from getStaves
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getSiblings"><span class="type-signature"></span>getSiblings<span class="signature">(name)</span><span class="type-signature"> &rarr; {DOMNodeList}</span></h4>
+    
 
     
 
@@ -3486,12 +1665,16 @@ can be retrieved from getStaves
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getText"><span class="type-signature"></span>getText<span class="signature">(name)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
 
     
 
@@ -3644,12 +1827,16 @@ can be retrieved from getStaves
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="getTextArray"><span class="type-signature"></span>getTextArray<span class="signature">(name)</span><span class="type-signature"> &rarr; {Arrray}</span></h4>
+    
 
     
 
@@ -3802,6 +1989,8 @@ can be retrieved from getStaves
 
 
 
+
+
         
     
 
@@ -3818,13 +2007,13 @@ can be retrieved from getStaves
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Key.html">Key</a></li><li><a href="Measure.html">Measure</a></li><li><a href="Note.html">Note</a></li><li><a href="Part.html">Part</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer.html">XmlSerializer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Key_Key.html">Key</a></li><li><a href="Measure.html">Measure</a></li><li><a href="Note.html">Note</a></li><li><a href="Part.html">Part</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Jul 26 2017 19:57:16 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a> on Mon Jul 31 2017 10:48:24 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>
