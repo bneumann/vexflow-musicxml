@@ -33,7 +33,6 @@ export class Measure extends XmlObject {
     this.Attributes = lastAttributes;
     this.StartClefs = this.Attributes.Clef;
     const tmpClef = this.StartClefs; // Semaphore to change the clef inline
-
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
@@ -43,9 +42,8 @@ export class Measure extends XmlObject {
           this.Attributes.Clef !== tmpClef));
       }
       if (curChild.tagName === 'attributes') {
-        const curAttributes = new Attributes(curChild);
-        // console.log('curAttributes', curAttributes);
-        this.Attributes.merge(curAttributes);
+        this.Attributes = new Attributes(curChild);
+        this.Attributes.merge(lastAttributes);
       }
     }
     // Fix for MusicXML 2.0: Clefs can occur somewhere in the stream. Therefore

@@ -28,15 +28,16 @@ export class Attributes extends XmlObject {
       }
     }
     this.Divisions = attributes.Divisions > 0 ? attributes.Divisions : this.Divisions;
-    // this.TimingChange = false;
+    this.Key = this.Key === undefined ? attributes.Key : this.Key;
+
     if (attributes.Time !== undefined) {
-      // console.log(JSON.stringify(attributes.Time) !== JSON.stringify(this.Time));
-      this.TimingChange = JSON.stringify(attributes.Time) !== JSON.stringify(this.Time);
-      this.Time = attributes.Time.clone();
-    } else {
-      //this.TimingChange = true;
+      if (this.Time === undefined) {
+        this.TimingChange = false;
+        this.Time = attributes.Time.clone();
+      } else {
+        this.TimingChange = !this.Time.Equals(attributes.Time);
+      }
     }
-    console.log(attributes.Time, this.Time, this.TimingChange);
   }
 
   toString() {
