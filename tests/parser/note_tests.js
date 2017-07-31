@@ -29,6 +29,8 @@ describe('Vexflow tests', function() {
   });
   it('Check if clefs are loaded correctly', () => {
     assert.strictEqual(meas1.getAllClefs()[0].Number, 1, 'This example has only one staff so clef should be 1');
+    assert.deepEqual(meas1.getAllClefs()[0], meas2.getAllClefs()[0], 'Measure 1 and 2 should have the same Clef');
+    assert.notDeepEqual(meas1.getAllClefs()[0], meas3.getAllClefs()[0], 'Measure 1 and 3 should not have the same Clef');
   });
   it('Check if times are loaded correctly', () => {
     assert.strictEqual(meas1.getAllTimes().length, 1, 'Number of times should be 1');

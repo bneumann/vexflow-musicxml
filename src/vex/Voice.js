@@ -29,17 +29,13 @@ export class Voice {
           const vexNote = xmlNote.getVexNote();
           let clefChange = false;
           // FIXME: n > 0 is ONLY valid for the first measure. the clefchange can
-          // also occure if the last not in the last measure was different from
+          // also occure if the last note in the last measure was different from
           // the first note of this measure
           // Ergo: Last Measure needs to be accessible from this measure.
           if (n > 0) {
             const prevClef = voiceNotes[n - 1].mAttributes.Clef[stave - 1];
-            const curClef = voiceNotes[n].mAttributes.Clef[stave - 1];
-            clefChange = JSON.stringify(curClef) !== JSON.stringify(prevClef);
-            // console.log(vexNote, xmlNote.mAttributes.Clef[stave - 1].toString(),
-            // xmlMeasure.StartClefs[stave - 1].toString(),
-            // staveClef,
-            // clefChange);
+            const curClef = voiceNotes[n].mAttributes.Clef[stave - 1];            
+            clefChange = !curClef.isEqual(curClef, prevClef);
           }
           const newClef = xmlNote.hasClefChange ? xmlNote.mAttributes.Clef[stave - 1].getVexClef() : staveClef;
           vexNote.clef = xmlNote.isRest ? 'treble' : newClef;

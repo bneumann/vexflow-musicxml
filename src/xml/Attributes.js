@@ -14,6 +14,7 @@ export class Attributes extends XmlObject {
     // this.Clef = this.childExists('clef') ?  new Clef(this.getChild('clef')) : undefined;
 
     this.TimingChange = false;
+    this.ClefChange = false;
     const clefs = this.getChildren('clef');
     this.Clef = [...clefs].map(n => new Clef(n));
   }
@@ -24,7 +25,10 @@ export class Attributes extends XmlObject {
       if (this.Clef.map(c => c.Number).indexOf(clef.Number) === -1) {
         this.Clef.push(clef);
       } else {
-        this.Clef = this.Clef.map(c => c.Number === clef.Number ? clef : c);
+        this.Clef = this.Clef.map((c) => {
+          this.ClefChange = true;
+          return c.isEqual(clef) ? clef : c;
+        });
       }
     }
     this.Clef.sort((c1, c2) => c1.Number > c2.Number);
