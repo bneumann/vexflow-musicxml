@@ -20,7 +20,7 @@ To get it running you can create it like so:
 renderer = new Vex.Flow.MusicXmlRenderer(data, canvasReference);
 ```
 ```data``` is a XML string. So if you load your XML from the local PC or through your server you will need a XML to String parser to get the data.
-```canvasReference``` is either a reference to a <div> element or a <canvas> element.
+```canvasReference``` is either a reference to a ```<div>``` element or a ```<canvas>``` element.
 
 ## Installation
 
