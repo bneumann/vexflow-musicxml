@@ -32,6 +32,6 @@
     "quote-props": [0],
     "space-before-function-paren": [2, "never"],
     "strict": [2, "global"],
-    "linebreak-style": ["error", "unix"]
+    "linebreak-style": ["warn", "unix"]
   }
 }
