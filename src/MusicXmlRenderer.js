@@ -70,7 +70,9 @@ export class MusicXmlRenderer {
     };
     // Set the SVG viewbox according to the calculated layout
     const vb = [0, 0, this.width, this.getScoreHeight()];
-    this.ctx.setViewBox(vb);
+    if (this.isSvg) {
+      this.ctx.setViewBox(vb);
+    }
     if (dontPrint !== false) {
       this.parse().render();
     }
