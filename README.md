@@ -46,6 +46,7 @@ There is a wepback development server configuration for debugging purposes. It u
 ```
 npm test
 ```
+> For more details check the ```src/main.js``` file that is used by the webpack-server. Also have a look at the ```webpack.config.js``` file, particularly the include section. There you can include folders to your liking and call the files later on in the main.js file to be loaded and refreshed.
 
 ## Screenshots
 
