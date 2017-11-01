@@ -29,6 +29,8 @@ class NoteVisitor {
     const ret = { keys: [kStep + '/' + kOctave], duration: type };
     if (this.isRest) {
       ret.type = 'r';
+    } else if (this.Clef !== undefined) {
+      ret.clef = this.Clef.accept(ClefVisitor);
     }
     // Add additional notes in chord
     if (this.Node.nextElementSibling !== null) {
@@ -101,7 +103,13 @@ class NoteVisitor {
       });
   }
 
+  /**
+   * Converts the XML note object into VexFlow format.
+   * @param {Note} note XML note object
+   */
   visit(note) {
+    // Copy all properties to be used in this class
+    // TODO: This is refactored code and could use some love
     this.NoteLength = note.NoteLength;
     this.Pitch = note.Pitch;
     this.isRest = note.isRest;
@@ -111,11 +119,12 @@ class NoteVisitor {
     this.Dots = this.NoteLength >= 1 && this.NoteLength % 1 === 0.5;
     this.Type = note.Type;
     this.Accidental = note.Accidental;
+    this.Clef = note.Clef;
 
+    // Create a constructor struct
     const vNote = this.getVexNote();
-    vNote.clef = note.Clef[note.Staff - 1].accept(ClefVisitor);
 
-
+    // Create the "real" VexFlow note
     const fNote = new Flow.StaveNote(vNote);
 
     // Add accidentials to notes

@@ -1,6 +1,5 @@
 import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
-import { Clef } from './Clef.js';
 import { Note } from './Note.js';
 
 /**
@@ -12,6 +11,7 @@ export class Measure extends XmlObject {
     super(node);
     const { lastAttributes, part } = options;
 
+    this.lastMeasure = {};
     this.Attributes = {};
     this.Notes = [];
     this.Part = part;
@@ -26,7 +26,6 @@ export class Measure extends XmlObject {
       return;
     }
 
-
     const children = this.getChildren();
     // In this XML the order does matter. So we need to go through the whole
     // children and check which is which. The lastAttributes value needs to
@@ -35,26 +34,35 @@ export class Measure extends XmlObject {
     this.Attributes = lastAttributes;
     this.StartClefs = this.Attributes.Clef;
     const tmpClef = this.StartClefs; // Semaphore to change the clef inline
-
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
         // Add a clef change if the attributes before the note are different
-        // then the starting clef. Also prevent it for the first note
-        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes), this.Attributes.Clef !== tmpClef && this.Notes.length > 0));
-        // tmpClef = this.Attributes.Clef;
+        // then the starting clef.
+        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes),
+          this.Attributes.Clef !== tmpClef));
       }
       if (curChild.tagName === 'attributes') {
-        const curAttributes = new Attributes(curChild);
-        this.Attributes.merge(curAttributes);
+        this.Attributes = new Attributes(curChild);
+        this.Attributes.merge(lastAttributes);
+        if (this.Attributes.Node.previousElementSibling === null) {
+          this.StartClefs = this.Attributes.Clef;
+        }
       }
     }
-
+    // Fix for MusicXML 2.0: Clefs can occur somewhere in the stream. Therefore
+    // we should check that all staves have clefs:
+    if (this.StartClefs.length !== this.Attributes.Staves &&
+       this.Attributes.Clef.length === this.Attributes.Staves) {
+      this.StartClefs = this.Attributes.Clef;
+    } else {
+      // TODO: Throw error here
+    }
     // Make unique list of voices in this measure
     this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
   }
 
- /**
+  /**
  * Get all the notes belonging to the given staff. The staff number
  * can be retrieved from {@link getStaves}
  * @param {Number} Number of the staff.
@@ -75,7 +83,7 @@ export class Measure extends XmlObject {
   }
 
   getAllClefs() {
-    const clefs = this.Attributes.map(a => a.Clef.filter(c => c.Number));
+    const clefs = this.Attributes.Clef.filter(c => c.Number);
     // Collect all distributed clefs in all attributes in measure
     return [].concat(...clefs);
   }
@@ -85,17 +93,13 @@ export class Measure extends XmlObject {
   }
 
   getClefsByStaff(index) {
-    const clefs = this.StartClefs.filter(c => c.Number === index);
-
-    // Collect all distributed clefs in all attributes in measure
-    return [].concat(...clefs);
-    // return [...new Set(...clefs)];
+    return this.StartClefs.filter(c => c.Number === index)[0];
   }
 
   getAllTimes() {
-    let times = this.Attributes.map(a => a.Time);
+    let times = this.Attributes.Time;
     // Repeat the timing information according to the staves
-    times = Array(this.getStaves().length).fill(times[0]);
+    times = Array(this.getStaves()).fill(times[0]);
     return times;
   }
 
@@ -104,24 +108,24 @@ export class Measure extends XmlObject {
   }
 
   /**
-  * Get the unique numbers of all staves in this measure
-  * @returns {Array} Staves in this measure
-  */
+ * Get the unique numbers of all staves in this measure
+ * @returns {Number} Staves in this measure
+ */
   getStaves() {
-    const stavesNode = this.Node.parentElement.getElementsByTagName('staves');
+    const stavesNode = this.getSiblings('staves');
     return stavesNode.length === 0 ? 1 : parseInt(stavesNode[0].textContent, 10);
-  }
-
-  fillArrayWithNumbers(n) {
-      const arr = Array.apply(null, Array(n));
-      return arr.map(function (x, i) { return i });
   }
 
   /**
    * Check if this Measure has Attributes
+   * @deprecated since version 0.2 every measure has attributes.
    * @returns {Boolean} Indicates if the measure has Attributes
    */
   hasAttributes() {
-    return this.Attributes !== undefined && this.Attributes.length > 0;
+    return this.Attributes !== undefined;
+  }
+
+  toString() {
+    return `Part: ${this.Part}, Measure: ${this.Number}`;
   }
 }

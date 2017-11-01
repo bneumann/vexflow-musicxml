@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: XmlSerializer</title>
+    <title>JSDoc: Class: Key</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: XmlSerializer</h1>
+    <h1 class="page-title">Class: Key</h1>
 
     
 
@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>XmlSerializer<span class="signature">(xDoc)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Key<span class="signature">(Key)</span><span class="type-signature"> &rarr; {VexKey}</span></h2>
         
     
 </header>
@@ -41,12 +41,22 @@
     
 
     
-    <h4 class="name" id="XmlSerializer"><span class="type-signature"></span>new XmlSerializer<span class="signature">(xDoc)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Key"><span class="type-signature"></span>new Key<span class="signature">(Key)</span><span class="type-signature"> &rarr; {VexKey}</span></h4>
     
 
     
 
 
+
+<div class="description">
+    From the docs:
+Traditional key signatures are represented by the number
+of flats and sharps, plus an optional mode for major/
+minor/mode distinctions. Negative numbers are used for
+flats and positive numbers for sharps, reflecting the
+key's placement within the circle of fifths (hence the
+element name).
+</div>
 
 
 
@@ -81,13 +91,13 @@
 
         <tr>
             
-                <td class="name"><code>xDoc</code></td>
+                <td class="name"><code>Key</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">xmlKey</span>
 
 
             
@@ -97,7 +107,7 @@
 
             
 
-            <td class="description last">The string representation of an XML document</td>
+            <td class="description last">MusicXml object to be translated</td>
         </tr>
 
     
@@ -138,7 +148,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlSerializer.js.html">src/xml/XmlSerializer.js</a>, <a href="src_xml_XmlSerializer.js.html#line13">line 13</a>
+        <a href="src_vex_Key.js.html">src/vex/Key.js</a>, <a href="src_vex_Key.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -161,6 +171,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Vex object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">VexKey</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 

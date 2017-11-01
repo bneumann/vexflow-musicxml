@@ -1,7 +1,7 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"optionalDependencies": false}] */
 const chai = require('chai'); // eslint-disable-line no-unused-vars
-const expect = require('chai').expect; // eslint-disable-line no-unused-vars
-const assert = require('chai').assert; // eslint-disable-line no-unused-vars
+const { expect } = require('chai').expect; // eslint-disable-line no-unused-vars
+const { assert } = require('chai').assert; // eslint-disable-line no-unused-vars
 const fs = require('fs');
 const path = require('path');
 const xpath = require('xpath');
@@ -15,15 +15,23 @@ require('source-map-support').install({
 }); // eslint-disable-line
 
 const jsPath = path.join(__dirname, '..', 'build', 'vexflow-musicxml-tests.js');
-const MusicXml = require(jsPath);
+const Vex = require(jsPath);
+const { MusicXml } = Vex.Flow;
+const { MusicXmlRenderer } = Vex.Flow;
 const SCORES_DIR = path.join(__dirname, 'testdata/v3/');
 const MOCK_DIR = path.join(__dirname, 'testdata/mock/');
-const gTestContext = { scores: [], mocks: [], MusicXml: undefined };
+const gTestContext = {
+  scores: [],
+  scoreNames: [],
+  mocks: [],
+  MusicXml: undefined,
+};
 
 const files = fs.readdirSync(SCORES_DIR);
 for (const i in files) {
   if (path.extname(files[i]) === '.xml') {
     gTestContext.scores.push(path.join(SCORES_DIR, files[i]));
+    gTestContext.scoreNames.push(files[i]);
   }
 }
 
@@ -40,13 +48,14 @@ const data = fs.readFileSync(gTestContext.scores[0], { 'encoding': 'utf8' });
 gTestContext.MusicXml = new MusicXml(data);
 
 const result = {
-  'MusicXml': MusicXml,
+  MusicXml,
+  MusicXmlRenderer,
   'assert': chai.assert,
   'expect': chai.expect,
-  'gTestContext': gTestContext,
-  'dom': dom,
-  'xpath': xpath,
-  'fs': fs,
+   gTestContext,
+  dom,
+  xpath,  
+  fs,
 };
 
 module.exports = result;

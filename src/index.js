@@ -1,6 +1,6 @@
 import vexImport from 'vexflow';
 
-import { VexRenderer } from './VexRenderer.js';
+import { MusicXmlRenderer } from './MusicXmlRenderer.js';
 import { MusicXml } from './xml/MusicXml.js';
 import { NoteVisitor } from './visitors/index';
 
@@ -11,7 +11,7 @@ const Vex = () => {};
 Vex.Flow = vexImport.Flow;
 
 Vex.Flow.MusicXml = MusicXml;
-Vex.Flow.MusicXmlRenderer = VexRenderer;
+Vex.Flow.MusicXmlRenderer = MusicXmlRenderer;
 Vex.Flow.NoteVisitor = NoteVisitor;
 
 export default Vex;

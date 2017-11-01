@@ -13,19 +13,43 @@ export class Attributes extends XmlObject {
     this.Time = this.childExists('time') ?  new Time(this.getChild('time')) : undefined;
     // this.Clef = this.childExists('clef') ?  new Clef(this.getChild('clef')) : undefined;
 
+    this.TimingChange = false;
     const clefs = this.getChildren('clef');
     this.Clef = [...clefs].map(n => new Clef(n));
   }
 
   merge(attributes) {
     // Find the clef belonging to our staff and replace it
-    for(const [, clef] of attributes.Clef.entries()) {
-      this.Clef = this.Clef.map(c => c.Number === clef.Number ? clef : c);
+    for (const [, clef] of attributes.Clef.entries()) {
+      if (this.Clef.map(c => c.Number).indexOf(clef.Number) === -1) {
+        this.Clef.push(clef);
+      } else {
+        this.Clef = this.Clef.map(c => c.Number === clef.Number ? c : clef);
+      }
     }
     this.Divisions = attributes.Divisions > 0 ? attributes.Divisions : this.Divisions;
+    this.Key = this.Key === undefined ? attributes.Key : this.Key;
+
+    if (attributes.Time !== undefined) {
+      if (this.Time === undefined) {
+        this.TimingChange = false;
+        this.Time = attributes.Time.clone();
+      } else {
+        this.TimingChange = !this.Time.Equals(attributes.Time);
+      }
+    }
   }
 
   toString() {
-    return `Divisions: \n\t-> ${this.Divisions}\nTime:\n\t-> ${this.Time}\nStaves:\n\t-> ${this.Staves}\nKey:\n${this.Key}\n${this.Clef}`;
+    return 'Divisions:' +
+            `\t-> ${this.Divisions}\n` +
+            'Time:' +
+            `\t\t-> ${this.Time}\n` +
+            'Staves:' +
+            `\t\t-> ${this.Staves}\n` +
+            'Key:' +
+            `\t\t-> ${this.Key}\n` +
+            'Clef:' +
+            `\t\t-> ${this.Clef}\n`;
   }
 }

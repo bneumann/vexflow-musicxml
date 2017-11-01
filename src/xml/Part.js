@@ -1,6 +1,6 @@
-import { Measure } from './Measure.js';
 import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
+import { Measure } from './Measure.js';
 /**
  * Class representation of a part
  * @extends XmlObject
@@ -23,6 +23,9 @@ export class Part extends XmlObject {
         part: this.Id,
       };
       const curMeasure = new Measure(measures[m], options);
+      if (m > 0) {
+        curMeasure.lastMeasure = this.Measures[m - 1];
+      }
       this.Measures.push(curMeasure);
       lastAttributes = curMeasure.Attributes;
     }
@@ -65,11 +68,10 @@ export class Part extends XmlObject {
   /**
    * Gets all measures that have keys. This can be used for checking if we still
    * have the same keys as in the measure before
+   * @deprecated This function will always return all measures because all measures have attributes (with keys)
    * @returns {Key} A Key class object
    */
   getAllMeasuresWithKeys() {
-    const a = this.Measures.filter(m => m.hasAttributes() &&
-                                        m.Attributes.some(a => a.Key !== undefined));
-    return a;
+    return this.Measures.filter(m => m.Attributes.Key !== undefined);
   }
 }

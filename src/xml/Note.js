@@ -1,5 +1,6 @@
 import { XmlObject } from './XmlObject.js';
 import { MusicXmlError } from './Errors.js';
+import { Notation } from './Notation.js';
 
 /**
  * Class representation of a Note
@@ -46,16 +47,11 @@ export class Note extends XmlObject {
                   this.Node.nextElementSibling.tagName === 'backup';
 
     /**
-     * The note's voice number
-     * @prop {Number} Note.Voice
-     */
-    this.Voice = this.getNum('voice');
-    /**
      * The note's staff number
      * @prop {Number} Note.Staff
      */
     const tStaff = this.getNum('staff');
-    this.Staff = isNaN(tStaff) ? 1 : tStaff;
+    this.Staff = Number.isNaN(tStaff) ? 1 : tStaff;
     /**
      * The duration of the note
      * @prop {Number} Note.Duration
@@ -67,6 +63,12 @@ export class Note extends XmlObject {
      * @prop {String} Note.Type
      */
     this.Type = this.getText('type');
+
+    /**
+     * The notes stem direction (up, down)
+     * @prop {String} Note.Stem
+     */
+    this.Stem = this.getText('stem');
 
     /**
      * The notes beam state. It indicates if a beam starts or ends here
@@ -86,14 +88,10 @@ export class Note extends XmlObject {
     this.isLastBeamNote = this.getTextArray('beam').every(b => b.indexOf('end') > -1);
 
     /**
-     * The notes pitch. It is defined by a step and the octave.
-     * @prop {Object} .Step: Step inside octave
-     *                .Octave: Octave of the note
+     * Percussion notes don't have absolute values and are called "unpitched"
+     * @param {Boolean} Note.isUnpitched defines if note is a percussion note
      */
-    this.Pitch = {
-      Step: this.childExists('step') ?  this.getText('step') : undefined,
-      Octave: this.getNum('octave'),
-    };
+    this.isUnpitched = this.childExists('unpitched');
 
     /**
      * The note's length. It is defined by the duration divided by the divisions
@@ -105,12 +103,47 @@ export class Note extends XmlObject {
     this.Dots = this.NoteLength >= 1 && this.NoteLength % 1 === 0.5;
   }
 
+  /**
+   * The note's voice number
+   * @returns {Number} voice Number of the voice
+   */
+  get Voice() {
+    const voice = this.getNum('voice');
+    return Number.isNaN(voice) ? 1 : voice;
+  }
+
+  /**
+   * The notes pitch. It is defined by a step and the octave.
+   * @prop {Object} .Step: Step inside octave
+   *                .Octave: Octave of the note
+   */
+  get Pitch() {
+    const stepName = this.isUnpitched ? 'display-step' : 'step';
+    const octaveName = this.isUnpitched ? 'display-octave' : 'octave';
+    return {
+      Step: this.childExists(stepName) ?  this.getText(stepName) : undefined,
+      Octave: this.getNum(octaveName),
+    };
+  }
+
+  get Notation() {
+    return this.childExists('notations') ? new Notation(this.getChild('notations')) : null;
+  }
+
+  get IsLastSlur() {
+    let res = false;
+    if (this.Notation && this.Notation.Slur) {
+      res = this.Notation.Slur.type === 'stop';
+    }
+    return res;
+  }
+
   get Accidental() {
     return this.getText('accidental');
   }
 
   get Clef() {
-    return this.mAttributes.Clef;
+    return this.mAttributes.Clef.filter(c => c.Number === this.Staff)[0];
   }
 
   accept(visitor) {

@@ -1,6 +1,5 @@
 class ClefVisitor {
   constructor() {
-    console.log('constructor called')
     this.Clefs = {
       'G2': 'treble',
       'C3': 'alto',

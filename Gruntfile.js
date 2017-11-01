@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackCfg = require('./webpack.config.js');
+const jsdocCfg = require('./.jsdoc.json');
 
 module.exports = (grunt) => {
   const BANNER = [
@@ -95,16 +96,16 @@ module.exports = (grunt) => {
     eslint: {
       target: SOURCES,
       options: {
-        configFile: '.eslintrc.json',
+        configFile: '.eslintrc',
       },
     },
     clean: {
       all: [BUILD_DIR, 'doc/*', '!doc/images/**'],
       doc: ['doc/*', '!doc/images/**'],
-      options: { 'no-write': false },
+      options: {'no-write': false}
     },
     webpack: {
-      test: webpackTest,
+      test: Object.assign(webpackCfg, webpackTest),
       all: webpackAll,
       watch: Object.assign({}, webpackAll, {
         watch: true,
@@ -142,9 +143,7 @@ module.exports = (grunt) => {
     jsdoc: {
       dist: {
         src: ['src/*.js', 'src/xml/*.js', 'src/vex/*.js', 'src/visitors/*.js', 'tests/*.js', 'README.md'],
-        options: {
-          destination: DOC_DIR,
-        },
+        options: Object.assign({ destination: DOC_DIR }, jsdocCfg),
       },
     },
   });

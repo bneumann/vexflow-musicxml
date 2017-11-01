@@ -3,8 +3,9 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-      'vexflow-musicxml': './src/index.js',
-      'bundle': './src/main.js'
+    'vexflow-musicxml': './src/index.js',
+    // 'vexflow-musicxml-tests': './tests/run.js',
+    'bundle': './src/main.js',
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -28,14 +29,16 @@ module.exports = {
   },
   devServer: {
     contentBase: [
-      path.join(__dirname, "tests/testdata/v3"), 
-      path.join(__dirname, "src"), 
-      path.join(__dirname, "build"),
-      path.join(__dirname, "../bandstand/MusicXml/Examples/Bach")
+      path.join(__dirname, 'src'),
+      path.join(__dirname, 'tests/testdata/v3'),
+      path.join(__dirname, 'tests/testdata/mock'),
+      path.join(__dirname, 'tests/testdata/v2'),
+      path.join(__dirname, 'build'),
+      path.join(__dirname, 'test'),
     ],
     port: 8000,
     compress: false,
-    watchContentBase: true
+    watchContentBase: true,
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
@@ -43,11 +46,11 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       $: 'jquery',
-      jQuery: 'jquery'
+      jQuery: 'jquery',
     }),
     // new webpack.LoaderOptionsPlugin({
     //   //TODO: Make it NODE_ENV dependent
     //    debug: true
     // }),
-  ]
+  ],
 };

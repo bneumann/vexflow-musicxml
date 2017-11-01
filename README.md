@@ -1,4 +1,4 @@
-# Vexflow MusicXML parser [![Build Status](https://travis-ci.org/bneumann/vexflow-musicxml.svg?branch=develop)](https://travis-ci.org/bneumann/vexflow-musicxml)
+# Vexflow MusicXML parser [![Build Status](https://travis-ci.org/bneumann/vexflow-musicxml.svg?branch=master)](https://travis-ci.org/bneumann/vexflow-musicxml)
 
 This is a ES6 approach to an easy Music XML renderer. It uses [Vexflow](https://github.com/0xfe/vexflow) to display the score. It does __not__ take care about the layout (at the moment) and always renders the score in respect to the given canvas. The VexRenderer class has an interface for layout calculations and redrawing if the dimensions change.
 
@@ -15,13 +15,18 @@ npm install -g grunt-cli
 ```
 
 ## Build
-
 ```javascript
 grunt
 ```
 ## Test
 ```javascript
 grunt test
+```
+
+## Debugging
+There is a wepback development server configuration for debugging purposes. It uses the ```src/main.js``` script to load a file from the ```test/testdata``` folder. This is very convenient for live changes in the code. To start the server just hit npm test:
+```
+npm test
 ```
 
 ## Screenshots
@@ -91,7 +96,8 @@ Apply like this:
 
 ## History
 
-TODO: Write history
+* v0.1: First draft and working version
+* v0.2: Changed the vexflow object creation and drawing to a more capsuled code. Added webpack-dev-server. Renamed VexRenderer to MusicXmlRenderer. Integrated the Attributes to Notes and Measures to be able to display according to screen size.
 
 ## Credits
 
