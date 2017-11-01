@@ -101,7 +101,7 @@ module.exports = (grunt) => {
     clean: {
       all: [BUILD_DIR, 'doc/*', '!doc/images/**'],
       doc: ['doc/*', '!doc/images/**'],
-      options: {'no-write': false}
+      options: { 'no-write': false },
     },
     webpack: {
       test: webpackTest,
@@ -114,10 +114,17 @@ module.exports = (grunt) => {
     // FIXME: grunt-webpack-server does not support webpack 3.x configs
     webpack_server: {
       options: {
-        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        webpackCfg,
+        port: 8080,
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
       },
-      prod: Object.assign({ options: webpackCfg }),
-      dev: Object.assign({ watch: true, port: 8080 }, webpackCfg)
+      dev: {
+        keepAlive: true,
+        webpack: {
+          devtool: 'eval',
+          debug: true,
+        },
+      },
     },
     mochaTest: {
       test: {
@@ -134,7 +141,7 @@ module.exports = (grunt) => {
     },
     jsdoc: {
       dist: {
-        src: ['src/*.js', 'tests/*.js', 'README.md'],
+        src: ['src/*.js', 'src/xml/*.js', 'src/vex/*.js', 'src/visitors/*.js', 'tests/*.js', 'README.md'],
         options: {
           destination: DOC_DIR,
         },

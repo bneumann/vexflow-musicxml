@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: tests/run.js</title>
+    <title>JSDoc: Source: src/xml/XmlSerializer.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: tests/run.js</h1>
+    <h1 class="page-title">Source: src/xml/XmlSerializer.js</h1>
 
     
 
@@ -27,25 +27,22 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
-* @file This is the main test file. All tests are started from here
-* @module Test
+* @fileOverview
 * @author {@link mailto:neumann.benni@gmail.com|neumann.benni@gmail.com}
 * @version 0.1
 */
 
-/**
- * @function UnitTests
- * @desc All unit tests that have to do with load and validating data
- * */
-describe('Vexflow MusicXml unit tests', () => {
-  describe('Basic xml parser tests', () => {
-    require('./parser/basic_tests.js');
-  });
 
-  describe('Vex specific conversion tests', () => {
-    require('./parser/note_tests.js');
-  });
-});
+export class XmlSerializer {
+  /**
+   * @constructor
+   * @param {string} xDoc - The string representation of an XML document
+   */
+  constructor(xDoc) {
+    const domParser = new DOMParser();
+    this.xDoc = domParser.parseFromString(xDoc, 'text/xml');
+  }
+}
 </code></pre>
         </article>
     </section>

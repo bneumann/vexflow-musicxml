@@ -18,6 +18,10 @@ export class Clef extends XmlObject {
     };
   }
 
+  accept(visitor) {
+    return visitor.visit(this);
+  }
+
   getVexClef() {
     return this.Clefs[this.sign + this.line];
   }

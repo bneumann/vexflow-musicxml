@@ -2,7 +2,7 @@ import Vex from 'vexflow';
 import { Voice } from './Voice.js';
 import { Time } from '../xml/Time.js';
 
-const Flow = Vex.Flow;
+const { Flow } = Vex;
 
 export class Measure {
   constructor(xmlMeasure, format, ctx) {
@@ -32,15 +32,11 @@ export class Measure {
     const allStaves = xmlMeasure.getStaves();
     // FIXME: Time should be handled in Stave object
     const time = xmlMeasure.getTime() === undefined ? new Time(xmlMeasure.Node.parentNode.getElementsByTagName('time')[0]) : xmlMeasure.getTime();
-    const clefs = xmlMeasure.getClefs();
 
     for (let s = 0; s < allStaves; s++) {
     // for (const [s, stave] of allStaves.entries()) {
       const stave = s + 1;
       // console.log(" measure", s, stave);
-
-      const allClefs = xmlMeasure.getClefsByStaff(stave);
-      // console.log(xmlMeasure, allClefs, stave);
 
       const staveClef = xmlMeasure.StartClefs[s].getVexClef();
       // console.log(`Part: ${xmlMeasure.Part} Measure: ${number} staveClef: ${staveClef}`);

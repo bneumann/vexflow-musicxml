@@ -27,9 +27,15 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: [path.join(__dirname, "tests/testdata/v3"), path.join(__dirname, "src"), path.join(__dirname, "build")],
+    contentBase: [
+      path.join(__dirname, "tests/testdata/v3"), 
+      path.join(__dirname, "src"), 
+      path.join(__dirname, "build"),
+      path.join(__dirname, "../bandstand/MusicXml/Examples/Bach")
+    ],
     port: 8000,
-    compress: false
+    compress: false,
+    watchContentBase: true
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({

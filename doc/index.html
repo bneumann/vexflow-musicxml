@@ -43,7 +43,7 @@
 
 
     <section>
-        <article><h1>Vexflow MusicXML parser <a href="https://travis-ci.org/bneumann/vexflow-musicxml"><img src="https://travis-ci.org/bneumann/vexflow-musicxml.svg?branch=master" alt="Build Status"></a></h1><p>This is a ES6 approach to an easy Music XML renderer. It uses <a href="https://github.com/0xfe/vexflow">Vexflow</a> to display the score. It does <strong>not</strong> take care about the layout (at the moment) and always renders the score in respect to the given canvas. The VexRenderer class has an interface for layout calculations and redrawing if the dimensions change.</p>
+        <article><h1>Vexflow MusicXML parser <a href="https://travis-ci.org/bneumann/vexflow-musicxml"><img src="https://travis-ci.org/bneumann/vexflow-musicxml.svg?branch=develop" alt="Build Status"></a></h1><p>This is a ES6 approach to an easy Music XML renderer. It uses <a href="https://github.com/0xfe/vexflow">Vexflow</a> to display the score. It does <strong>not</strong> take care about the layout (at the moment) and always renders the score in respect to the given canvas. The VexRenderer class has an interface for layout calculations and redrawing if the dimensions change.</p>
 <p>Please consider that this project is under development and needs some more care.</p>
 <h2>Installation</h2><pre class="prettyprint source lang-javascript"><code>npm install</code></pre><p>Grunt</p>
 <pre class="prettyprint source lang-javascript"><code>npm install -g grunt-cli</code></pre><h2>Build</h2><pre class="prettyprint source lang-javascript"><code>grunt</code></pre><h2>Test</h2><pre class="prettyprint source lang-javascript"><code>grunt test</code></pre><h2>Screenshots</h2><p>Here are some shots from the current development:</p>
@@ -205,7 +205,314 @@ SOFTWARE.</p></article>
 
     
 
-     
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>src/visitors/NoteVisitor.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Visitor implementation for converting MusicXML to VexFlow</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>neumann.benni@gmail.com</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_visitors_NoteVisitor.js.html">src/visitors/NoteVisitor.js</a>, <a href="src_visitors_NoteVisitor.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>src/xml/MusicXml.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>neumann.benni@gmail.com</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_xml_MusicXml.js.html">src/xml/MusicXml.js</a>, <a href="src_xml_MusicXml.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>src/xml/XmlSerializer.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.1</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>neumann.benni@gmail.com</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_xml_XmlSerializer.js.html">src/xml/XmlSerializer.js</a>, <a href="src_xml_XmlSerializer.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
@@ -226,13 +533,13 @@ SOFTWARE.</p></article>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="VexRenderer.html">VexRenderer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="Measure.html">Measure</a></li><li><a href="Note.html">Note</a></li><li><a href="NoteVisitor.html">NoteVisitor</a></li><li><a href="Part.html">Part</a></li><li><a href="VexRenderer.html">VexRenderer</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Jul 12 2017 10:37:34 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Nov 01 2017 09:00:06 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

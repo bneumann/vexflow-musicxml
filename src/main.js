@@ -1,6 +1,7 @@
 import Vex from './index.js';
 
-// const file1 = 'ActorPreludeSample.xml';
+// // const file1 = 'ActorPreludeSample.xml';
+// const file1 = 'BWV_0772.xml';
 const file1 = 'BeetAnGeSample.xml';
 $(document).ready(() => {
   loadXMLDoc();

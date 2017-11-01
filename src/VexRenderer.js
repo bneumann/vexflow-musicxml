@@ -10,7 +10,7 @@ import { MusicXml } from './xml/MusicXml.js';
 import { Utils } from './xml/Utils.js';
 import { Measure } from './vex/Measure.js';
 
-const Flow = Vex.Flow;
+const { Flow } = Vex;
 
 /**
  * MusicXmlRenderer aka VexRenderer
@@ -19,7 +19,11 @@ const Flow = Vex.Flow;
 export class VexRenderer {
   constructor(data, canvas, dontPrint) {
     this.musicXml = new MusicXml(data);
+    console.log(Flow);
     console.log(this.musicXml);
+    console.log(Flow.NoteVisitor);
+
+    console.log(this.musicXml.Parts[0].Measures[9].Notes[0].accept(Flow.NoteVisitor));
     // const part = 1;
     // const from = 0;
     // const to = 1;
@@ -50,8 +54,8 @@ export class VexRenderer {
       }
     }
     this.stavesPerSystem = this.musicXml.Parts
-              .map(p => p.getAllStaves()) // get all the staves in a part
-              .reduce((e, ne) => e + ne);   // sum them up
+      .map(p => p.getAllStaves()) // get all the staves in a part
+      .reduce((e, ne) => e + ne);   // sum them up
 
     // Some formatting constants
     this.width = this.isSvg ? parseInt(this.canvas.getAttribute('width'), 10) : this.canvas.width;
@@ -78,61 +82,18 @@ export class VexRenderer {
     const vb = [0, 0, this.width, this.getScoreHeight()];
     this.ctx.setViewBox(vb);
     // this.layout = this.calculateLayout();
-    if (dontPrint !== false) {
-      this.parseNew().draw();
-    }
+    console.time("parse");
+    this.parseNew();
+    console.timeEnd("parse");
   }
 
   getScoreHeight() {
     return this.systemSpace * this.format.linesPerPage;
   }
 
-  calculateLayout() {
-    // TODO: Use page height for calculation
-    // const height = this.isSvg ? this.canvas.getAttribute('height') : this.canvas.height;
-    const measures = this.musicXml.Parts[0].Measures;
-    const lpp = Math.ceil(measures.length / this.measuresPerStave);    // lines per page
-
-    const a = [];
-    let idx = 0;
-
-    for (let s = 0; s < this.stavesPerSystem; s++) { // systems / all staves
-      for (let l = 0; l < lpp; l++) { // lines
-        for (let m = 0; m < this.measuresPerStave; m++) { // measures
-          const point = {
-            x: (this.staveWidth * m) + this.staveXOffset,
-            y: l * this.systemSpace + s * this.staveSpace + this.staveYOffset,
-            index: idx,
-          };
-          if (this.mDebug) {
-            this.ctx.fillText(' line: ' + l +
-                              ' stave ' + s +
-                              ' measure ' + m +
-                              ' index: ' + idx, point.x, point.y);
-          }
-          a.push(point);
-          idx++;
-          if (idx === measures.length) {
-            idx = 0;
-            break;
-          }
-        }
-      }
-    }
-    // console.log(a);
-    const ret = {
-      measPerStave: this.measuresPerStave,
-      linesPerPage: lpp,
-      systems: this.stavesPerSystem,
-      points: a,
-    };
-    // console.log(ret);
-    return ret;
-  }
-
   // https://github.com/0xfe/vexflow/blob/1.2.83/tests/formatter_tests.js line 271
   parseNew() {
-    console.profile('parse');
+    // console.profile('parse');
     const drawables = [];
     const allParts = this.musicXml.Parts;
     for (const [p] of allParts.entries()) {
@@ -142,164 +103,7 @@ export class VexRenderer {
       }
     }
     drawables.forEach(d => d.draw());
-    console.profileEnd();
-    return this;
-  }
-
-  parse() {
-    // Reset all lists
-    this.staveList = [];
-    this.beamList = [];
-    this.connectors = [];
-    this.voiceList = [];
-
-    const allParts = this.musicXml.Parts;
-    let curSystem = 0;
-    let mIndex = 0;
-    allParts.forEach((part, pIdx) => {
-      const allMeasures = part.Measures;
-      const allStaves = part.getAllStaves();
-      const allMeasureWithKeys = part.getAllMeasuresWithKeys();
-
-      let stave = {};
-      stave.width = this.staveWidth;
-      // Iterate all staves in this part
-      allStaves.forEach((curStave, si) => {
-        const staffInfo = {
-          'stave': curStave,
-          'si': si,
-        };
-        const measureList = [];
-         // The notes can be set to bass, treble, etc. with the clef.
-         // So we need to remember the last clef we used
-        let curClef = 'treble';
-        let curTime = { num_beats: 4, beat_value: 4, resolution: Flow.RESOLUTION };
-        // Iterate all measures in this stave
-        allMeasures.forEach((meas, mi) => {
-          const newSystem = this.layout.measPerStave % (mi + 1) > 0;
-          curSystem = newSystem ? curSystem + 1 : curSystem;
-          const point = this.layout.points[mIndex];
-          stave = new Flow.Stave(point.x, point.y, stave.width);
-          // Keep track which stave belongs to which part. Needed for connectors
-          stave.system = pIdx;
-          mIndex++;
-          measureList.push(stave);
-
-          // Check if we have keys in this measure
-          if (allMeasureWithKeys.indexOf(meas) > -1) {
-            const key = this.getVexKey(meas.Attributes[0].Key);
-            stave.addKeySignature(key);
-          }
-          const allClefs = meas.getAllClefs();
-          const allTimes = meas.getAllTimes();
-          // Adding clef information to the stave
-          if (allClefs.length > 0) {
-            // Only change if the clef change is meant for this stave
-            if (allClefs[staffInfo.si] && staffInfo.stave === allClefs[staffInfo.si].Number) {
-              curClef = allClefs[staffInfo.si] ? allClefs[staffInfo.si].getVexClef() : curClef;
-              stave.addClef(curClef);
-            }
-          }
-          // Adding time information to the stave & voice
-          if (allTimes[staffInfo.si]) {
-            curTime = allTimes[staffInfo.si].getVexTime();
-            curTime.resolution = Flow.RESOLUTION;
-          }
-          if (mi === 0 || allTimes[staffInfo.si]) {
-            if (1) { // eslint-disable-line
-              stave.addTimeSignature(curTime.num_beats + '/' + curTime.beat_value);
-            } else {
-              stave.addTimeSignature('C');
-            }
-          }
-          stave.setContext(this.ctx);
-
-          // Adding notes
-          // const curNotes = meas.getNotesByStaff(staffInfo.stave);
-          let curNotes = Utils.getNotesByBackup(meas.Notes);
-          curNotes = curNotes[staffInfo.si];
-          // FIXME: Backup mechanism ftw... :(
-          const staffNoteArray = [];
-          // filter chord notes. They are automatically returned by the getVexNote function
-          if (curNotes) {
-            curNotes = curNotes.filter(n => n.isInChord === false);
-            let lastTempClef = curClef;
-            curNotes.forEach((n) => {
-              const vn = n.getVexNote();
-              const tempClef = n.getClef() ? n.getClef().getVexClef() : curClef;
-              // console.log('Clefs: ', n.getClef(), ' Note: ', n.Pitch);
-              vn.clef = n.isRest ? 'treble' : tempClef;
-              const sn = new Flow.StaveNote(vn);
-              if (tempClef !== lastTempClef) {
-                lastTempClef = tempClef;
-                // console.log(tempClef);
-                const cn = new Flow.ClefNote(tempClef, 'small');
-                sn.addModifier(0, new Flow.NoteSubGroup([cn]));
-                // console.log(cn);
-              }
-              for (let i = 0; i < n.Dots; i++) {
-                sn.addDotToAll();
-              }
-              sn.setStave(stave);
-              const acc = n.getAccidental();
-              if (acc !== null) {
-                sn.addAccidental(0, new Flow.Accidental(acc));
-              }
-
-              staffNoteArray.push(sn);
-            }); // Notes
-
-
-            // Beaming: mxml has a start, end and continue for beams. VexFlow
-            // handles the number of beams itself so we only need to group the
-            // notes depending on their "BeamState"
-            // const beamStates = curNotes.map(n => n.BeamState);
-            let beamNotes = [];
-            curNotes.forEach((b, i) => {
-              if (b.BeamState) {
-                beamNotes.push(staffNoteArray[i]);
-                // Beams do only make sense if more then 1 note is involved
-                if (beamNotes.length > 1 && b.isLastBeamNote) {
-                  this.beamList.push(new Flow.Beam(beamNotes));
-                  beamNotes = [];
-                }
-              }
-            });
-
-            // Draw notes
-            const voice = new Flow.Voice(curTime)
-              .setMode(Flow.Voice.Mode.SOFT)
-              .addTickables(staffNoteArray);
-            // FIXME: This would only add 1 voice per stave.
-            new Flow.Formatter()
-              .joinVoices([voice], { align_rests: false })
-              .formatToStave([voice], stave, { align_rests: false, stave });
-
-            this.voiceList.push(voice);
-          }
-        }); // Measures
-        this.staveList.push(measureList);
-      }); // Staves
-    }); // Parts
-    this.addConnectors();
-    return this;
-  }
-
-  /**
-   * Draw all elements on the canvas.
-   *
-   * @returns The object itself for usage in fluent interface
-   */
-  draw() {
-    // Draw measures and lines
-    // this.staveList.forEach(meas => meas.forEach(s => s.setContext(this.ctx).draw()));
-    this.staveList.forEach(s => s.setContext(this.ctx).draw());
-    // Draw connectors
-    this.connectors.forEach(c => c.setContext(this.ctx).draw());
-    // Draw notes
-    this.voiceList.forEach(v => v.setContext(this.ctx).draw());
-    // Draw beams
-    this.beamList.forEach(beam => beam.setContext(this.ctx).draw());
+    // console.profileEnd();
     return this;
   }
 
