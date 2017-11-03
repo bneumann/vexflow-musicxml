@@ -145,8 +145,4 @@ export class Note extends XmlObject {
   get Clef() {
     return this.mAttributes.Clef.filter(c => c.Number === this.Staff)[0];
   }
-
-  accept(visitor) {
-    return visitor.visit(this);
-  }
 }

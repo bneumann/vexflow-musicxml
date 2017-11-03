@@ -1,5 +1,5 @@
 import Vex from 'vexflow';
-import { NoteVisitor, ClefVisitor } from '../visitors/index';
+import { NoteVisitor, TimeVisitor } from '../visitors/index';
 
 const { Flow } = Vex;
 
@@ -14,10 +14,6 @@ export class Voice {
       time,
       staveClef,
     } = options;
-
-    // TODO: Move to formatter stuff and pass down for performance reasons
-    this.noteVisitor = NoteVisitor;
-    this.clefVisitor = ClefVisitor;
 
     this.voiceList = [];
     this.beamList = [];
@@ -50,7 +46,7 @@ export class Voice {
             clefChange = JSON.stringify(curClef) !== JSON.stringify(prevClef);
           }
           const newClef = xmlNote.hasClefChange ? xmlNote.Clef.getVexClef() : staveClef;
-          const flowNote = xmlNote.accept(this.noteVisitor) // new Flow.StaveNote(note)
+          const flowNote = xmlNote.accept(NoteVisitor) // new Flow.StaveNote(note)
             .setContext(ctx)
             .setStave(flowStave);
           //       try {
@@ -103,7 +99,7 @@ export class Voice {
           }
         } // Notes
         if (noteList.length > 0) {
-          const vexVoice = new Flow.Voice(time.getVexTime())
+          const vexVoice = new Flow.Voice(time.accept(TimeVisitor))
             .setMode(Flow.Voice.Mode.SOFT)
             .addTickables(noteList)
             .setContext(ctx);

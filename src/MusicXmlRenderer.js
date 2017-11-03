@@ -8,6 +8,7 @@
 import Vex from 'vexflow';
 import { MusicXml } from './xml/MusicXml.js';
 import { Measure } from './vex/Measure.js';
+import { MeasureVisitor } from './visitors/index';
 
 const { Flow } = Vex;
 
@@ -21,7 +22,7 @@ export class MusicXmlRenderer {
     console.log(this.musicXml);
 
     if (false) {
-      const part = 0;
+      const part = 1;
       const from = 0;
       const to = 2;
       this.musicXml.Parts = [this.musicXml.Parts[part]];
@@ -88,6 +89,7 @@ export class MusicXmlRenderer {
       const part = allParts[p];
       for (const [, measure] of part.Measures.entries()) {
         this.Drawables.push(new Measure(measure, this.format, this.ctx));
+        measure.accept(MeasureVisitor);
       }
     }
 

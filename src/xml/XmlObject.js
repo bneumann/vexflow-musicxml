@@ -17,12 +17,11 @@ export class XmlObject {
   }
 
   /**
-   * Accept a visitor for data coversion. This methods should be overwritten by inheriting classes
-   * @param {Visitor} visitor must implement a visit() methods
+   * Methods to hook in converters that can use this XML type for formatting
+   * @param {Visitor} visitor that converts XML to other formats
    */
-  // eslint-disable-next-line
   accept(visitor) {
-    console.warn('accept() not implemented by ' + this.constructor.name);
+    return visitor.visit(this);
   }
 
   /**
@@ -144,5 +143,12 @@ export class XmlObject {
    */
   getAttribute(name) {
     return this.Node.getAttribute(name);
+  }
+
+  /**
+   * Check if this element is the first in the tag
+   */
+  isFirst() {
+    return this.Node.previousElementSibling === null;
   }
 }

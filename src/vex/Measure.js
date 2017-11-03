@@ -1,7 +1,7 @@
 import Vex from 'vexflow';
 import { Voice } from './Voice.js';
 import { Key } from './Key.js';
-import { ClefVisitor } from '../visitors/index';
+import { ClefVisitor, KeyVisitor, TimeSignatureVisitor } from '../visitors/index';
 
 const { Flow } = Vex;
 
@@ -42,17 +42,23 @@ export class Measure {
       const stave = s + 1;
 
       let staveClef = xmlMeasure.getClefsByStaff(stave);
+      console.log(stave, staveClef)
       if (staveClef === undefined) {
         staveClef = 'treble';
       } else {
         staveClef = staveClef.accept(ClefVisitor);
       }
 
-      const flowStave = new Flow.Stave(this.x, this.y + s * 100 + part * 100, this.width)
-        .setContext(ctx);
+      // TODO: Separate formatter and converter into MeasureContainer and MeasureVisitor
+      const flowStave = new Flow.Stave()
+        .setContext(ctx)
+        .setX(this.x)
+        .setY(this.y + s * 100 + part * 100)
+        .setWidth(this.width);
+
       if (this.firstInLine) {
-        const vexKey = new Key(xmlMeasure.Attributes.Key);
-        flowStave.addKeySignature(vexKey.VexKey);
+        const key = xmlMeasure.Attributes.Key.accept(KeyVisitor);
+        flowStave.addKeySignature(key);
       }
       if (JSON.stringify(this.xmlMeasure.StartClefs) !== JSON.stringify(this.xmlMeasure.lastMeasure.StartClefs)) {
         flowStave.addClef(staveClef);
@@ -73,8 +79,7 @@ export class Measure {
 
       // Adding time signatures
       if (xmlMeasure.Number === 1 || xmlMeasure.Attributes.TimingChange) {
-        const curTime = xmlMeasure.Attributes.Time !== undefined ? xmlMeasure.Attributes.Time.getVexTime() : 'C';
-        flowStave.addTimeSignature(curTime.num_beats + '/' + curTime.beat_value);
+        flowStave.addTimeSignature(xmlMeasure.Attributes.Time.accept(TimeSignatureVisitor));
       }
     } // Staves
     this.addConnectors(this.firstInLine, lastMeasure);

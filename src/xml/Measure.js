@@ -1,6 +1,7 @@
 import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
 import { Note } from './Note.js';
+import { MusicXmlError } from './Errors';
 
 /**
  * Class representation of a measure
@@ -34,20 +35,22 @@ export class Measure extends XmlObject {
     this.Attributes = lastAttributes;
     this.StartClefs = this.Attributes.Clef;
     const tmpClef = this.StartClefs; // Semaphore to change the clef inline
+    let tagFound = false;
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
         // Add a clef change if the attributes before the note are different
         // then the starting clef.
-        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes),
-          this.Attributes.Clef !== tmpClef));
+        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes), this.Attributes.Clef !== tmpClef));
+        tagFound = true;
       }
       if (curChild.tagName === 'attributes') {
         this.Attributes = new Attributes(curChild);
         this.Attributes.merge(lastAttributes);
-        if (this.Attributes.Node.previousElementSibling === null) {
+        if (!tagFound) {
           this.StartClefs = this.Attributes.Clef;
         }
+        tagFound = true;
       }
     }
     // Fix for MusicXML 2.0: Clefs can occur somewhere in the stream. Therefore
@@ -56,7 +59,7 @@ export class Measure extends XmlObject {
        this.Attributes.Clef.length === this.Attributes.Staves) {
       this.StartClefs = this.Attributes.Clef;
     } else {
-      // TODO: Throw error here
+      // throw new MusicXmlError('m_001', 'XML inconclusive. Not all staves have clefs');
     }
     // Make unique list of voices in this measure
     this.Voices = [...new Set(this.Notes.map(n => n.Voice))];

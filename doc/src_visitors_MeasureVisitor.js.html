@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: tests/run.js</title>
+    <title>JSDoc: Source: src/visitors/MeasureVisitor.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: tests/run.js</h1>
+    <h1 class="page-title">Source: src/visitors/MeasureVisitor.js</h1>
 
     
 
@@ -26,26 +26,45 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
-* @file This is the main test file. All tests are started from here
-* @module Test
+            <pre class="prettyprint source linenums"><code>/* eslint-disable class-methods-use-this */
+/**
+* @file
+* @description Visitor implementation for converting MusicXML Measure to VexFlow
 * @author {@link mailto:neumann.benni@gmail.com|neumann.benni@gmail.com}
 * @version 0.1
 */
 
-/**
- * @function UnitTests
- * @desc All unit tests that have to do with load and validating data
- * */
-describe('Vexflow MusicXml unit tests', () => {
-  describe('Basic xml parser tests', () => {
-    require('./parser/basic_tests.js');
-  });
+import Vex from 'vexflow';
+import { ClefVisitor, TimeSignatureVisitor } from './index';
 
-  describe('Vex specific conversion tests', () => {
-    require('./parser/note_tests.js');
-  });
-});
+const { Flow } = Vex;
+
+class MeasureVisitor {
+  visit(measure) {
+    console.log(`Number: ${measure.Number}, ${measure.StartClefs.length}`);
+
+    const allStaves = measure.getStaves();
+    for (let s = 0; s &lt; allStaves; s++) {
+      const stave = s + 1;
+
+      let staveClef = measure.getClefsByStaff(stave);
+      if (staveClef === undefined) {
+        staveClef = 'treble';
+      } else {
+        staveClef = staveClef.accept(ClefVisitor);
+      }
+
+      const flowStave = new Flow.Stave();
+
+      // Adding time signatures
+      if (measure.Number === 1 || measure.Attributes.TimingChange) {
+        flowStave.addTimeSignature(measure.Attributes.Time.accept(TimeSignatureVisitor));
+      }
+    }
+  }
+}
+
+export const measureVisitor = new MeasureVisitor();
 </code></pre>
         </article>
     </section>

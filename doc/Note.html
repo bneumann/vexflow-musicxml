@@ -1690,7 +1690,7 @@ in this measure.
 
 
 <div class="description">
-    Accept a visitor for data coversion. This methods should be overwritten by inheriting classes
+    Methods to hook in converters that can use this XML type for formatting
 </div>
 
 
@@ -1742,7 +1742,7 @@ in this measure.
 
             
 
-            <td class="description last">must implement a visit() methods</td>
+            <td class="description last">that converts XML to other formats</td>
         </tr>
 
     
@@ -1761,10 +1761,8 @@ in this measure.
     
 
     
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
         <a href="XmlObject.html#accept">XmlObject#accept</a>
     </li></ul></dd>
     
@@ -1786,9 +1784,11 @@ in this measure.
     
 
     
+
+    
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line24">line 24</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -1928,7 +1928,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line86">line 86</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line85">line 85</a>
     </li></ul></dd>
     
 
@@ -2090,7 +2090,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line145">line 145</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line144">line 144</a>
     </li></ul></dd>
     
 
@@ -2252,7 +2252,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line34">line 34</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -2414,7 +2414,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line44">line 44</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -2576,7 +2576,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line130">line 130</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -2738,7 +2738,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line54">line 54</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -2900,7 +2900,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line96">line 96</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line95">line 95</a>
     </li></ul></dd>
     
 
@@ -3062,7 +3062,7 @@ in this measure.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line113">line 113</a>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line112">line 112</a>
     </li></ul></dd>
     
 
@@ -3113,6 +3113,97 @@ in this measure.
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="isFirst"><span class="type-signature"></span>isFirst<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Check if this element is the first in the tag
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="XmlObject.html#isFirst">XmlObject#isFirst</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="src_xml_XmlObject.js.html">src/xml/XmlObject.js</a>, <a href="src_xml_XmlObject.js.html#line151">line 151</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
@@ -3128,13 +3219,13 @@ in this measure.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="Key_Key.html">Key</a></li><li><a href="Measure.html">Measure</a></li><li><a href="MusicXmlRenderer.html">MusicXmlRenderer</a></li><li><a href="Note.html">Note</a></li><li><a href="NoteVisitor.html">NoteVisitor</a></li><li><a href="Part.html">Part</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="Key_Key.html">Key</a></li><li><a href="KeyVisitor.html">KeyVisitor</a></li><li><a href="Measure.html">Measure</a></li><li><a href="MusicXmlRenderer.html">MusicXmlRenderer</a></li><li><a href="Note.html">Note</a></li><li><a href="NoteVisitor.html">NoteVisitor</a></li><li><a href="Part.html">Part</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Nov 01 2017 21:38:27 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 03 2017 13:12:30 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
