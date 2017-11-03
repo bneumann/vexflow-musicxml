@@ -8,7 +8,6 @@
 import Vex from 'vexflow';
 import { MusicXml } from './xml/MusicXml.js';
 import { Measure } from './vex/Measure.js';
-import { MeasureVisitor } from './visitors/index';
 
 const { Flow } = Vex;
 
@@ -85,7 +84,6 @@ export class MusicXmlRenderer {
   // https://github.com/0xfe/vexflow/blob/1.2.83/tests/formatter_tests.js line 271
   parse() {
     const allParts = this.musicXml.Parts;
-    const partList = [];
     for (const [p] of allParts.entries()) {
       const part = allParts[p];
       for (const [, measure] of part.Measures.entries()) {
