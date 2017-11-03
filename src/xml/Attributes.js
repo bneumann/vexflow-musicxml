@@ -13,7 +13,6 @@ export class Attributes extends XmlObject {
     this.Time = this.childExists('time') ?  new Time(this.getChild('time')) : undefined;
     // this.Clef = this.childExists('clef') ?  new Clef(this.getChild('clef')) : undefined;
 
-    this.TimingChange = false;
     const clefs = this.getChildren('clef');
     this.Clef = [...clefs].map(n => new Clef(n));
   }
@@ -33,10 +32,7 @@ export class Attributes extends XmlObject {
 
     if (attributes.Time !== undefined) {
       if (this.Time === undefined) {
-        this.TimingChange = false;
         this.Time = attributes.Time.clone();
-      } else {
-        this.TimingChange = !this.Time.Equals(attributes.Time);
       }
     }
   }

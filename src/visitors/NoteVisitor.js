@@ -33,10 +33,19 @@ class NoteVisitor {
       ret.clef = this.Clef.accept(ClefVisitor);
     }
     // Add additional notes in chord
-    if (this.Node.nextElementSibling !== null) {
-      const tempNote = new Note(this.Node.nextElementSibling, this.mAttributes, false);
-      if (tempNote.isInChord) {
-        ret.keys.push(`${tempNote.Pitch.Step}/${tempNote.Pitch.Octave}`);
+    let nextNode = this.Node.nextElementSibling;
+    let exitCounter = 100;
+    while (exitCounter-- > 0) {
+      if (nextNode !== null && nextNode.tagName === 'note') {
+        const tempNote = new Note(nextNode, this.mAttributes);
+        if (tempNote.isInChord) {
+          ret.keys.push(`${tempNote.Pitch.Step}/${tempNote.Pitch.Octave}`);
+        } else {
+          break;
+        }
+        nextNode = nextNode.nextElementSibling;
+      } else {
+        break;
       }
     }
     return ret;
@@ -131,6 +140,12 @@ class NoteVisitor {
     const acc = this.getAccidental();
     if (acc) {
       fNote.addAccidental(0, new Flow.Accidental(acc));
+    }
+
+    if (note.hasClefChange) {
+      console.log(note, this.Clef.accept(ClefVisitor));
+      // const cn = new Flow.ClefNote(vNote.clef, 'small');
+      // fNote.addModifier(0, new Flow.NoteSubGroup([cn]));
     }
 
     return fNote;

@@ -12,7 +12,9 @@ export class Measure extends XmlObject {
     super(node);
     const { lastAttributes, part } = options;
 
-    this.lastMeasure = {};
+    this.lastMeasure = {
+      Attributes: {},
+    };
     this.Attributes = {};
     this.Notes = [];
     this.Part = part;
@@ -34,14 +36,15 @@ export class Measure extends XmlObject {
 
     this.Attributes = lastAttributes;
     this.StartClefs = this.Attributes.Clef;
-    const tmpClef = this.StartClefs; // Semaphore to change the clef inline
-    let tagFound = false;
+    let tagFound = false; // Will be true if the first note or attribute tag has been found
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
-        // Add a clef change if the attributes before the note are different
-        // then the starting clef.
-        this.Notes.push(new Note(curChild, Object.assign({}, this.Attributes), this.Attributes.Clef !== tmpClef));
+        const curNote = new Note(curChild, Object.assign({}, this.Attributes));
+        this.Notes.push(curNote);
+        if (this.Notes.length > 0) {
+          curNote.lastNote = this.Notes[this.Notes.length - 1];
+        }
         tagFound = true;
       }
       if (curChild.tagName === 'attributes') {
@@ -106,7 +109,7 @@ export class Measure extends XmlObject {
     return times;
   }
 
-  getTime() {
+  get Time() {
     return this.Attributes.Time;
   }
 

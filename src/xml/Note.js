@@ -12,8 +12,12 @@ export class Note extends XmlObject {
    * @param {NodeObject} node - the XML Node representing the note
    * @param {Number}    divisions - The divisions entry from the measure node
    */
-  constructor(node, attributes, clefChange) {
+  constructor(node, attributes) {
     super(node);
+
+    if (node.tagName !== 'note') {
+      throw new MusicXmlError('ne_001', 'Wrong XML type inserted into Note class!');
+    }
 
     /**
      * Private property to store attributes before this note
@@ -21,7 +25,11 @@ export class Note extends XmlObject {
      */
     this.mAttributes = attributes;
 
-    this.hasClefChange = clefChange;
+    this.lastNote = {
+      Clef: {},
+      mAttributes: {},
+    };
+
     /**
      * Private property to store measures divions units
      * @prop {Number} Note.mDivisions
@@ -144,5 +152,9 @@ export class Note extends XmlObject {
 
   get Clef() {
     return this.mAttributes.Clef.filter(c => c.Number === this.Staff)[0];
+  }
+
+  get hasClefChange() {
+    return JSON.stringify(this.Clef) !== JSON.stringify(this.lastNote.Clef);
   }
 }

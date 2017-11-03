@@ -8,7 +8,7 @@
 /* eslint-disable class-methods-use-this */
 
 import Vex from 'vexflow';
-import { ClefVisitor, TimeSignatureVisitor } from './index';
+import { ClefVisitor, KeyVisitor, TimeSignatureVisitor } from './index';
 
 const { Flow } = Vex;
 
@@ -17,8 +17,8 @@ const { Flow } = Vex;
  */
 class MeasureVisitor {
   visit(measure) {
-    console.log(`Number: ${measure.Number}, ${measure.StartClefs.length}`);
-
+    console.log(`Part: ${measure.Part}, Number: ${measure.Number}, ${measure.StartClefs.length}`);
+    const staveList = [];
     const allStaves = measure.getStaves();
     for (let s = 0; s < allStaves; s++) {
       const stave = s + 1;
@@ -31,12 +31,21 @@ class MeasureVisitor {
       }
 
       const flowStave = new Flow.Stave();
+      staveList.push({
+        staff: flowStave,
+        key: measure.Attributes.Key.accept(KeyVisitor),
+        clef: staveClef,
+        time: measure.Attributes.Time.accept(TimeSignatureVisitor),
+      });
 
       // Adding time signatures
-      if (measure.Number === 1 || measure.Attributes.TimingChange) {
+      const timingChange = JSON.stringify(measure.Time) !== JSON.stringify(measure.lastMeasure.Time);
+      if (measure.Number === 1 || timingChange) {
         flowStave.addTimeSignature(measure.Attributes.Time.accept(TimeSignatureVisitor));
       }
     }
+
+    return staveList;
   }
 }
 

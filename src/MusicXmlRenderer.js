@@ -23,7 +23,7 @@ export class MusicXmlRenderer {
 
     if (false) {
       const part = 1;
-      const from = 0;
+      const from = 1;
       const to = 2;
       this.musicXml.Parts = [this.musicXml.Parts[part]];
       this.musicXml.Parts[0].Measures = this.musicXml.Parts[0].Measures.slice(from, to);
@@ -85,11 +85,11 @@ export class MusicXmlRenderer {
   // https://github.com/0xfe/vexflow/blob/1.2.83/tests/formatter_tests.js line 271
   parse() {
     const allParts = this.musicXml.Parts;
+    const partList = [];
     for (const [p] of allParts.entries()) {
       const part = allParts[p];
       for (const [, measure] of part.Measures.entries()) {
         this.Drawables.push(new Measure(measure, this.format, this.ctx));
-        measure.accept(MeasureVisitor);
       }
     }
 

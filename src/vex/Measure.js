@@ -1,7 +1,6 @@
 import Vex from 'vexflow';
 import { Voice } from './Voice.js';
-import { Key } from './Key.js';
-import { ClefVisitor, KeyVisitor, TimeSignatureVisitor } from '../visitors/index';
+import { MeasureVisitor } from '../visitors/index';
 
 const { Flow } = Vex;
 
@@ -33,55 +32,34 @@ export class Measure {
     this.x = format.staveXOffset + (number - 1) % format.measuresPerStave * format.staveWidth;
     this.y = lineOnPage * format.systemSpace;
 
-    const allStaves = xmlMeasure.getStaves();
-    // FIXME: Time should be handled in Stave object
-    const time = xmlMeasure.getTime() === undefined ? new Time(xmlMeasure.Node.parentNode.getElementsByTagName('time')[0]) : xmlMeasure.getTime();
-    const clefs = xmlMeasure.getClefs();
+    const staves = xmlMeasure.accept(MeasureVisitor);
 
-    for (let s = 0; s < allStaves; s++) {
-      const stave = s + 1;
-
-      let staveClef = xmlMeasure.getClefsByStaff(stave);
-      console.log(stave, staveClef)
-      if (staveClef === undefined) {
-        staveClef = 'treble';
-      } else {
-        staveClef = staveClef.accept(ClefVisitor);
-      }
-
+    for (let s = 0; s < staves.length; s++) {
       // TODO: Separate formatter and converter into MeasureContainer and MeasureVisitor
-      const flowStave = new Flow.Stave()
-        .setContext(ctx)
+      const flowStave = staves[s].staff;
+      flowStave.setContext(ctx)
         .setX(this.x)
         .setY(this.y + s * 100 + part * 100)
         .setWidth(this.width);
 
       if (this.firstInLine) {
-        const key = xmlMeasure.Attributes.Key.accept(KeyVisitor);
-        flowStave.addKeySignature(key);
+        flowStave.addKeySignature(staves[s].key);
       }
       if (JSON.stringify(this.xmlMeasure.StartClefs) !== JSON.stringify(this.xmlMeasure.lastMeasure.StartClefs)) {
-        flowStave.addClef(staveClef);
+        flowStave.addClef(staves[s].clef);
       }
-      this.staveList.push(flowStave);
-
-      // console.log(xmlMeasure.toString(), xmlMeasure.Attributes.TimingChange, staveClef);
       const options = {
         ctx,
         formatter: this.formatter,
-        stave,
-        staveClef,
+        stave: s + 1,
+        staveClef: staves[s].clef,
         flowStave,
         time: xmlMeasure.Attributes.Time,
       };
       const v = new Voice(xmlMeasure, options);
       this.voiceList.push(v);
-
-      // Adding time signatures
-      if (xmlMeasure.Number === 1 || xmlMeasure.Attributes.TimingChange) {
-        flowStave.addTimeSignature(xmlMeasure.Attributes.Time.accept(TimeSignatureVisitor));
-      }
     } // Staves
+    this.staveList = staves.map(s => s.staff);
     this.addConnectors(this.firstInLine, lastMeasure);
   } // Constructor
 
@@ -121,7 +99,7 @@ export class Measure {
    */
   addConnector(stave1, stave2, type) {
     this.connectors.push(new Flow.StaveConnector(stave1, stave2)
-        .setType(type)
-        .setContext(this.context));
+      .setType(type)
+      .setContext(this.context));
   }
 }

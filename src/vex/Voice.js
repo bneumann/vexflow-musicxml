@@ -45,7 +45,7 @@ export class Voice {
             const curClef = voiceNotes[n].Clef;
             clefChange = JSON.stringify(curClef) !== JSON.stringify(prevClef);
           }
-          const newClef = xmlNote.hasClefChange ? xmlNote.Clef.getVexClef() : staveClef;
+          // const newClef = xmlNote.hasClefChange ? xmlNote.Clef.getVexClef() : staveClef;
           const flowNote = xmlNote.accept(NoteVisitor) // new Flow.StaveNote(note)
             .setContext(ctx)
             .setStave(flowStave);
@@ -54,19 +54,13 @@ export class Voice {
           //     const cn = new Flow.ClefNote(newClef, 'small');
           //     flowNote.addModifier(0, new Flow.NoteSubGroup([cn]));
           //   }
-          //   // console.log(xmlMeasure.Part, xmlMeasure.Number, newClef, xmlNote.mAttributes.Clef[stave - 1], staveClef);
 
           noteList.push(flowNote);
           // } catch (e) {
           //   console.log('ErrorV', e, vexNote, flowStave, newClef);
           // }
 
-          // Accidentals
-          // vexNote.accidental.forEach((acc, idx) => {
-          //   if (acc) {
-          //     noteList[noteList.length - 1].addAccidental(idx, new Flow.Accidental(acc));
-          //   }
-          // });
+
 
           // Beams
           if (xmlNote.BeamState) {

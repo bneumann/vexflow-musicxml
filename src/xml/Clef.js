@@ -6,22 +6,8 @@ export class Clef extends XmlObject {
     const staffClefNum = parseInt(this.getAttribute('number'), 10);
     this.Number = Number.isNaN(staffClefNum) ? 1 : staffClefNum;
     this.sign = this.getText('sign');
-    this.line = this.getNum('line');
-
-    // TODO: Move somewhere else
-    this.Clefs = {
-      'G2': 'treble',
-      'C3': 'alto',
-      // TODO: Was this a typo? Or does a G4 exist?
-      // 'G4': 'tenor',
-      'C4': 'tenor',
-      'F4': 'bass',
-      'percussion': 'percussion',
-    };
-  }
-
-  getVexClef() {
-    return this.Clefs[this.sign + this.line];
+    const lineNum = this.getNum('line');
+    this.line = Number.isNaN(lineNum) ? '' : lineNum;
   }
 
   toString() {
