@@ -37,7 +37,7 @@ module.exports = {
       path.join(__dirname, 'test'),
     ],
     port: 8000,
-    compress: false,
+    compress: true,
     watchContentBase: true,
   },
   plugins: [

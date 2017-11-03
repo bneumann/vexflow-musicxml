@@ -1,16 +1,20 @@
-/* eslint-disable class-methods-use-this */
 /**
-* @file
-* @description Visitor implementation for converting MusicXML Measure to VexFlow
-* @author {@link mailto:neumann.benni@gmail.com|neumann.benni@gmail.com}
-* @version 0.1
-*/
+ * @file
+ * @description Visitor implementation for converting MusicXML Measure to VexFlow
+ * @author {@link mailto:neumann.benni@gmail.com|neumann.benni@gmail.com}
+ * @version 0.1
+ */
+
+/* eslint-disable class-methods-use-this */
 
 import Vex from 'vexflow';
 import { ClefVisitor, TimeSignatureVisitor } from './index';
 
 const { Flow } = Vex;
 
+/**
+ * This class implements a visitor used to convert MusicXML measures to VexFlow staves
+ */
 class MeasureVisitor {
   visit(measure) {
     console.log(`Number: ${measure.Number}, ${measure.StartClefs.length}`);

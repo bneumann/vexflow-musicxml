@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: src/visitors/MeasureVisitor.js</title>
+    <title>JSDoc: Source: src/visitors/TimeSignatureVisitor.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: src/visitors/MeasureVisitor.js</h1>
+    <h1 class="page-title">Source: src/visitors/TimeSignatureVisitor.js</h1>
 
     
 
@@ -26,49 +26,22 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @file
- * @description Visitor implementation for converting MusicXML Measure to VexFlow
- * @author {@link mailto:neumann.benni@gmail.com|neumann.benni@gmail.com}
- * @version 0.1
- */
-
-/* eslint-disable class-methods-use-this */
-
-import Vex from 'vexflow';
-import { ClefVisitor, TimeSignatureVisitor } from './index';
-
-const { Flow } = Vex;
+            <pre class="prettyprint source linenums"><code>/* eslint-disable class-methods-use-this */
 
 /**
- * This class implements a visitor used to convert MusicXML measures to VexFlow staves
+ * This class implements a visitor used to convert MusicXML time signature to VexFlow time signature
  */
-class MeasureVisitor {
-  visit(measure) {
-    console.log(`Number: ${measure.Number}, ${measure.StartClefs.length}`);
-
-    const allStaves = measure.getStaves();
-    for (let s = 0; s &lt; allStaves; s++) {
-      const stave = s + 1;
-
-      let staveClef = measure.getClefsByStaff(stave);
-      if (staveClef === undefined) {
-        staveClef = 'treble';
-      } else {
-        staveClef = staveClef.accept(ClefVisitor);
-      }
-
-      const flowStave = new Flow.Stave();
-
-      // Adding time signatures
-      if (measure.Number === 1 || measure.Attributes.TimingChange) {
-        flowStave.addTimeSignature(measure.Attributes.Time.accept(TimeSignatureVisitor));
-      }
-    }
+class TimeSignatureVisitor {
+  /**
+   * Returns a time signature in the frmat of 3/4, 4/4, ...
+   * @param {Time} time XML Time object
+   */
+  visit(time) {
+    return `${time.Beats}/${time.BeatType}`;
   }
 }
 
-export const measureVisitor = new MeasureVisitor();
+export const timeSignatureVisitor = new TimeSignatureVisitor();
 </code></pre>
         </article>
     </section>

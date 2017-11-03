@@ -2,6 +2,9 @@ import Vex from 'vexflow';
 
 const { Flow } = Vex;
 
+/**
+ * This class implements a visitor used to convert MusicXML keys to VexFlow keys
+ */
 class KeyVisitor {
   /**
   *
