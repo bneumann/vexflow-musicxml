@@ -12,6 +12,18 @@ export class XmlObject {
     this.Node = node;
   }
 
+  clone() {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
+
+  /**
+   * Methods to hook in converters that can use this XML type for formatting
+   * @param {Visitor} visitor that converts XML to other formats
+   */
+  accept(visitor) {
+    return visitor.visit(this);
+  }
+
   /**
    * getChild - Gets a (usally the first) child by its tag name
    *
@@ -29,7 +41,17 @@ export class XmlObject {
    * @return {DOMNodeList} DOM node list representation of the children
    */
   getChildren(name = '') {
-    return name === '' ? this.Node.children : this.Node.getElementsByTagName(name);
+    return name === '' ? this.Node.childNodes : this.Node.getElementsByTagName(name);
+  }
+
+  /**
+   * getSiblings - Gets all siblings by its tag name
+   *
+   * @param  {string} name The tag name of the sibling.
+   * @return {DOMNodeList} DOM node list representation of the children
+   */
+  getSiblings(name) {
+    return this.Node.parentNode.getElementsByTagName(name);
   }
 
   findPreviousElement(name, vicinity = 2) {
@@ -121,5 +143,12 @@ export class XmlObject {
    */
   getAttribute(name) {
     return this.Node.getAttribute(name);
+  }
+
+  /**
+   * Check if this element is the first in the tag
+   */
+  isFirst() {
+    return this.Node.previousElementSibling === null;
   }
 }

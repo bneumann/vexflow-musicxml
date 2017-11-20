@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+    <script src="bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+    <title></title>
+  </head>
+  <body>
+    <div class="ui menu">
+      <div class="ui selection dropdown">
+        <input type="hidden" name="parts">
+        <i class="dropdown icon"></i>
+        <div class="default text">Parts</div>
+        <div class="menu" id="parts"></div>
+      </div>
+      <div class="ui selection dropdown" id="startDrop">
+        <input type="hidden" name="start">
+        <i class="dropdown icon"></i>
+        <div class="default text">Start measure</div>
+        <i class="dropdown icon"></i>
+        <div class="menu" id="start"></div>
+      </div>
+      <div class="ui selection dropdown">
+        <input type="hidden" name="stop">
+        <i class="dropdown icon"></i>
+        <div class="default text">Stop Measure</div>
+        <div class="menu" id="stop"></div>
+      </div>
+    </div>
+    <p></p>
+    <div id="canvas" width="800" height="600" script="width: 800px; height: 600px"></div>
+  </body>
+  <script>
+    $('.ui.dropdown').dropdown();
+
+  </script>
+</html>

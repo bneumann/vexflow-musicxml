@@ -18,7 +18,7 @@ describe('Basic tests', function() {
     assert.isDefined(gTestContext.MusicXml);
   });
 
-  it('Check music XML version', () => {
+  it(`Check music XML version of ${gTestContext.scoreNames[0]}`, () => {
     assert.strictEqual(gTestContext.MusicXml.Version, '3.0', 'Version is 3');
   });
 
@@ -50,9 +50,11 @@ describe('Basic tests', function() {
       let elapsedTime = 10000;
       try {
         const data = fs.readFileSync(gTestContext.scores[i], { 'encoding': 'utf8' });
+        console.time(`\t\tParsing time for ${gTestContext.scoreNames[i]}: `);
         const startTime = new Date().getTime();
         gTestContext.MusicXml = new MusicXml(data);
         elapsedTime = new Date().getTime() - startTime;
+        console.timeEnd(`\t\tParsing time for ${gTestContext.scoreNames[i]}: `);
         statistics.push(elapsedTime);
       } catch (e) {
         console.warn('Test failed @', gTestContext.scores[i], e);

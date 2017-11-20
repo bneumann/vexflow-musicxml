@@ -1,6 +1,6 @@
 {
   "name": "vexflow-musicxml",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "MusicXml Parser for vexflow",
   "main": "build/vexflow-musicxml.js",
   "keywords": [
@@ -8,6 +8,9 @@
     "musicxml",
     "notes"
   ],
+  "scripts": {
+    "test": "webpack-dev-server -d --config webpack.config.js --progress --colors"
+  },
   "author": {
     "name": "Benjamin Giesinger",
     "email": "neumann.benni@gmail.com"
@@ -15,31 +18,33 @@
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.24.0",
-    "babel-loader": "^6.2.4",
+    "babel-loader": "^7.1.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-object-assign": "^6.8.0",
     "babel-preset-es2015": "^6.13.2",
     "babel-preset-es2015-loose": "^8.0.0",
     "babel-register": "^6.11.6",
-    "chai": "^3.5.0",
-    "eslint": "^3.0.1",
-    "eslint-config-airbnb-base": "^11.1.1",
+    "chai": "^4.1.2",
+    "eslint": "^4.10.0",
+    "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "grunt": "~1.0.1",
+    "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-jshint": "~1.1.0",
     "grunt-contrib-nodeunit": "~1.0.0",
-    "grunt-contrib-uglify": "~2.2.0",
+    "grunt-contrib-uglify": "~3.1.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-eslint": "^19.0.0",
+    "grunt-eslint": "^20.1.0",
     "grunt-git": "^1.0.0",
     "grunt-jsdoc": "^2.1.0",
     "grunt-mocha-test": "^0.13.2",
-    "grunt-webpack": "^2.0.1",
-    "mocha": "^3.0.2",
-    "source-map-support": "^0.4.2",
-    "webpack": "*",
-    "webpack-dev-server": "^2.4.2",
+    "grunt-webpack": "^3.0.2",
+    "grunt-webpack-server": "^0.1.0",
+    "jquery": "^3.2.1",
+    "mocha": "^4.0.1",
+    "source-map-support": "^0.5.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3",
     "xmldom": "^0.1.22",
     "xpath": "0.0.24"
   },

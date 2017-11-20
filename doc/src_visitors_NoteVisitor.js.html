@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/visitors/NoteVisitor.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/visitors/NoteVisitor.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+* @file
+* @description Visitor implementation for converting MusicXML to VexFlow
+* @author {@link mailto:neumann.benni@gmail.com|neumann.benni@gmail.com}
+* @version 0.1
+*/
+
+import Vex from 'vexflow';
+import { Note } from '../xml/Note';
+import { MusicXmlError } from '../xml/Errors.js';
+import { ClefVisitor } from './index';
+
+const { Flow } = Vex;
+
+/**
+ * This class implements a visitor used to display notes in Vex format.
+ */
+class NoteVisitor {
+  /**
+   * Returns the input required for Flow.StaveNote
+   */
+  getVexNote() {
+    const kStep = this.isRest ? 'b' : this.Pitch.Step;
+    const kOctave = this.isRest ? '4' : this.Pitch.Octave;
+    const type = this.Types[this.Type];
+    if (type === undefined) {
+      throw new MusicXmlError('BadArguments', 'Invalid type ' + JSON.stringify(this));
+    }
+    const ret = { keys: [kStep + '/' + kOctave], duration: type };
+    if (this.isRest) {
+      ret.type = 'r';
+    } else if (this.Clef !== undefined) {
+      ret.clef = this.Clef.accept(ClefVisitor);
+    }
+    // Add additional notes in chord
+    let nextNode = this.Node.nextElementSibling;
+    let exitCounter = 100;
+    while (exitCounter-- > 0) {
+      if (nextNode !== null &amp;&amp; nextNode.tagName === 'note') {
+        const tempNote = new Note(nextNode, this.mAttributes);
+        if (tempNote.isInChord) {
+          ret.keys.push(`${tempNote.Pitch.Step}/${tempNote.Pitch.Octave}`);
+        } else {
+          break;
+        }
+        nextNode = nextNode.nextElementSibling;
+      } else {
+        break;
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Calculate the long representation type from the length of the note.
+   * A length of 4 is a whole note, 2 a half and so on.
+   */
+  calculateType() {
+    let ret;
+
+    if (this.NoteLength === 4) {
+      ret = 'w';
+    } else if (this.NoteLength >= 2 &amp;&amp; this.NoteLength &lt;= 3) {
+      ret = 'h';
+    } else if (this.NoteLength >= 1 &amp;&amp; this.NoteLength &lt; 2) {
+      ret = 'w';
+    } else if (this.NoteLength === 0.25) {
+      ret = 'q';
+    } else if (this.NoteLength === 0.5) {
+      ret = 'h';
+    } else if (this.NoteLength &lt;= (1 / 8)) {
+      ret = Math.round(1 / (1 / 8)).toString();
+    }
+    return ret;
+  }
+
+  /**
+   * Converts accidentials from MusicXML to VexFlow
+   */
+  getAccidental() {
+    const acc = this.Accidental;
+    switch (acc) {
+      case 'natural':
+        return 'n';
+      case 'flat':
+        return 'b';
+      case 'sharp':
+        return '#';
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Returns the Vex type of note (whole, quarter, etc.) from it's XML representation
+   */
+  get Types() {
+    return (
+      {
+        '': this.calculateType(),
+        'whole': 'w',
+        'half': 'h',
+        'quarter': 'q',
+        'eighth': '8',
+        '16th': '16',
+        '32nd': '32',
+        '64th': '64',
+        '128th': '128',
+        '256th': '256',
+        '512th': '512',
+        '1024th': '1024',
+      });
+  }
+
+  /**
+   * Converts the XML note object into VexFlow format.
+   * @param {Note} note XML note object
+   */
+  visit(note) {
+    // Copy all properties to be used in this class
+    // TODO: This is refactored code and could use some love
+    this.NoteLength = note.NoteLength;
+    this.Pitch = note.Pitch;
+    this.isRest = note.isRest;
+    this.Node = note.Node;
+    this.mAttributes = note.mAttributes;
+    this.NoteLength = note.Duration / this.mAttributes.Divisions;
+    this.Dots = this.NoteLength >= 1 &amp;&amp; this.NoteLength % 1 === 0.5;
+    this.Type = note.Type;
+    this.Accidental = note.Accidental;
+    this.Clef = note.Clef;
+
+    // Create a constructor struct
+    const vNote = this.getVexNote();
+
+    // Create the "real" VexFlow note
+    const fNote = new Flow.StaveNote(vNote);
+
+    // Add accidentials to notes
+    const acc = this.getAccidental();
+    if (acc) {
+      fNote.addAccidental(0, new Flow.Accidental(acc));
+    }
+
+    if (note.hasClefChange) {
+      console.log(note, this.Clef.accept(ClefVisitor));
+      // const cn = new Flow.ClefNote(vNote.clef, 'small');
+      // fNote.addModifier(0, new Flow.NoteSubGroup([cn]));
+    }
+
+    return fNote;
+  }
+}
+
+// Make it singleton
+export const noteVisitor = new NoteVisitor();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="ClefVisitor.html">ClefVisitor</a></li><li><a href="Key_Key.html">Key</a></li><li><a href="KeyVisitor.html">KeyVisitor</a></li><li><a href="Measure.html">Measure</a></li><li><a href="MeasureVisitor.html">MeasureVisitor</a></li><li><a href="MusicXmlRenderer.html">MusicXmlRenderer</a></li><li><a href="Note.html">Note</a></li><li><a href="NoteVisitor.html">NoteVisitor</a></li><li><a href="Part.html">Part</a></li><li><a href="TimeSignatureVisitor.html">TimeSignatureVisitor</a></li><li><a href="TimeVisitor.html">TimeVisitor</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Nov 20 2017 21:10:58 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

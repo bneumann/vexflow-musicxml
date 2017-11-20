@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: src/xml/Measure.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: src/xml/Measure.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { XmlObject } from './XmlObject.js';
+import { Attributes } from './Attributes.js';
+import { Note } from './Note.js';
+import { MusicXmlError } from './Errors';
+
+/**
+ * Class representation of a measure
+ * @extends XmlObject
+ */
+export class Measure extends XmlObject {
+  constructor(node, options = { lastAttributes: [], part: -1 }) {
+    super(node);
+    const { lastAttributes, part } = options;
+
+    this.lastMeasure = {
+      Attributes: {},
+    };
+    this.Attributes = {};
+    this.Notes = [];
+    this.Part = part;
+
+    this.Number = parseInt(this.getAttribute('number'), 10);
+    this.Width = parseFloat(this.getAttribute('width'), 10);
+    // REVIEW: Fluid interface for filtering notes seems odd.
+    if (part === -1) {
+      // FIXME: This is a workaround for a fluid interface. This way I can instantiate
+      // new objects without parsing the node again.
+      this.Attributes = lastAttributes;
+      return;
+    }
+
+    const children = this.getChildren();
+    // In this XML the order does matter. So we need to go through the whole
+    // children and check which is which. The lastAttributes value needs to
+    // be stored so the layout can break the line whereever it wants.
+
+    this.Attributes = lastAttributes;
+    this.StartClefs = this.Attributes.Clef;
+    let tagFound = false; // Will be true if the first note or attribute tag has been found
+    for (let ch = 0; ch &lt; children.length; ch++) {
+      const curChild = children[ch];
+      if (curChild.tagName === 'note') {
+        const curNote = new Note(curChild, Object.assign({}, this.Attributes));
+        this.Notes.push(curNote);
+        if (this.Notes.length > 0) {
+          curNote.lastNote = this.Notes[this.Notes.length - 1];
+        }
+        tagFound = true;
+      }
+      if (curChild.tagName === 'attributes') {
+        this.Attributes = new Attributes(curChild);
+        this.Attributes.merge(lastAttributes);
+        if (!tagFound) {
+          this.StartClefs = this.Attributes.Clef;
+        }
+        tagFound = true;
+      }
+    }
+    // Fix for MusicXML 2.0: Clefs can occur somewhere in the stream. Therefore
+    // we should check that all staves have clefs:
+    if (this.StartClefs.length !== this.Attributes.Staves &amp;&amp;
+       this.Attributes.Clef.length === this.Attributes.Staves) {
+      this.StartClefs = this.Attributes.Clef;
+    } else {
+      // throw new MusicXmlError('m_001', 'XML inconclusive. Not all staves have clefs');
+    }
+    // Make unique list of voices in this measure
+    this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
+  }
+
+  /**
+ * Get all the notes belonging to the given staff. The staff number
+ * can be retrieved from {@link getStaves}
+ * @param {Number} Number of the staff.
+ * @returns {Note} A Note class object
+ * @see {@link getStaves}
+ */
+  getNotesByStaff(index) {
+    const newObj = new Measure(this.Node, { lastAttributes: this.Attributes, part: -1 });
+    newObj.Notes = this.Notes.filter(a => a.Staff === index);
+    return newObj;
+  }
+
+  getNotesByVoice(voice) {
+    // Copy this object
+    const newObj = new Measure(this.Node, { lastAttributes: this.Attributes, part: -1 });
+    newObj.Notes = this.Notes.filter(n => n.Voice === voice);
+    return newObj;
+  }
+
+  getAllClefs() {
+    const clefs = this.Attributes.Clef.filter(c => c.Number);
+    // Collect all distributed clefs in all attributes in measure
+    return [].concat(...clefs);
+  }
+
+  getClefs() {
+    return this.Attributes.Clef;
+  }
+
+  getClefsByStaff(index) {
+    return this.StartClefs.filter(c => c.Number === index)[0];
+  }
+
+  getAllTimes() {
+    let times = this.Attributes.Time;
+    // Repeat the timing information according to the staves
+    times = Array(this.getStaves()).fill(times[0]);
+    return times;
+  }
+
+  get Time() {
+    return this.Attributes.Time;
+  }
+
+  /**
+ * Get the unique numbers of all staves in this measure
+ * @returns {Number} Staves in this measure
+ */
+  getStaves() {
+    const stavesNode = this.getSiblings('staves');
+    return stavesNode.length === 0 ? 1 : parseInt(stavesNode[0].textContent, 10);
+  }
+
+  /**
+   * Check if this Measure has Attributes
+   * @deprecated since version 0.2 every measure has attributes.
+   * @returns {Boolean} Indicates if the measure has Attributes
+   */
+  hasAttributes() {
+    return this.Attributes !== undefined;
+  }
+
+  toString() {
+    return `Part: ${this.Part}, Measure: ${this.Number}`;
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Test.html">Test</a></li></ul><h3>Classes</h3><ul><li><a href="ClefVisitor.html">ClefVisitor</a></li><li><a href="Key_Key.html">Key</a></li><li><a href="KeyVisitor.html">KeyVisitor</a></li><li><a href="Measure.html">Measure</a></li><li><a href="MeasureVisitor.html">MeasureVisitor</a></li><li><a href="MusicXmlRenderer.html">MusicXmlRenderer</a></li><li><a href="Note.html">Note</a></li><li><a href="NoteVisitor.html">NoteVisitor</a></li><li><a href="Part.html">Part</a></li><li><a href="TimeSignatureVisitor.html">TimeSignatureVisitor</a></li><li><a href="TimeVisitor.html">TimeVisitor</a></li><li><a href="XmlObject.html">XmlObject</a></li><li><a href="XmlSerializer_XmlSerializer.html">XmlSerializer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Nov 20 2017 21:10:58 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

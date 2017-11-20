@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const webpackCfg = require('./webpack.config.js');
+const jsdocCfg = require('./.jsdoc.json');
 
 module.exports = (grunt) => {
   const BANNER = [
@@ -9,8 +11,9 @@ module.exports = (grunt) => {
   const BASE_DIR = __dirname;
   const BUILD_DIR = path.join(BASE_DIR, 'build');
   const DOC_DIR = path.join(BASE_DIR, 'doc');
-  const MODULE_ENTRY = path.join(BASE_DIR, 'src/MusicXml.js');
+  const MODULE_ENTRY = path.join(BASE_DIR, 'src/index.js');
   const ALL_ENTRIES = path.join(BASE_DIR, 'src/index.js');
+  const WP_SERVER_ENTRIES = path.join(BASE_DIR, 'src/index.html');
   const TARGET_RAW = 'vexflow-musicxml.js';
   const TARGET_MIN = 'vexflow-musicxml-min.js';
   const TARGET_TESTS = 'vexflow-musicxml-tests.js';
@@ -23,6 +26,7 @@ module.exports = (grunt) => {
       entry: config.entry,
       output: {
         path: BUILD_DIR,
+        publicPath: 'assets',
         filename: config.target,
         library: config.library,
         libraryTarget: 'umd',
@@ -44,7 +48,7 @@ module.exports = (grunt) => {
       plugins: [
         // new webpack.optimize.UglifyJsPlugin({
         //   sourceMap: true,
-        // })
+        // }),
       ],
     };
   }
@@ -92,7 +96,7 @@ module.exports = (grunt) => {
     eslint: {
       target: SOURCES,
       options: {
-        configFile: '.eslintrc.json',
+        configFile: '.eslintrc',
       },
     },
     clean: {
@@ -101,12 +105,27 @@ module.exports = (grunt) => {
       options: {'no-write': false}
     },
     webpack: {
-      test: webpackTest,
+      test: Object.assign(webpackCfg, webpackTest),
       all: webpackAll,
       watch: Object.assign({}, webpackAll, {
         watch: true,
         keepalive: true,
       }),
+    },
+    // FIXME: grunt-webpack-server does not support webpack 3.x configs
+    webpack_server: {
+      options: {
+        webpackCfg,
+        port: 8080,
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+      },
+      dev: {
+        keepAlive: true,
+        webpack: {
+          devtool: 'eval',
+          debug: true,
+        },
+      },
     },
     mochaTest: {
       test: {
@@ -123,10 +142,8 @@ module.exports = (grunt) => {
     },
     jsdoc: {
       dist: {
-        src: ['src/*.js', 'tests/*.js', 'README.md'],
-        options: {
-          destination: DOC_DIR,
-        },
+        src: ['src/*.js', 'src/xml/*.js', 'src/vex/*.js', 'src/visitors/*.js', 'tests/*.js', 'README.md'],
+        options: Object.assign({ destination: DOC_DIR }, jsdocCfg),
       },
     },
   });
@@ -139,6 +156,7 @@ module.exports = (grunt) => {
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-webpack-server');
 
   // Default task(s).
   grunt.registerTask('default', ['eslint', 'webpack:all', 'uglify:build', 'doc']);

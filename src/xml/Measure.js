@@ -1,44 +1,74 @@
 import { XmlObject } from './XmlObject.js';
 import { Attributes } from './Attributes.js';
 import { Note } from './Note.js';
+import { MusicXmlError } from './Errors';
 
 /**
  * Class representation of a measure
  * @extends XmlObject
  */
 export class Measure extends XmlObject {
-  constructor(node, lastAttributes) {
+  constructor(node, options = { lastAttributes: [], part: -1 }) {
     super(node);
+    const { lastAttributes, part } = options;
+
+    this.lastMeasure = {
+      Attributes: {},
+    };
+    this.Attributes = {};
+    this.Notes = [];
+    this.Part = part;
+
     this.Number = parseInt(this.getAttribute('number'), 10);
     this.Width = parseFloat(this.getAttribute('width'), 10);
+    // REVIEW: Fluid interface for filtering notes seems odd.
+    if (part === -1) {
+      // FIXME: This is a workaround for a fluid interface. This way I can instantiate
+      // new objects without parsing the node again.
+      this.Attributes = lastAttributes;
+      return;
+    }
 
     const children = this.getChildren();
+    // In this XML the order does matter. So we need to go through the whole
+    // children and check which is which. The lastAttributes value needs to
+    // be stored so the layout can break the line whereever it wants.
 
-    this.Attributes = [];
-    this.Notes = [];
-
-    let curAttributes = lastAttributes;
+    this.Attributes = lastAttributes;
+    this.StartClefs = this.Attributes.Clef;
+    let tagFound = false; // Will be true if the first note or attribute tag has been found
     for (let ch = 0; ch < children.length; ch++) {
       const curChild = children[ch];
       if (curChild.tagName === 'note') {
-        this.Notes.push(new Note(curChild, curAttributes));
+        const curNote = new Note(curChild, Object.assign({}, this.Attributes));
+        this.Notes.push(curNote);
+        if (this.Notes.length > 0) {
+          curNote.lastNote = this.Notes[this.Notes.length - 1];
+        }
+        tagFound = true;
       }
       if (curChild.tagName === 'attributes') {
-        curAttributes = new Attributes(curChild);
-        this.Attributes.push(curAttributes);
+        this.Attributes = new Attributes(curChild);
+        this.Attributes.merge(lastAttributes);
+        if (!tagFound) {
+          this.StartClefs = this.Attributes.Clef;
+        }
+        tagFound = true;
       }
     }
-    // const attr = this.getChildren('attributes');
-    // // The MusicXML Spec says attributes are unbounded. It can occur that the
-    // // measure contains more than one node if given a "backup" node.
-    // this.Attributes = [...attr].map(a => new Attributes(a));
-    // const notes = this.getChildren('note');
-    // // the first attributes hould always have divisions.
-    // const divisions = lastDivision === 0 ? this.Attributes[0].Divisions : lastDivision;
-    // this.Notes = [...notes].map(n => new Note(n, divisions));
+    // Fix for MusicXML 2.0: Clefs can occur somewhere in the stream. Therefore
+    // we should check that all staves have clefs:
+    if (this.StartClefs.length !== this.Attributes.Staves &&
+       this.Attributes.Clef.length === this.Attributes.Staves) {
+      this.StartClefs = this.Attributes.Clef;
+    } else {
+      // throw new MusicXmlError('m_001', 'XML inconclusive. Not all staves have clefs');
+    }
+    // Make unique list of voices in this measure
+    this.Voices = [...new Set(this.Notes.map(n => n.Voice))];
   }
 
-/**
+  /**
  * Get all the notes belonging to the given staff. The staff number
  * can be retrieved from {@link getStaves}
  * @param {Number} Number of the staff.
@@ -46,54 +76,62 @@ export class Measure extends XmlObject {
  * @see {@link getStaves}
  */
   getNotesByStaff(index) {
-    return [...new Set(this.Notes.filter(a => a.Staff === index))];
+    const newObj = new Measure(this.Node, { lastAttributes: this.Attributes, part: -1 });
+    newObj.Notes = this.Notes.filter(a => a.Staff === index);
+    return newObj;
   }
 
-  getNotesByBackup() {
-    const bList = [];
-    let nList = [];
-    this.Notes.forEach((n) => {
-      nList.push(n);
-      if (n.isLast) {
-        bList.push(nList);
-        nList = [];
-      }
-    });
-    return bList;
+  getNotesByVoice(voice) {
+    // Copy this object
+    const newObj = new Measure(this.Node, { lastAttributes: this.Attributes, part: -1 });
+    newObj.Notes = this.Notes.filter(n => n.Voice === voice);
+    return newObj;
   }
 
   getAllClefs() {
-    const clefs = this.Attributes.map(a => a.Clef.filter(c => c.Number));
+    const clefs = this.Attributes.Clef.filter(c => c.Number);
     // Collect all distributed clefs in all attributes in measure
     return [].concat(...clefs);
+  }
+
+  getClefs() {
+    return this.Attributes.Clef;
   }
 
   getClefsByStaff(index) {
-    const clefs = this.Attributes.map(a => a.Clef.filter(c => c.Number === index));
-    // Collect all distributed clefs in all attributes in measure
-    return [].concat(...clefs);
+    return this.StartClefs.filter(c => c.Number === index)[0];
   }
 
   getAllTimes() {
-    let times = this.Attributes.map(a => a.Time);
+    let times = this.Attributes.Time;
     // Repeat the timing information according to the staves
-    times = Array(this.getStaves().length).fill(times[0]);
+    times = Array(this.getStaves()).fill(times[0]);
     return times;
   }
 
-/**
+  get Time() {
+    return this.Attributes.Time;
+  }
+
+  /**
  * Get the unique numbers of all staves in this measure
- * @returns {Array} Staves in this measure
+ * @returns {Number} Staves in this measure
  */
   getStaves() {
-    return [...new Set(this.Notes.map(n => n.Staff))];
+    const stavesNode = this.getSiblings('staves');
+    return stavesNode.length === 0 ? 1 : parseInt(stavesNode[0].textContent, 10);
   }
 
   /**
    * Check if this Measure has Attributes
+   * @deprecated since version 0.2 every measure has attributes.
    * @returns {Boolean} Indicates if the measure has Attributes
    */
   hasAttributes() {
-    return this.Attributes !== undefined && this.Attributes.length > 0;
+    return this.Attributes !== undefined;
+  }
+
+  toString() {
+    return `Part: ${this.Part}, Measure: ${this.Number}`;
   }
 }

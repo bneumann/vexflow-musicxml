@@ -10,4 +10,8 @@ export class Key extends XmlObject {
       this.Mode = 'major';
     }
   }
+
+  toString() {
+    return `Fifths: ${this.Fifths} Mode: ${this.Mode}`;
+  }
 }

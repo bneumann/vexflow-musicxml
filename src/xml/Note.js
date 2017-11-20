@@ -1,6 +1,6 @@
 import { XmlObject } from './XmlObject.js';
 import { MusicXmlError } from './Errors.js';
-import { Attributes } from './Attributes.js';
+import { Notation } from './Notation.js';
 
 /**
  * Class representation of a Note
@@ -15,7 +15,21 @@ export class Note extends XmlObject {
   constructor(node, attributes) {
     super(node);
 
-    this.Attributes = attributes;
+    if (node.tagName !== 'note') {
+      throw new MusicXmlError('ne_001', 'Wrong XML type inserted into Note class!');
+    }
+
+    /**
+     * Private property to store attributes before this note
+     * @prop {Number} Note.mAttributes
+     */
+    this.mAttributes = attributes;
+
+    this.lastNote = {
+      Clef: {},
+      mAttributes: {},
+    };
+
     /**
      * Private property to store measures divions units
      * @prop {Number} Note.mDivisions
@@ -41,16 +55,11 @@ export class Note extends XmlObject {
                   this.Node.nextElementSibling.tagName === 'backup';
 
     /**
-     * The note's voice number
-     * @prop {Number} Note.Voice
-     */
-    this.Voice = this.getNum('voice');
-    /**
      * The note's staff number
      * @prop {Number} Note.Staff
      */
     const tStaff = this.getNum('staff');
-    this.Staff = isNaN(tStaff) ? 1 : tStaff;
+    this.Staff = Number.isNaN(tStaff) ? 1 : tStaff;
     /**
      * The duration of the note
      * @prop {Number} Note.Duration
@@ -64,11 +73,17 @@ export class Note extends XmlObject {
     this.Type = this.getText('type');
 
     /**
+     * The notes stem direction (up, down)
+     * @prop {String} Note.Stem
+     */
+    this.Stem = this.getText('stem');
+
+    /**
      * The notes beam state. It indicates if a beam starts or ends here
      * @prop {Array} Note.Beam is an array of beams. They can be 'begin', 'end',
      *               'continue' or 'none'
      */
-     // FIXME: Description doesn't match implementation
+    // FIXME: Description doesn't match implementation
     this.BeamState = this.getTextArray('beam').indexOf('begin') > -1 ||
                      this.getTextArray('beam').indexOf('continue') > -1 ||
                      this.getTextArray('beam').indexOf('end') > -1;
@@ -81,14 +96,10 @@ export class Note extends XmlObject {
     this.isLastBeamNote = this.getTextArray('beam').every(b => b.indexOf('end') > -1);
 
     /**
-     * The notes pitch. It is defined by a step and the octave.
-     * @prop {Object} .Step: Step inside octave
-     *                .Octave: Octave of the note
+     * Percussion notes don't have absolute values and are called "unpitched"
+     * @param {Boolean} Note.isUnpitched defines if note is a percussion note
      */
-    this.Pitch = {
-      Step: this.childExists('step') ?  this.getText('step') : undefined,
-      Octave: this.getNum('octave'),
-    };
+    this.isUnpitched = this.childExists('unpitched');
 
     /**
      * The note's length. It is defined by the duration divided by the divisions
@@ -98,86 +109,52 @@ export class Note extends XmlObject {
     this.NoteLength = this.Duration / this.mDivisions;
 
     this.Dots = this.NoteLength >= 1 && this.NoteLength % 1 === 0.5;
+  }
 
-    // TODO: Move somewhere else
-    this.Types = {
-      '': this.calculateType(),
-      'whole': 'w',
-      'half': 'h',
-      'quarter': 'q',
-      'eighth': '8',
-      '16th': '16',
-      '32nd': '32',
-      '64th': '64',
-      '128th': '128',
-      '256th': '256',
-      '512th': '512',
-      '1024th': '1024',
+  /**
+   * The note's voice number
+   * @returns {Number} voice Number of the voice
+   */
+  get Voice() {
+    const voice = this.getNum('voice');
+    return Number.isNaN(voice) ? 1 : voice;
+  }
+
+  /**
+   * The notes pitch. It is defined by a step and the octave.
+   * @prop {Object} .Step: Step inside octave
+   *                .Octave: Octave of the note
+   */
+  get Pitch() {
+    const stepName = this.isUnpitched ? 'display-step' : 'step';
+    const octaveName = this.isUnpitched ? 'display-octave' : 'octave';
+    return {
+      Step: this.childExists(stepName) ?  this.getText(stepName) : undefined,
+      Octave: this.getNum(octaveName),
     };
   }
 
-  getAccidental() {
-    const acc = this.getText('accidental');
-    switch (acc) {
-      case 'natural':
-        return 'n';
-      case 'flat':
-        return 'b';
-      case 'sharp':
-        return '#';
-      default:
-        return null;
-    }
+  get Notation() {
+    return this.childExists('notations') ? new Notation(this.getChild('notations')) : null;
   }
 
-  calculateType() {
-    let ret;
-
-    if (this.NoteLength === 4) {
-      ret = 'w';
-    } else if (this.NoteLength >= 2 && this.NoteLength <= 3) {
-      ret = 'h';
-    } else if (this.NoteLength >= 1 && this.NoteLength < 2) {
-      ret = 'w';
-    } else if (this.NoteLength === 0.25) {
-      ret = 'q';
-    } else if (this.NoteLength === 0.5) {
-      ret = 'h';
-    } else if (this.NoteLength <= (1 / 8)) {
-      ret = Math.round(1 / (1 / 8)).toString();
+  get IsLastSlur() {
+    let res = false;
+    if (this.Notation && this.Notation.Slur) {
+      res = this.Notation.Slur.type === 'stop';
     }
-    return ret;
+    return res;
   }
 
-  getClef() {
-    const thisClef = this.Attributes.Clef.find(c => c.Number === this.Staff);
-    console.log(thisClef, this.Pitch);
-
-    const sIdx = this.Attributes.Clef.length > 1 ? this.Staff : 0;
-    return this.Attributes.Clef.find(c => c.Number === this.Staff);
+  get Accidental() {
+    return this.getText('accidental');
   }
 
-  getAttributes() {
-    return this.Attributes;
+  get Clef() {
+    return this.mAttributes.Clef.filter(c => c.Number === this.Staff)[0];
   }
 
-  getVexNote() {
-    const kStep = this.isRest ? 'b' : this.Pitch.Step;
-    const kOctave = this.isRest ? '4' : this.Pitch.Octave;
-    const type = this.Types[this.Type];
-    if (type === undefined) {
-      throw new MusicXmlError('BadArguments', 'Invalid type ' + JSON.stringify(this));
-    }
-    const ret = { keys: [kStep + '/' + kOctave], duration: type };
-    if (this.isRest) {
-      ret.type = 'r';
-    }
-    if (this.Node.nextElementSibling !== null) {
-      const tempNote = new Note(this.Node.nextElementSibling, this.Attributes);
-      if (tempNote.isInChord) {
-        ret.keys.push(...tempNote.getVexNote().keys);
-      }
-    }
-    return ret;
+  get hasClefChange() {
+    return JSON.stringify(this.Clef) !== JSON.stringify(this.lastNote.Clef);
   }
 }
