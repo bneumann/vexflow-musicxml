@@ -46,6 +46,7 @@ There is a wepback development server configuration for debugging purposes. It u
 ```
 npm test
 ```
+> For more details check the ```src/main.js``` file that is used by the webpack-server. Also have a look at the ```webpack.config.js``` file, particularly the include section. There you can include folders to your liking and call the files later on in the main.js file to be loaded and refreshed.
 
 ## Screenshots
 
@@ -57,7 +58,7 @@ It scales also to the small browser screens:
 
 ![Smartphone Browser](doc/images/screenshot_bach2.png)
 
-## Usage
+## Example
 
 Apply like this:
 
@@ -79,29 +80,20 @@ Apply like this:
     const openFile = function(event) {
       const input = event.target;
       reader.onload = function(){
-        const dStart = new Date();
         const text = reader.result;
         const node = document.getElementById('output'); // get the element where you want the score to be rendered
         const vex = new Vex.Flow.MusicXmlRenderer(text, node); // call the MusicXmlRenderer
-        const dStop = new Date();
-        console.log('Time for loading: ' + (dStop.getMilliseconds() - dStart.getMilliseconds()) + ' ms');
       };
       reader.readAsText(input.files[0]);
     };
 
   </script>
   <form name="foo" method="post" enctype="multipart/form-data">
-    <input type='file'
-           accept='text/xml'
-           onchange='openFile(event)'><br>
+    <input type='file' accept='text/xml' onchange='openFile(event)'><br>
   </form>
-  <canvas id='output' width='1280' height='1024'>
-  ...
-  </canvas>
+  <canvas id='output' width='1280' height='1024'></canvas>
 </body>
-
 </html>
-
 ```
 
 ## Contributing
