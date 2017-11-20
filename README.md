@@ -52,11 +52,11 @@ npm test
 
 Here are some shots from the current development:
 
-![PC Browser](doc/images/screenshot_bach1.png)
+![PC Browser](./doc/images/screenshot_bach1.png)
 
 It scales also to the small browser screens:
 
-![Smartphone Browser](doc/images/screenshot_bach2.png)
+![Smartphone Browser](./doc/images/screenshot_bach2.png)
 
 ## Example
 
