@@ -1,6 +1,6 @@
 {
   "name": "vexflow-musicxml",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "MusicXml Parser for vexflow",
   "main": "build/vexflow-musicxml.js",
   "keywords": [

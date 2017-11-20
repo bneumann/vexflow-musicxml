@@ -18,6 +18,7 @@ const { Flow } = Vex;
 export class MusicXmlRenderer {
   constructor(data, canvas) {
     this.musicXml = new MusicXml(data);
+    console.profileEnd('parsing');
     console.log(this.musicXml);
 
     if (false) {

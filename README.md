@@ -4,6 +4,24 @@ This is a ES6 approach to an easy Music XML renderer. It uses [Vexflow](https://
 
 Please consider that this project is under development and needs some more care.
 
+## Usage
+If you want to use the library as is, you can checkout the npm package: https://www.npmjs.com/package/vexflow-musicxml
+Just add it to your project with ```npm install --save vexflow-musicxml``` and require like this for ES6 Syntax:
+```javascript
+import Vex from 'vexflow-musicxml';
+```
+or classic JS require:
+```javascript
+var Vex = require('vexflow-musicxml');
+```
+
+To get it running you can create it like so:
+```javascript
+renderer = new Vex.Flow.MusicXmlRenderer(data, canvasReference);
+```
+```data``` is a XML string. So if you load your XML from the local PC or through your server you will need a XML to String parser to get the data.
+```canvasReference``` is either a reference to a ```<div>``` element or a ```<canvas>``` element.
+
 ## Installation
 
 ```javascript

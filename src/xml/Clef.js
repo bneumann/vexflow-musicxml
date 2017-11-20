@@ -13,4 +13,8 @@ export class Clef extends XmlObject {
   toString() {
     return `[Staff ${this.Number}]: ${this.sign}${this.line} ~ ${this.getVexClef()}\n`;
   }
+
+  isEqual(clef2) {
+    return this.Number === clef2.Number && this.sign === clef2.sign && this.line === clef2.line;
+  }
 }

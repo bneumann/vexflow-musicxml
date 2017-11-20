@@ -5,7 +5,7 @@ export class Notation extends XmlObject {
     super(node);
     let slurNode = [];
     // Fix for MusicXML 2.0: slurs are called ties here:
-    const sp = node.getRootNode().getElementsByTagName('score-partwise')[0];
+    const sp = node.ownerDocument.getElementsByTagName('score-partwise')[0];
     if (sp.getAttribute('version') === '2.0') {
       slurNode = node.getElementsByTagName('tied')[0];
     } else {
