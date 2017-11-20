@@ -1,4 +1,5 @@
 // import { Vex } from 'vexflow';
+import { XmlSerializer } from './XmlSerializer.js';
 import { XmlObject } from './XmlObject.js';
 import { MusicXmlError } from './Errors.js';
 import { Identification } from './Identification.js';
@@ -16,16 +17,9 @@ export class MusicXml extends XmlObject {
       super();
       throw new MusicXmlError('NoInputXML', 'No XML string has been given as input file');
     }
-    // This is a hack to be able to test with mocha in a non-browser environment
-    // Or maybe even in a standalone node application.
-    let oParser;
-    if (typeof window === 'undefined') {
-      const DOMParser = require('xmldom').DOMParser; // eslint-disable-line
-      oParser = new DOMParser();
-    } else {
-      oParser = new DOMParser();
-    }
-    const xDoc = oParser.parseFromString(xDocString, 'text/xml');
+    const serializer = new XmlSerializer(xDocString);
+    const { xDoc } = serializer;
+
     super(xDoc.getElementsByTagName('score-partwise')[0]);
     this.Version = this.getAttribute('version');
     this.Identification = undefined;
@@ -35,7 +29,10 @@ export class MusicXml extends XmlObject {
     this.Title = this.getText('movement-title');
 
     const parts = this.getChildren('part');
+    const partInfo = this.getChildren('part-list')[0];
+    const names = partInfo.getElementsByTagName('part-name');
     this.Parts = [...parts].map(p => new Part(p));
+    this.Parts.forEach((p, i) => { p.Name = names[i].textContent; });
   }
 
   getMeasuresFromPart(partNumber) {

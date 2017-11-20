@@ -8,10 +8,18 @@
 export class XmlSerializer {
   /**
    * @constructor
-   * @param {string} xDoc - The string representation of an XML document
+   * @param {string} xDocString - The string representation of an XML document
    */
-  constructor(xDoc) {
-    const domParser = new DOMParser();
-    this.xDoc = domParser.parseFromString(xDoc, 'text/xml');
+  constructor(xDocString) {
+    // This is a hack to be able to test with mocha in a non-browser environment
+    // Or maybe even in a standalone node application.
+    let oParser;
+    if (typeof window === 'undefined') {
+      const DOMParser = require('xmldom').DOMParser; // eslint-disable-line
+      oParser = new DOMParser();
+    } else {
+      oParser = new DOMParser();
+    }
+    this.xDoc = oParser.parseFromString(xDocString, 'text/xml');
   }
 }
